@@ -1,0 +1,26 @@
+{
+    "name": "neam/yii2-yii-workflow-ui-giiant-generator",
+    "description": "Giiant-based Yii Workflow UI Generators for Yii 2 Framework",
+    "keywords": ["yii2", "gii", "crud"],
+    "homepage": "https://github.com/neam/yii2-yii-workflow-ui-giiant-generator",
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Fredrik Wollsén",
+            "email": "fredrik@neam.se",
+            "homepage": "http://neamlabs.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "schmunk42\\yii_workflow_ui_giiant_generator\\": ""
+        }
+    },
+    "extra": {
+        "bootstrap": "neam\\yii_workflow_ui_giiant_generator\\Bootstrap"
+    },
+    "require": {
+        "schmunk42/yii2-giiant": "*"
+    }
+}
