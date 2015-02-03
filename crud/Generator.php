@@ -11,6 +11,18 @@ use Yii;
  */
 class Generator extends \schmunk42\giiant\crud\Generator
 {
+
+    public function getName()
+    {
+        return 'Yii Workflow UI CRUD Generator';
+    }
+
+    public function getDescription()
+    {
+        return 'This generator generates a yii-workflow-ui compatible controller and views that implement CRUD (Create, Read, Update, Delete)
+            operations for the specified data model.';
+    }
+
     public function rules()
     {
         $rules = parent::rules();
@@ -32,22 +44,11 @@ class Generator extends \schmunk42\giiant\crud\Generator
     {
         /* @var $class ActiveRecord */
         $class = $this->modelClass;
-        $table=$class::model()->getMetaData()->tableSchema;
-        $pk=$table->primaryKey;
+        $table = $class::model()->getMetaData()->tableSchema;
+        $pk = $table->primaryKey;
         if (empty($pk)) {
             $this->addError('modelClass', "The table associated with $class must have primary key(s).");
         }
-    }
-
-    public function getName()
-    {
-        return 'Yii Workflow UI CRUD Generator';
-    }
-
-    public function getDescription()
-    {
-        return 'This generator generates a yii-workflow-ui compatible controller and views that implement CRUD (Create, Read, Update, Delete)
-            operations for the specified data model.';
     }
 
 }
