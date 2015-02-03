@@ -51,4 +51,36 @@ class Generator extends \schmunk42\giiant\crud\Generator
         }
     }
 
+    /**
+     * Returns table schema for current model class or false if it is not an active record
+     * @return boolean|CDbTableSchema
+     */
+    public function getTableSchema()
+    {
+        /* @var $class CActiveRecord */
+        $class = $this->modelClass;
+        if (is_subclass_of($class, '\CActiveRecord')) {
+            return $class::model()->getMetaData()->tableSchema;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @return array model column names
+     */
+    public function getColumnNames()
+    {
+        /* @var $class CActiveRecord */
+        $class = $this->modelClass;
+        if (is_subclass_of($class, '\CActiveRecord')) {
+            return $class::model()->getMetaData()->tableSchema->getColumnNames();
+        } else {
+            /* @var $model \yii\base\Model */
+            $model = new $class();
+
+            return $model->attributes();
+        }
+    }
+
 }
