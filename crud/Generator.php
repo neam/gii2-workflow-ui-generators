@@ -25,6 +25,19 @@ class Generator extends \schmunk42\giiant\crud\Generator
         return $rules;
     }
 
+    /**
+     * Checks if yii 1 model class is valid
+     */
+    public function validateModelClass()
+    {
+        /* @var $class ActiveRecord */
+        $class = $this->modelClass;
+        $table=$class::model()->getMetaData()->tableSchema;
+        $pk=$table->primaryKey;
+        if (empty($pk)) {
+            $this->addError('modelClass', "The table associated with $class must have primary key(s).");
+        }
+    }
 
     public function getName()
     {
