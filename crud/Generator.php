@@ -38,6 +38,16 @@ class Generator extends \schmunk42\giiant\crud\Generator
     }
 
     /**
+     * Get model
+     */
+    public function getModel()
+    {
+        /* @var $class CActiveRecord */
+        $class = $this->modelClass;
+        return $class::model();
+    }
+
+    /**
      * Checks if yii 1 model class is valid
      */
     public function validateModelClass()
