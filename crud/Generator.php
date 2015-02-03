@@ -42,7 +42,7 @@ class Generator extends \schmunk42\giiant\crud\Generator
      */
     public function validateModelClass()
     {
-        /* @var $class ActiveRecord */
+        /* @var $class CActiveRecord */
         $class = $this->modelClass;
         $table = $class::model()->getMetaData()->tableSchema;
         $pk = $table->primaryKey;
