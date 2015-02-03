@@ -11,6 +11,20 @@ use Yii;
  */
 class Generator extends \schmunk42\giiant\crud\Generator
 {
+    public function rules()
+    {
+        $rules = parent::rules();
+
+        // Alter the rule that restricts model classes to yii2 active records so that we can use yii 1 active records
+        foreach ($rules as &$rule) {
+            if ($rule[0][0] === "modelClass" && $rule[1] === "validateClass") {
+                $rule["params"]["extends"] = "\CActiveRecord";
+            }
+        }
+
+        return $rules;
+    }
+
 
     public function getName()
     {
