@@ -14,8 +14,6 @@ class Generator extends \schmunk42\giiant\crud\Generator
 {
 
     public $baseControllerClass = 'Controller';
-    public $controllerNamespace = '';
-    public $modelNamespace = '';
 
     public function getName()
     {
@@ -33,14 +31,14 @@ class Generator extends \schmunk42\giiant\crud\Generator
      */
     public function generate()
     {
+        $files = [];
+
+        // Controller
         $controllerPath = $this->getControllerPath();
-
         $controllerFile = $controllerPath . str_replace('\\', '/', ltrim($this->controllerClass, '\\')) . '.php';
+        $files[] = new CodeFile($controllerFile, $this->render('controller.php'));
 
-        $files = [
-            new CodeFile($controllerFile, $this->render('controller.php')),
-        ];
-
+        // View path
         $viewPath = $this->getViewPath();
 
         // Edit workflow views
@@ -48,7 +46,6 @@ class Generator extends \schmunk42\giiant\crud\Generator
             $stepViewPath = $viewPath . '/steps/' . $step . ".php";
             $files[] = new CodeFile($stepViewPath, $this->render('step.php', compact("step", "attributes")));
         }
-
 
         // Translate workflow views
         foreach ($this->getModel()->flowSteps() as $step => $attributes) {
@@ -96,6 +93,31 @@ class Generator extends \schmunk42\giiant\crud\Generator
     }
 
     /**
+     * An inline validator that checks if the attribute value refers to an existing class name.
+     * If the `extends` option is specified, it will also check if the class is a child class
+     * of the class represented by the `extends` option.
+     * @param string $attribute the attribute being validated
+     * @param array $params the validation options
+     */
+    public function validateClass($attribute, $params)
+    {
+        $class = $this->$attribute;
+        try {
+            if (class_exists($class)) {
+                if (isset($params['extends'])) {
+                    if (ltrim($class, '\\') !== ltrim($params['extends'], '\\') && !is_subclass_of($class, $params['extends'])) {
+                        $this->addError($attribute, "'$class' must extend from {$params['extends']} or its child class.");
+                    }
+                }
+            } else {
+                $this->addError($attribute, "Class '$class' does not exist or has syntax error.");
+            }
+        } catch (\Exception $e) {
+            //$this->addError($attribute, "Class '$class' does not exist or has syntax error.");
+        }
+    }
+
+    /**
      * An inline validator that checks if the attribute value refers to a valid namespaced class name.
      * The validator will check if the directory containing the new class file exist or not.
      * @param string $attribute the attribute being validated
@@ -133,7 +155,7 @@ class Generator extends \schmunk42\giiant\crud\Generator
     public function getControllerID()
     {
         $pos = strrpos($this->controllerClass, '\\');
-        $class = substr(substr($this->controllerClass, $pos + 1), 0, -10);
+        $class = substr(ltrim($this->controllerClass, '\\'), 0, -10);
 
         return lcfirst($class);
     }
