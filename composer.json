@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "schmunk42\\yii_workflow_ui_giiant_generator\\": ""
+            "neam\\yii_workflow_ui_giiant_generator\\": ""
         }
     },
     "extra": {
