@@ -43,11 +43,25 @@ class Generator extends \schmunk42\giiant\crud\Generator
 
         $viewPath = $this->getViewPath();
 
+        // Edit workflow views
         foreach ($this->getModel()->flowSteps() as $step => $attributes) {
             $stepViewPath = $viewPath . '/steps/' . $step . ".php";
             $files[] = new CodeFile($stepViewPath, $this->render('step.php', compact("step", "attributes")));
         }
 
+
+        // Translate workflow views
+        foreach ($this->getModel()->flowSteps() as $step => $attributes) {
+
+            if (!$this->getModel()->anyTranslatable($attributes)) {
+                continue;
+            }
+
+            $stepViewPath = $viewPath . '/translate/steps/' . $step . ".php";
+            $files[] = new CodeFile($stepViewPath, $this->render('step.php', compact("step", "attributes")));
+        }
+
+        // Other views
         $templatePath = $this->getTemplatePath() . '/views';
         foreach (scandir($templatePath) as $file) {
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
