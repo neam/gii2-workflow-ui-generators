@@ -1,7 +1,7 @@
 yii2-yii-workflow-ui-giiant-generator
 ===========
 
-Giiant-based Yii Workflow UI Generators for Yii 2 Framework
+Yii 1 Workflow UI Generators powered by Giiant, based on Gii 2 (Yii 2 Framework)
 
 Links
 -----
