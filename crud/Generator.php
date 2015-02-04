@@ -3,6 +3,7 @@
 namespace neam\yii_workflow_ui_giiant_generator\crud;
 
 use Yii;
+use yii\gii\CodeFile;
 
 /**
  * Yii Workflow UI Generator.
@@ -11,6 +12,10 @@ use Yii;
  */
 class Generator extends \schmunk42\giiant\crud\Generator
 {
+
+    public $baseControllerClass = 'Controller';
+    public $controllerNamespace = '';
+    public $modelNamespace = '';
 
     public function getName()
     {
@@ -23,6 +28,45 @@ class Generator extends \schmunk42\giiant\crud\Generator
             operations for the specified data model.';
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function generate()
+    {
+        $controllerPath = $this->getControllerPath();
+
+        $controllerFile = $controllerPath . str_replace('\\', '/', ltrim($this->controllerClass, '\\')) . '.php';
+
+        $files = [
+            new CodeFile($controllerFile, $this->render('controller.php')),
+        ];
+
+        $viewPath = $this->getViewPath();
+
+        foreach ($this->getModel()->flowSteps() as $step => $attributes) {
+            $stepViewPath = $viewPath . '/steps/' . $step . ".php";
+            $files[] = new CodeFile($stepViewPath, $this->render('step.php', compact("step", "attributes")));
+        }
+
+        $templatePath = $this->getTemplatePath() . '/views';
+        foreach (scandir($templatePath) as $file) {
+            if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                $files[] = new CodeFile("$viewPath/$file", $this->render("views/$file"));
+            }
+        }
+
+        return $files;
+    }
+
+    public function getControllerPath()
+    {
+        return \Yii::getAlias(str_replace('views', 'controllers', $this->viewPath)) . '/';
+    }
+
+    /**
+     * Alter validation rules to work with yii 1 templates
+     * @return array
+     */
     public function rules()
     {
         $rules = parent::rules();
@@ -38,6 +82,28 @@ class Generator extends \schmunk42\giiant\crud\Generator
     }
 
     /**
+     * An inline validator that checks if the attribute value refers to a valid namespaced class name.
+     * The validator will check if the directory containing the new class file exist or not.
+     * @param string $attribute the attribute being validated
+     * @param array $params the validation options
+     */
+    public function validateNewClass($attribute, $params)
+    {
+        $class = ltrim($this->$attribute, '\\');
+        if (($pos = strrpos($class, '\\')) === false) {
+            //$this->addError($attribute, "The class name must contain fully qualified namespace name.");
+        } else {
+            $ns = substr($class, 0, $pos);
+            $path = Yii::getAlias('@' . str_replace('\\', '/', $ns), false);
+            if ($path === false) {
+                $this->addError($attribute, "The class namespace is invalid: $ns");
+            } elseif (!is_dir($path)) {
+                $this->addError($attribute, "Please make sure the directory containing this class exists: $path");
+            }
+        }
+    }
+
+    /**
      * Get model
      */
     public function getModel()
@@ -45,6 +111,17 @@ class Generator extends \schmunk42\giiant\crud\Generator
         /* @var $class CActiveRecord */
         $class = $this->modelClass;
         return $class::model();
+    }
+
+    /**
+     * @return string the yii 1 controller ID (without the module ID prefix)
+     */
+    public function getControllerID()
+    {
+        $pos = strrpos($this->controllerClass, '\\');
+        $class = substr(substr($this->controllerClass, $pos + 1), 0, -10);
+
+        return lcfirst($class);
     }
 
     /**
