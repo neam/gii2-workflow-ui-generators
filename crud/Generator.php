@@ -4,6 +4,11 @@ namespace neam\yii_workflow_ui_giiant_generator\crud;
 
 use Yii;
 use yii\gii\CodeFile;
+use neam\yii_workflow_ui_giiant_generator\crud\providers\CallbackProvider;
+use neam\yii_workflow_ui_giiant_generator\crud\providers\DateTimeProvider;
+use neam\yii_workflow_ui_giiant_generator\crud\providers\EditorProvider;
+use neam\yii_workflow_ui_giiant_generator\crud\providers\RelationProvider;
+use yii\helpers\Json;
 
 /**
  * Yii Workflow UI Generator.
@@ -24,6 +29,16 @@ class Generator extends \schmunk42\giiant\crud\Generator
     {
         return 'This generator generates a yii-workflow-ui compatible controller and views that implement CRUD (Create, Read, Update, Delete)
             operations for the specified data model.';
+    }
+
+    static public function getCoreProviders()
+    {
+        return [
+            CallbackProvider::className(),
+            DateTimeProvider::className(),
+            EditorProvider::className(),
+            RelationProvider::className(),
+        ];
     }
 
     /**
@@ -205,6 +220,141 @@ class Generator extends \schmunk42\giiant\crud\Generator
             $model = new $class();
 
             return $model->attributes();
+        }
+    }
+
+    /**
+     * Generates code for active field by using the provider queue
+     *
+     * @param string $attribute
+     * @param null $model
+     *
+     * @return mixed|string
+     */
+    public function activeFieldForAttribute($attribute, $model = null)
+    {
+        Yii::trace("Rendering activeField for '{$attribute}'", __METHOD__);
+        if ($model === null) {
+            $model = $this->modelClass;
+        }
+        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        if ($code !== null) {
+            return $code;
+        } else {
+            throw new \CException("This generator requires a non-null result from each attribute. Attribute '{$attribute}' returned null");
+        };
+    }
+
+    public function prependActiveFieldForAttribute($attribute, $model = null)
+    {
+        Yii::trace("Rendering activeField for '{$attribute}'", __METHOD__);
+        if ($model === null) {
+            $model = $this->modelClass;
+        }
+        return $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+    }
+
+    public function appendActiveFieldForAttribute($attribute, $model = null)
+    {
+        Yii::trace("Rendering activeField for '{$attribute}'", __METHOD__);
+        if ($model === null) {
+            $model = $this->modelClass;
+        }
+        return $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+    }
+
+    public function columnFormatForAttribute($attribute, $model = null)
+    {
+        Yii::trace("Rendering columnFormat for '{$attribute}'", __METHOD__);
+        if ($model === null) {
+            $model = $this->modelClass;
+        }
+        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        if ($code !== null) {
+            return $code;
+        } else {
+            throw new \CException("This generator requires a non-null result from each attribute. Attribute '{$attribute}' returned null");
+        };
+    }
+
+    public function attributeFormatForAttribute($attribute, $model = null)
+    {
+        Yii::trace("Rendering attributeFormat for '{$attribute}'", __METHOD__);
+        if ($model === null) {
+            $model = $this->modelClass;
+        }
+        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        if ($code !== null) {
+            return $code;
+        }
+        throw new \CException("This generator requires a non-null result from each attribute. Attribute '{$attribute}' returned null");
+    }
+
+    public function relationGrid($name, $relation, $showAllRecords = false)
+    {
+        Yii::trace("Rendering relationGrid", __METHOD__);
+        return $this->callProviderQueue(__FUNCTION__, $name, $relation, $showAllRecords);
+    }
+
+    /**
+     * Clone of parent's _p because it is declared private
+     * @var array
+     */
+    private $_p = [];
+
+    /**
+     * Clone of parent's callProviderQueue because it is declared private
+     * @param $func
+     * @param $args
+     * @return mixed
+     */
+    private function callProviderQueue($func, $args)
+    {
+        $this->initializeProviders(); // TODO: should be done on init, but providerList is empty
+        //var_dump($this->_p);exit;
+        $args = func_get_args();
+        unset($args[0]);
+        // walk through providers
+        foreach ($this->_p AS $obj) {
+            if (method_exists($obj, $func)) {
+                $c = call_user_func_array(array(&$obj, $func), $args);
+                // until a provider returns not null
+                if ($c !== null) {
+                    if (is_object($args)) {
+                        $argsString = get_class($args);
+                    } elseif (is_array($args)) {
+                        $argsString = Json::encode($args);
+                    } else {
+                        $argsString = $args;
+                    }
+                    $msg = 'Using provider ' . get_class($obj) . '::' . $func . ' ' . $argsString;
+                    Yii::trace($msg, __METHOD__);
+                    return $c;
+                }
+            }
+        }
+    }
+
+    /**
+     * Clone of parent's initializeProviders because it is declared private
+     */
+    private function initializeProviders()
+    {
+        // TODO: this is a hotfix for an already initialized provider queue on action re-entry
+        if ($this->_p !== []) {
+            return;
+        }
+        if ($this->providerList) {
+            foreach (explode(',', $this->providerList) AS $class) {
+                $class = trim($class);
+                if (!$class) {
+                    continue;
+                }
+                $obj            = \Yii::createObject(['class' => $class]);
+                $obj->generator = $this;
+                $this->_p[]     = $obj;
+                #\Yii::trace("Initialized provider '{$class}'", __METHOD__);
+            }
         }
     }
 
