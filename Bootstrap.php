@@ -34,7 +34,7 @@ class Bootstrap implements BootstrapInterface
             if (!isset($app->getModule('gii')->generators['yii-workflow-ui-crud'])) {
                 $app->getModule('gii')->generators['yii-workflow-ui-crud'] = 'neam\yii_workflow_ui_giiant_generator\crud\Generator';
             }
-            if (!isset($app->getModule('gii')->generators['yii-workflow-ui-codeception-test'])) {
+            if (!isset($app->getModule('gii')->generators['yii-workflow-ui-test'])) {
                 $app->getModule('gii')->generators['yii-workflow-ui-test'] = 'neam\yii_workflow_ui_giiant_generator\test\Generator';
             }
         }
