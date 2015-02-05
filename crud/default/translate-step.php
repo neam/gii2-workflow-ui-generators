@@ -4,7 +4,6 @@ use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 
 $model = $generator->getModel();
-$translatableAttributes = $model->getTranslatableAttributes();
 
 echo "<?php\n";
 ?>
@@ -15,13 +14,9 @@ echo "<?php\n";
 */
 ?>
 
-<?= "<?php"; ?> if ($this->actionUsesEditWorkflow()): ?>
-
 <?php
-var_dump($translatableAttributes);
+//var_dump($translatableAttributes);
 ?>
-
-<?= "<?php"; ?> endif; ?>
 
 <?php foreach ($translatableAttributes as $attribute => $sourceLanguageContentAttribute): ?>
 

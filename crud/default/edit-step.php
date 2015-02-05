@@ -3,7 +3,7 @@
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 
-$translatableAttributes = $generator->getModel()->getTranslatableAttributes();
+$model = $generator->getModel();
 
 echo "<?php\n";
 ?>
@@ -14,23 +14,17 @@ echo "<?php\n";
 */
 ?>
 
-<?="<?php";?> if ($this->actionUsesEditWorkflow()): ?>
-
 <?php
-var_dump($attributes);
+//var_dump($attributes);
 ?>
 
-<?="<?php";?> endif; ?>
+<?php foreach ($attributes as $attribute): ?>
 
-<?php foreach ($attributes as $attribute) {
+    <?php
 
-
-
-//    $column = $generator->getTableSchema()->columns[$attribute];
-/*
-    $prepend = $generator->prependActiveField($column, $model);
-    $field = $generator->activeField($column, $model);
-    $append = $generator->appendActiveField($column, $model);
+    $prepend = $generator->prependActiveFieldForAttribute($attribute, $model);
+    $field = $generator->activeFieldForAttribute($attribute, $model);
+    $append = $generator->appendActiveFieldForAttribute($attribute, $model);
 
     if ($prepend) {
         echo "\n\t\t\t<?= " . $prepend . " ?>";
@@ -41,5 +35,17 @@ var_dump($attributes);
     if ($append) {
         echo "\n\t\t\t<?= " . $append . " ?>";
     }
+
+    /*
+    <?="<?php";?> echo $form->translateTextFieldControlGroup(
+        $model,
+        '<?=$attribute?>',
+        $this->getTranslationLanguage(),
+        $this->action->id,
+        array('hint' => true)
+    ); ?>
+
     */
-} ?>
+    ?>
+
+<?php endforeach; ?>
