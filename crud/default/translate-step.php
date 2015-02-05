@@ -14,11 +14,9 @@ echo "<?php\n";
 */
 ?>
 
-<?php
-//var_dump($translatableAttributes);
-?>
-
 <?php foreach ($translatableAttributes as $attribute => $sourceLanguageContentAttribute): ?>
+
+    <?= "<?php"; ?> // <?= $attribute ?> ?>
 
     <?php
 
@@ -36,16 +34,6 @@ echo "<?php\n";
         echo "\n\t\t\t<?= " . $append . " ?>";
     }
 
-    /*
-    <?="<?php";?> echo $form->translateTextFieldControlGroup(
-        $model,
-        '<?=$attribute?>',
-        $this->getTranslationLanguage(),
-        $this->action->id,
-        array('hint' => true)
-    ); ?>
-
-        */
     ?>
 
 <?php endforeach; ?>
