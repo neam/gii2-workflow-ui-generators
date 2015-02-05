@@ -44,18 +44,20 @@ class Generator extends \schmunk42\giiant\crud\Generator
         // Edit workflow views
         foreach ($this->getModel()->flowSteps() as $step => $attributes) {
             $stepViewPath = $viewPath . '/steps/' . $step . ".php";
-            $files[] = new CodeFile($stepViewPath, $this->render('step.php', compact("step", "attributes")));
+            $files[] = new CodeFile($stepViewPath, $this->render('edit-step.php', compact("step", "attributes")));
         }
 
         // Translate workflow views
         foreach ($this->getModel()->flowSteps() as $step => $attributes) {
 
-            if (!$this->getModel()->anyTranslatable($attributes)) {
+            $translatableAttributes = $this->getModel()->matchingTranslatable($attributes);
+
+            if (empty($translatableAttributes)) {
                 continue;
             }
 
             $stepViewPath = $viewPath . '/translate/steps/' . $step . ".php";
-            $files[] = new CodeFile($stepViewPath, $this->render('step.php', compact("step", "attributes")));
+            $files[] = new CodeFile($stepViewPath, $this->render('translate-step.php', compact("step", "translatableAttributes")));
         }
 
         // Other views
