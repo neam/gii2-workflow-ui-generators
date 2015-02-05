@@ -25,13 +25,13 @@ echo "<?php\n";
     $append = $generator->appendActiveFieldForAttribute($attribute, $model);
 
     if ($prepend) {
-        echo "\n\t\t\t<?= " . $prepend . " ?>";
+        echo "\n" . $prepend . "";
     }
     if ($field) {
-        echo "\n\t\t\t<?= " . $field . " ?>";
+        echo "\n" . $field . "";
     }
     if ($append) {
-        echo "\n\t\t\t<?= " . $append . " ?>";
+        echo "\n" . $append . "";
     }
 
     ?>
