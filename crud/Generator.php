@@ -35,9 +35,9 @@ class Generator extends \schmunk42\giiant\crud\Generator
     {
         return [
             CallbackProvider::className(),
-            DateTimeProvider::className(),
-            EditorProvider::className(),
-            RelationProvider::className(),
+            //DateTimeProvider::className(),
+            //EditorProvider::className(),
+            //RelationProvider::className(),
         ];
     }
 
