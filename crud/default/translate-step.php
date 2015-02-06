@@ -10,7 +10,7 @@ echo "<?php\n";
 /**
 * @var <?= ltrim($generator->controllerClass, '\\') ?>|WorkflowUiControllerTrait $this
 * @var <?= ltrim($generator->modelClass, '\\') ?>|ItemTrait $model
-* @var TbActiveForm $form
+* @var TbActiveForm|WorkflowUiTbActiveFormTrait $form
 */
 ?>
 <?php foreach ($translatableAttributes as $attribute => $sourceLanguageContentAttribute): ?>
@@ -34,3 +34,4 @@ echo "<?php\n";
     }
 
 endforeach; ?>
+
