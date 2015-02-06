@@ -13,12 +13,11 @@ echo "<?php\n";
 * @var TbActiveForm $form
 */
 ?>
-
 <?php foreach ($attributes as $attribute): ?>
 
-    <?= "<?php"; ?> // <?= $attribute ?> ?>
 
-    <?php
+<?= "<?php"; ?> // <?= $attribute ?> ?>
+<?php
 
     $prepend = $generator->prependActiveFieldForAttribute($attribute, $model);
     $field = $generator->activeFieldForAttribute($attribute, $model);
@@ -34,6 +33,4 @@ echo "<?php\n";
         echo "\n" . $append . "";
     }
 
-    ?>
-
-<?php endforeach; ?>
+endforeach; ?>
