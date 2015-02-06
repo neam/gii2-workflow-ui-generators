@@ -19,9 +19,9 @@ echo "<?php\n";
 <?= "<?php"; ?> // <?= $attribute ?> ?>
 <?php
 
-    $prepend = $generator->prependActiveFieldForAttribute($attribute, $model);
-    $field = $generator->activeFieldForAttribute($attribute, $model);
-    $append = $generator->appendActiveFieldForAttribute($attribute, $model);
+    $prepend = $generator->prependActiveFieldForAttribute($sourceLanguageContentAttribute, $model);
+    $field = $generator->activeFieldForAttribute($sourceLanguageContentAttribute, $model);
+    $append = $generator->appendActiveFieldForAttribute($sourceLanguageContentAttribute, $model);
 
     if ($prepend) {
         echo "\n" . $prepend . "";
