@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace neam\yii_workflow_ui_giiant_generator;
+namespace neam\workflow_ui_giiant_generator;
 
 use yii\base\Application;
 use yii\base\BootstrapInterface;
@@ -15,7 +15,7 @@ use yii\base\BootstrapInterface;
 
 /**
  * Class Bootstrap
- * @package neam\yii_workflow_ui_giiant_generator
+ * @package neam\workflow_ui_giiant_generator
  * @author Fredrik Wollsén <fredrik@neam.se>
  * @author Tobias Munk <tobias@diemeisterei.de>
  */
@@ -31,11 +31,14 @@ class Bootstrap implements BootstrapInterface
     {
         if ($app->hasModule('gii')) {
 
-            if (!isset($app->getModule('gii')->generators['yii-workflow-ui-crud'])) {
-                $app->getModule('gii')->generators['yii-workflow-ui-crud'] = 'neam\yii_workflow_ui_giiant_generator\crud\Generator';
+            if (!isset($app->getModule('gii')->generators['workflow-ui-yii1-crud'])) {
+                $app->getModule('gii')->generators['workflow-ui-yii1-crud'] = 'neam\workflow_ui_giiant_generator\yii1_crud\Generator';
             }
-            if (!isset($app->getModule('gii')->generators['yii-workflow-ui-test'])) {
-                $app->getModule('gii')->generators['yii-workflow-ui-test'] = 'neam\yii_workflow_ui_giiant_generator\test\Generator';
+            if (!isset($app->getModule('gii')->generators['workflow-ui-yii1-tests'])) {
+                $app->getModule('gii')->generators['workflow-ui-yii1-test'] = 'neam\workflow_ui_giiant_generator\yii1_test\Generator';
+            }
+            if (!isset($app->getModule('gii')->generators['workflow-ui-angular-crud-module'])) {
+                $app->getModule('gii')->generators['workflow-ui-angular-crud-module'] = 'neam\workflow_ui_giiant_generator\angular_crud_module\Generator';
             }
         }
     }

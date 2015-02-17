@@ -1,8 +1,8 @@
 {
-    "name": "neam/yii2-yii-workflow-ui-giiant-generator",
-    "description": "Yii 1 Workflow UI Generators powered by Giiant, based on Gii 2 (Yii 2 Framework)",
-    "keywords": ["yii2", "gii", "crud"],
-    "homepage": "https://github.com/neam/yii2-yii-workflow-ui-giiant-generator",
+    "name": "neam/yii2-workflow-ui-giiant-generator",
+    "description": "Yii 1 and AngularJS Workflow UI Generation from Yii 1 Active Records. Powered by Giiant / Gii 2 (Yii 2 Framework)",
+    "keywords": ["yii2", "gii", "crud", "angular"],
+    "homepage": "https://github.com/neam/yii2-workflow-ui-giiant-generator",
     "type": "yii2-extension",
     "license": "BSD-3-Clause",
     "authors": [
@@ -19,11 +19,11 @@
     ],
     "autoload": {
         "psr-4": {
-            "neam\\yii_workflow_ui_giiant_generator\\": ""
+            "neam\\workflow_ui_giiant_generator\\": ""
         }
     },
     "extra": {
-        "bootstrap": "neam\\yii_workflow_ui_giiant_generator\\Bootstrap"
+        "bootstrap": "neam\\workflow_ui_giiant_generator\\Bootstrap"
     },
     "require": {
         "schmunk42/yii2-giiant": "*"
