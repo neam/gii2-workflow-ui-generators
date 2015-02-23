@@ -1,6 +1,6 @@
 <?php
 
-namespace neam\workflow_ui_giiant_generator\test;
+namespace neam\workflow_ui_generators\yii1_tests;
 
 use Yii;
 
@@ -9,7 +9,7 @@ use Yii;
  * @author Fredrik Wollsén <fredrik@neam.se>
  * @since 1.0
  */
-class Generator extends \neam\workflow_ui_giiant_generator\crud\Generator
+class Generator extends \neam\workflow_ui_generators\yii1_crud\Generator
 {
 
     public function getName()

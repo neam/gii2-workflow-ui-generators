@@ -1,13 +1,13 @@
 <?php
 
-namespace neam\workflow_ui_giiant_generator\yii1_crud;
+namespace neam\workflow_ui_generators\yii1_crud;
 
 use Yii;
 use yii\gii\CodeFile;
-use neam\workflow_ui_giiant_generator\crud\providers\CallbackProvider;
-//use neam\workflow_ui_giiant_generator\crud\providers\DateTimeProvider;
-//use neam\workflow_ui_giiant_generator\crud\providers\EditorProvider;
-//use neam\workflow_ui_giiant_generator\crud\providers\RelationProvider;
+use neam\workflow_ui_generators\crud\providers\CallbackProvider;
+//use neam\workflow_ui_generators\crud\providers\DateTimeProvider;
+//use neam\workflow_ui_generators\crud\providers\EditorProvider;
+//use neam\workflow_ui_generators\crud\providers\RelationProvider;
 use yii\helpers\Json;
 
 /**
