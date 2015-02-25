@@ -8,10 +8,10 @@ $model = $generator->getModel();
 echo "<?php\n";
 ?>
 /**
-* @var <?= ltrim($generator->controllerClass, '\\') ?>|WorkflowUiControllerTrait $this
-* @var <?= ltrim($generator->modelClass, '\\') ?>|ItemTrait $model
-* @var TbActiveForm|WorkflowUiTbActiveFormTrait $form
-*/
+ * @var <?= ltrim($generator->controllerClass, '\\') ?>|WorkflowUiControllerTrait $this
+ * @var <?= ltrim($generator->modelClass, '\\') ?>|ItemTrait $model
+ * @var TbActiveForm|WorkflowUiTbActiveFormTrait $form
+ */
 ?>
 <?php foreach ($attributes as $attribute): ?>
 

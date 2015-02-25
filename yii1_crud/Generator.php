@@ -20,11 +20,17 @@ class Generator extends \schmunk42\giiant\crud\Generator
 
     public $baseControllerClass = 'Controller';
 
+    /**
+     * @inheritdoc
+     */
     public function getName()
     {
         return 'Yii Workflow UI CRUD Generator';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getDescription()
     {
         return 'This generator generates a yii-workflow-ui compatible controller and views that implement CRUD (Create, Read, Update, Delete)

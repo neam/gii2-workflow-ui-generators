@@ -26,7 +26,10 @@ class <?=$generator->controllerClass?> extends <?=$generator->baseControllerClas
     {
         return array_merge($this->itemAccessRules(), array(
             array(
-                'customAction', // placeholder - rename when/if you add the first custom action
+                'allow',
+                'actions' => array(
+                    'customAction', // placeholder - rename when/if you add the first custom action
+                ),
                 'users' => array('@'),
             ),
             array(
