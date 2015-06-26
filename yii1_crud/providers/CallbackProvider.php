@@ -1,6 +1,6 @@
 <?php
 
-namespace neam\workflow_ui_generators\crud\providers;
+namespace neam\gii2_workflow_ui_generators\yii1_crud\providers;
 
 class CallbackProvider extends \schmunk42\giiant\base\Provider
 {

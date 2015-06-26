@@ -6,7 +6,7 @@
  * Time: 10:21
  */
 
-namespace neam\yii_workflow_ui_giiant_generator\crud\providers;
+namespace neam\gii2_workflow_ui_generators\yii1_crud\providers;
 
 use yii\db\ActiveRecord;
 use yii\db\ColumnSchema;

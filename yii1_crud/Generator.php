@@ -4,10 +4,10 @@ namespace neam\gii2_workflow_ui_generators\yii1_crud;
 
 use Yii;
 use yii\gii\CodeFile;
-use neam\gii2_workflow_ui_generators\crud\providers\CallbackProvider;
-//use neam\gii2_workflow_ui_generators\crud\providers\DateTimeProvider;
-//use neam\gii2_workflow_ui_generators\crud\providers\EditorProvider;
-//use neam\gii2_workflow_ui_generators\crud\providers\RelationProvider;
+use neam\gii2_workflow_ui_generators\yii1_crud\providers\CallbackProvider;
+//use neam\gii2_workflow_ui_generators\yii1_crud\providers\DateTimeProvider;
+//use neam\gii2_workflow_ui_generators\yii1_crud\providers\EditorProvider;
+//use neam\gii2_workflow_ui_generators\yii1_crud\providers\RelationProvider;
 use yii\helpers\Json;
 
 /**
