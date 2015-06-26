@@ -9,6 +9,7 @@ class CallbackProvider extends \schmunk42\giiant\base\Provider
     public $appendActiveFields = [];
     public $attributeFormats = [];
     public $columnFormats = [];
+    public $relationGrids = [];
 
     public function activeFieldForAttribute($attribute, $model)
     {
@@ -48,6 +49,14 @@ class CallbackProvider extends \schmunk42\giiant\base\Provider
         $key = $this->findValue($this->getModelKey($attribute, $model), $this->columnFormats);
         if ($key) {
             return $this->columnFormats[$key]($attribute, $model);
+        }
+    }
+
+    public function relationGridForAttribute($attribute, $model)
+    {
+        $key = $this->findValue($this->getModelKey($attribute, $model), $this->relationGrids);
+        if ($key) {
+            return $this->relationGrids[$key]($attribute, $model);
         }
     }
 
