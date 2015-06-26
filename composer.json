@@ -1,6 +1,6 @@
 {
     "name": "neam/yii2-workflow-ui-generators",
-    "description": "Yii 1 and AngularJS Workflow UI Generation from Yii 1 Active Records. Powered by Giiant / Gii 2 (Yii 2 Framework)",
+    "description": "Yii 1 and AngularJS Workflow UI Generation from Yii 1 Active Records with generated Content Model Metadata. Inspired by Giiant, extending Gii 2 (Yii 2 Framework)",
     "keywords": ["yii2", "gii", "crud", "angular"],
     "homepage": "https://github.com/neam/yii2-workflow-ui-generators",
     "type": "yii2-extension",

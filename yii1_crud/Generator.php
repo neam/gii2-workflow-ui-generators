@@ -25,7 +25,7 @@ class Generator extends \schmunk42\giiant\crud\Generator
      */
     public function getName()
     {
-        return 'Yii Workflow UI CRUD Generator';
+        return 'Workflow UI CRUD Generator';
     }
 
     /**
@@ -33,8 +33,8 @@ class Generator extends \schmunk42\giiant\crud\Generator
      */
     public function getDescription()
     {
-        return 'This generator generates a yii-workflow-ui compatible controller and views that implement CRUD (Create, Read, Update, Delete)
-            operations for the specified data model.';
+        return 'This generator generates A) a yii-workflow-ui compatible controller + views and B) Angular Frontend Views that implement CRUD (Create, Read, Update, Delete)
+            operations for the specified data model';
     }
 
     static public function getCoreProviders()
