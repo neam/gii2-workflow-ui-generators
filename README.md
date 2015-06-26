@@ -1,4 +1,4 @@
-yii2-workflow-ui-generators
+gii2-workflow-ui-generators
 ===========
 
 Yii 1 and AngularJS Workflow UI Generation from Yii 1 Active Records. Inspired by Giiant, extending Gii 2 (Yii 2 Framework)
