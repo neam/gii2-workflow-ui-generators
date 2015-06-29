@@ -99,7 +99,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
 
                 $attributes = [];
-                if (in_array(get_class($this->getModel()), \ItemTypes::where('is_workflow_item'))) {
+                if (in_array(get_class($this->getModel()), array_keys(\ItemTypes::where('is_workflow_item')))) {
                     foreach ($this->getModel()->flowSteps() as $step => $stepAttributes) {
                         $attributes = array_merge($attributes, $stepAttributes);
                     }
