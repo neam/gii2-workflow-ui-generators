@@ -9,19 +9,15 @@ $modelClassSingular = get_class($model);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
-$labelSingular = ItemTypes::label($modelClassSingular, 1);
-$labelPlural = ItemTypes::label($modelClassSingular, 2);
-$labelNone = ItemTypes::label($modelClassSingular, 2);
-// TODO: fix choiceformat interpretation in yii2 and use item type choiceformat label for labels instead of inflector-created labels
+// TODO: use item type choiceformat label for labels instead of inflector
 
 ?>
 <h2><?= $modelClassPluralWords ?></h2>
-<?php if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')))): ?>
 
 <p>TODO INCLUDE ITEM TYPE HINT HERE</p>
 
 <div class="alert alert-warning"
-     ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.length == 0">
+     ng-show="!loading<?= $modelClassPlural ?> && <?= lcfirst($modelClassPlural) ?>.length == 0">
     You have no <?= $modelClassPluralWords ?>.
 </div>
 
@@ -52,9 +48,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
                 uncheckedTemplate="null"></hot-column>
     -->
 
-    <?php foreach ($model->flowSteps() as $step => $stepAttributes): ?>
-
-    <!-- step: <?= $step ?> --><?php foreach ($stepAttributes as $attribute): ?>
+    <?php foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo): ?>
 
     <!-- <?= $attribute ?> --><?php
 
@@ -72,13 +66,9 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
             echo "\n" . $append . "";
         }
 
-    endforeach;
     endforeach; ?>
+
 
 </hot-table>
 
-<?php else: ?>
 
-    [not a workflow-item]
-
-<?php endif; ?>

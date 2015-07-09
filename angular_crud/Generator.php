@@ -98,17 +98,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
         foreach (scandir($templatePath) as $file) {
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
 
-                $attributes = [];
-                if (in_array(get_class($this->getModel()), array_keys(\ItemTypes::where('is_workflow_item')))) {
-                    foreach ($this->getModel()->flowSteps() as $step => $stepAttributes) {
-                        $attributes = array_merge($attributes, $stepAttributes);
-                    }
-                } else {
-                    $attributes = $this->getModel()->getSafeAttributeNames();
-                }
-
-                $files[] = new CodeFile(
-                    str_replace(
+                $destination = str_replace(
                         ".php",
                         "",
                         str_replace(
@@ -116,7 +106,9 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                             "crud/",
                             "$viewPath/$file"
                         )
-                    ), $this->render("crud/$file", compact("attributes"))
+                    );
+                $files[] = new CodeFile(
+                    $destination, $this->render("crud/$file")
                 );
             }
         }

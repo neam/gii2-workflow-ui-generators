@@ -15,25 +15,19 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     var module = angular.module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-controllers', []);
 
-    module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, <?= lcfirst($modelClassPlural) ?>) {
+    module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
-        $scope.<?= lcfirst($modelClassPlural) ?> = [];
-
-        <?= lcfirst($modelClassPlural)."\n" ?>
-            .then(function (fetchedItems) {
-                $scope.<?= lcfirst($modelClassPlural) ?> = fetchedItems;
-            });
+        $scope.<?= lcfirst($modelClassSingular) ?>Resource = <?= lcfirst($modelClassSingular) ?>Resource;
+        $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
+        $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
 
     });
 
-    module.controller('curate<?= $modelClassPlural ?>Controller', function ($scope, <?= lcfirst($modelClassPlural) ?>) {
+    module.controller('curate<?= $modelClassPlural ?>Controller', function ($scope, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
-        $scope.<?= lcfirst($modelClassPlural) ?> = [];
-
-        <?= lcfirst($modelClassPlural)."\n" ?>
-            .then(function (fetchedItems) {
-                $scope.<?= lcfirst($modelClassPlural) ?> = fetchedItems;
-            });
+        $scope.<?= lcfirst($modelClassSingular) ?>Resource = <?= lcfirst($modelClassSingular) ?>Resource;
+        $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
+        $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
 
     });
 
