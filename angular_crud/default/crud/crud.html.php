@@ -17,7 +17,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 <p>TODO INCLUDE ITEM TYPE HINT HERE</p>
 
 <div class="alert alert-warning"
-     ng-show="!loading<?= $modelClassPlural ?> && <?= lcfirst($modelClassPlural) ?>.length == 0">
+     ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.length == 0">
     You have no <?= $modelClassPluralWords ?>.
 </div>
 
@@ -29,14 +29,14 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
 <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.addPlaceholder()" class="btn btn-primary btn-xs">Add new item</a>
 
-<!--dataSchema="dataSchema"-->
+<!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
 <hot-table
     settings="{manualRowMove: true, manualColumnMove: true, fixedColumnsLeft: 0, manualColumnResize: true, manualRowResize: true}"
-    currentRowClassName="currentRowClassName"
-    currentColumnClassName="currentColumnClassName"
+    currentRowClassName="'current-row'"
+    currentColumnClassName="'current-column'"
     rowHeaders="false"
-    colHeaders="colHeaders"
-    contextMenu="['row_above', 'row_below', 'remove_row']"
+    colHeaders="true"
+    contextMenu="false"
     persistentState="true"
     minSpareRows="0"
     datarows="<?= lcfirst($modelClassPlural) ?>"
@@ -67,7 +67,6 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         }
 
     endforeach; ?>
-
 
 </hot-table>
 
