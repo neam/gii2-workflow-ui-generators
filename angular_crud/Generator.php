@@ -99,14 +99,14 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
 
                 $destination = str_replace(
-                        ".php",
-                        "",
-                        str_replace(
-                            "views/",
-                            "crud/",
-                            "$viewPath/$file"
-                        )
-                    );
+                    ".php",
+                    "",
+                    str_replace(
+                        "views/",
+                        "crud/",
+                        "$viewPath/$file"
+                    )
+                );
                 $files[] = new CodeFile(
                     $destination, $this->render("crud/$file")
                 );
@@ -114,6 +114,24 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
         }
 
         return $files;
+    }
+
+    public function hasOneRelatedModelClasses()
+    {
+        $model = $this->getModel();
+        $relations = $model->relations();
+        $return = [];
+        foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo) {
+            if ($attributeInfo["type"] == "has-one-relation") {
+                if (!isset($relations[$attribute])) {
+                    throw new Exception("Model " . get_class($model) . " does not have a relation '$attribute'");
+                }
+                $relationInfo = $relations[$attribute];
+                $relatedModelClass = $relationInfo[1];
+                $return[] = $relatedModelClass;
+            }
+        }
+        return array_unique($return);
     }
 
 }

@@ -56,7 +56,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                 throw new Exception("Model ".get_class($model)." does not have a relation '$attribute'");
             }
             $relationInfo = $relations[$attribute];
-            $relatedModelClass = "RestApi".$relationInfo[1];
+            $relatedModelClass = $relationInfo[1];
 
             // tmp until memory allocation has been resolved
             break;
@@ -72,10 +72,10 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                 throw new Exception("Model ".get_class($model)." does not have a relation '$attribute'");
             }
             $relationInfo = $relations[$attribute];
-            $relatedModelClass = "RestApi".$relationInfo[1];
+            $relatedModelClass = $relationInfo[1];
 
 ?>
-                '<?=$attribute?>': {},
+                '<?=$attribute?>': {id: null, item_label: null, item_type: 'todo'},
 <?php
             break;
         case "ordinary":
@@ -124,7 +124,13 @@ endforeach;
     /**
      * Service that contains the main objects for CRUD logic
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function (<?= lcfirst($modelClassPlural) ?>) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function (<?= lcfirst($modelClassPlural) ?><?php
+        $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
+        foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
+        $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
+        $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
+        $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
+            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?><?php endforeach; ?>) {
 
         var handsontable = {
 
@@ -154,6 +160,11 @@ endforeach;
                         "oldVal": change[2],
                         "newVal": change[3]
                     };
+
+                    // Ignore non-changes
+                    if (changeObject.oldVal === changeObject.newVal) {
+                        return;
+                    }
 
                     if (source === 'edit') {
                         changeObject.id = self.getDataAtRowProp(changeObject.row, 'attributes.id');
@@ -192,8 +203,148 @@ endforeach;
 
                 });
 
-            }
+            },
 
+            /**
+             * Column-specific logic
+             */
+            columnLogic: {
+
+<?php
+foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
+
+    switch ($attributeInfo["type"]) {
+        case "has-one-relation":
+
+            if (!isset($relations[$attribute])) {
+                throw new Exception("Model ".get_class($model)." does not have a relation '$attribute'");
+            }
+            $relationInfo = $relations[$attribute];
+            $relatedModelClass = $relationInfo[1];
+
+            $relatedModelClassSingular = $relatedModelClass;
+            $relatedModelClassSingularWords = Inflector::camel2words($relatedModelClassSingular);
+            $relatedItemTypeSingularRef = Inflector::camel2id($relatedModelClassSingular, '_');
+            $relatedModelClassPluralWords = Inflector::pluralize($relatedModelClassSingularWords);
+            $relatedModelClassPlural = Inflector::camelize($relatedModelClassPluralWords);
+
+?>
+                '<?=$attribute?>': {
+                    cellRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+
+                        var rowItemId = instance.getDataAtRowProp(row, 'attributes.id');
+                        var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
+                            return item.attributes.id == rowItemId;
+                        });
+
+                        Handsontable.TextCell.renderer.apply(this, arguments);
+
+                        value = item.attributes.<?=$attribute?>.item_label;
+                        var markup = value;
+                        td.innerHTML = markup;
+                        return td;
+
+                    },
+                    select2Options: {
+                        /**
+                         * Ajax mode in select2 is used for two reasons:
+                         * 1. It allows the input to be initialized before the selections/options are available
+                         * 2. It allows for selection amongst an unlimited amount of items
+                         *
+                         * However, the transport function is overridden as to not actually use the built in jquery ajax methods,
+                         * but instead use the ngResource representation of the alternatives.
+                         */
+                        ajax: {
+                            dataType: 'json',
+                            delay: 0,
+                            data: function (params) {
+                                return {
+                                    q: params.term, // search term
+                                    page: params.page
+                                };
+                            },
+                            processResults: function (data, page) {
+                                // parse the results into the format expected by Select2.
+                                // since we are using custom formatting functions we do not need to
+                                // alter the remote JSON data
+                                return {
+                                    results: data
+                                };
+                            },
+                            // @param params The object containing the parameters used to generate the
+                            //   request.
+                            // @param success A callback function that takes `data`, the results from the
+                            //   request.
+                            // @param failure A callback function that indicates that the request could
+                            //   not be completed.
+                            // @returns An object that has an `abort` function that can be called to abort
+                            //   the request if needed.
+                            transport: function (params, success, failure) {
+
+                                <?= lcfirst($relatedModelClassPlural) ?>.$promise.then(function () {
+
+                                    // Filter available results to match the entered text
+                                    var filtered = _.filter(<?= lcfirst($relatedModelClassPlural) ?>, function (data, iterator, context) {
+
+                                        // If there are no search terms, return all of the data
+                                        if ($.trim(params.data.q) === '') {
+                                            return true;
+                                        }
+
+                                        if (data.item_label.toLowerCase().indexOf(params.data.q.toLowerCase()) > -1) {
+                                            return true
+                                        }
+
+                                        return false;
+                                    });
+
+                                    // Add a choice for not selecting anything
+                                    var choices = _.union([
+                                        {
+                                            id: "",
+                                            item_label: '&lt;none&gt;'
+                                        }
+                                    ], filtered);
+
+                                    success(choices);
+
+                                }).catch(failure);
+
+                                var returnObject = {
+                                    abort: function () {
+                                        console.log('abort TODO');
+                                    }
+                                };
+                                return returnObject;
+
+                            },
+                            cache: true
+                        },
+                        // Perform no escape of markup = allow html
+                        escapeMarkup: function (markup) {
+                            return markup;
+                        },
+                        minimumInputLength: 0,
+                        templateResult: function (item) {
+                            return item.item_label;
+                        },
+                        templateSelection: function (item) {
+                            return item.item_label;
+                        },
+                        dropdownAutoWidth: true,
+                        width: '400px'
+                    }
+                },
+<?php
+            break;
+        default:
+            // ignore
+            break;
+    }
+
+endforeach;
+?>
+            }
         }
 
         return {
