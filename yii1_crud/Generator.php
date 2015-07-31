@@ -80,7 +80,10 @@ class Generator extends \schmunk42\giiant\crud\Generator
 
             $stepViewPath = $viewPath . '/translate/steps/' . $step . ".php";
             $this->getModel()->scenario = "translate-step";
-            $files[] = new CodeFile($stepViewPath, $this->render('translate-step.php', compact("step", "translatableAttributes")));
+            $files[] = new CodeFile(
+                $stepViewPath,
+                $this->render('translate-step.php', compact("step", "translatableAttributes"))
+            );
         }
 
         // Other views
@@ -249,7 +252,7 @@ class Generator extends \schmunk42\giiant\crud\Generator
         if ($code !== null) {
             return $code;
         } else {
-            throw new \CException("This generator requires a non-null result from each attribute. Attribute '{$attribute}' returned null");
+            throw new \CException("This generator requires a non-null result from providers for each attribute. Attribute '{$attribute}' returned null");
         };
     }
 

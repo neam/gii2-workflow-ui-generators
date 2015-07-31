@@ -56,34 +56,37 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
     {
         $files = [];
 
-        // View path
-        $viewPath = $this->getViewPath();
+        // Workflow-related templates
+        if (in_array(get_class($this->getModel()), array_keys(\ItemTypes::where('is_workflow_item')))) {
 
-        /*
-        // Edit workflow views
-        foreach ($this->getModel()->flowSteps() as $step => $attributes) {
-            $stepViewPath = $viewPath . '/steps/' . $step . ".php";
-            $this->getModel()->scenario = "edit-step";
-            $files[] = new CodeFile($stepViewPath, $this->render('edit-step.php', compact("step", "attributes")));
-        }
-
-        // Translate workflow views
-        foreach ($this->getModel()->flowSteps() as $step => $attributes) {
-
-            $translatableAttributes = $this->getModel()->matchingTranslatable($attributes);
-
-            if (empty($translatableAttributes)) {
-                continue;
+            // Edit workflow views
+            foreach ($this->getModel()->flowSteps() as $step => $attributes) {
+                $this->getModel()->scenario = "edit-step";
+                $files[] = new CodeFile(
+                    $this->jsTemplateDestination("steps/$step.html"),
+                    $this->render('edit-step.html.php', compact("step", "attributes"))
+                );
             }
 
-            $stepViewPath = $viewPath . '/translate/steps/' . $step . ".php";
-            $this->getModel()->scenario = "translate-step";
-            $files[] = new CodeFile(
-                $stepViewPath,
-                $this->render('translate-step.php', compact("step", "translatableAttributes"))
-            );
+            // Translate workflow views
+            foreach ($this->getModel()->flowSteps() as $step => $attributes) {
+
+                $translatableAttributes = $this->getModel()->matchingTranslatable($attributes);
+
+                if (empty($translatableAttributes)) {
+                    continue;
+                }
+
+                $this->getModel()->scenario = "translate-step";
+                $files[] = new CodeFile(
+                    $this->jsTemplateDestination("translate/steps/$step.html"),
+                    $this->render('translate-step.html.php', compact("step", "translatableAttributes"))
+                );
+            }
+
         }
 
+        /*
         // Other views
         $templatePath = $this->getTemplatePath() . '/views';
         foreach (scandir($templatePath) as $file) {
@@ -94,26 +97,33 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
         */
 
         // Angularjs core
-        $templatePath = $this->getTemplatePath() . '/crud';
+        $templatePath = $this->getTemplatePath() . '/core';
         foreach (scandir($templatePath) as $file) {
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-
-                $destination = str_replace(
-                    ".php",
-                    "",
-                    str_replace(
-                        "views/",
-                        "crud/",
-                        "$viewPath/$file"
-                    )
-                );
                 $files[] = new CodeFile(
-                    $destination, $this->render("crud/$file")
+                    $this->jsTemplateDestination($file), $this->render("core/$file")
                 );
             }
         }
 
         return $files;
+    }
+
+    protected function jsTemplateDestination($file)
+    {
+
+        $viewPath = $this->getViewPath();
+        $destination = str_replace(
+            ".php",
+            "",
+            str_replace(
+                "views/",
+                "crud/",
+                "$viewPath/$file"
+            )
+        );
+        return $destination;
+
     }
 
     public function hasOneRelatedModelClasses()
