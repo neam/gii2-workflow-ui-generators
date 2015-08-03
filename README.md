@@ -7,4 +7,4 @@ Links
 -----
 
 - [DNA Project Page](http://neamlabs.com/dna-project-base/)
-- [GitHub](https://github.com/neam/yii2-workflow-ui-generators)
+- [GitHub](https://github.com/neam/gii2-workflow-ui-generators)
