@@ -5,19 +5,14 @@ use yii\helpers\StringHelper;
 
 $model = $generator->getModel();
 
-echo "<?php\n";
 ?>
-/**
-* @var <?= ltrim($generator->controllerClass, '\\') ?>|WorkflowUiControllerTrait $this
-* @var <?= ltrim($generator->modelClass, '\\') ?>|ItemTrait $model
-* @var TbActiveForm|WorkflowUiTbActiveFormTrait $form
-*/
+<!--
+Template for <?= ltrim($generator->modelClass, '\\') ?> model, translate step "<?=$step?>"
+-->
 ?>
 <?php foreach ($translatableAttributes as $attribute => $sourceLanguageContentAttribute): ?>
 
-
-<?= "<?php"; ?> // <?= $attribute ?> ?>
-<?php
+<!-- <?= $attribute ?> --><?php
 
     $prepend = $generator->prependActiveFieldForAttribute($sourceLanguageContentAttribute, $model);
     $field = $generator->activeFieldForAttribute($sourceLanguageContentAttribute, $model);
