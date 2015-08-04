@@ -22,7 +22,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
-            {},
+            {id : '@id'},
             {
                 query: {
                     method: 'GET',
@@ -107,8 +107,41 @@ endforeach;
         // Function to add a new item to the collection
         collection.add = function () {
             var newItem = new <?= lcfirst($modelClassSingular) ?>Resource(<?= lcfirst($modelClassSingular) ?>Resource.dataSchema);
-            newItem.$save();
-            collection.push(newItem);
+            // add item to collection
+            collection.unshift(newItem);
+            // find index of item in collection
+            var index = _.indexOf(collection, item);
+            // add item on server
+            newItem.$save(function(data) {
+                // success
+                console.log('<?= lcfirst($modelClassSingular) ?>.add(): data', data);
+            }, function(e) {
+                // on failure, remove item
+                collection.splice(index, 1);
+            });
+        }
+
+        // Function to remove an item from the collection
+        collection.remove = function (id) {
+            var item = _.find(collection, function (item) {
+                return item.attributes.id == id;
+            });
+            // find index of item in collection
+            var index = _.indexOf(collection, item);
+            // remote item from collection
+            collection.splice(index, 1);
+            // delete item on server
+            item.$delete(function(data) {
+                // success
+                console.log('<?= lcfirst($modelClassSingular) ?>.remove(): data', data);
+            }, function(e) {
+                // on failure, re-add item...
+                if (index > collection.length-1) {
+                    collection.push(item);
+                } else {
+                    collection.splice(index, 0, item);
+                }
+            });
         }
 
         return collection;
@@ -196,6 +229,21 @@ endforeach;
 
                 });
 
+            },
+
+            deleteButtonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                var $button = $('<button>Delete</button>');
+
+                var id = instance.getDataAtRowProp(row, 'attributes.id');
+
+                //$button.html(value);
+                $button.click(function() {
+
+                    console.log('delclick');
+
+                    <?= lcfirst($modelClassPlural) ?>.remove(id);
+                });
+                $(td).empty().append($button); //empty is needed because you are rendering to an existing cell
             },
 
             /**
