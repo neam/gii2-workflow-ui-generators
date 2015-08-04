@@ -23,12 +23,4 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     });
 
-    module.controller('curate<?= $modelClassPlural ?>Controller', function ($scope, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
-
-        $scope.<?= lcfirst($modelClassSingular) ?>Resource = <?= lcfirst($modelClassSingular) ?>Resource;
-        $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
-        $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
-
-    });
-
 })();
