@@ -104,19 +104,12 @@ endforeach;
         // Collection
         var collection = <?= lcfirst($modelClassSingular) ?>Resource.query();
 
-        // Function to add a placeholder for new item in collection
-        collection.addPlaceholder = function () {
+        // Function to add a new item to the collection
+        collection.add = function () {
             var newItem = new <?= lcfirst($modelClassSingular) ?>Resource(<?= lcfirst($modelClassSingular) ?>Resource.dataSchema);
             newItem.$save();
             collection.push(newItem);
         }
-
-        // Uncomment to automatically add a placeholder for new item in collection
-        /*
-        collection.$promise.then(function () {
-            collection.addPlaceholder();
-        });
-        */
 
         return collection;
     });

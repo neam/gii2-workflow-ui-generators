@@ -38,7 +38,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
 <div ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
 
-    <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.addPlaceholder()" class="btn btn-primary btn-xs">Add new item</a>
+    <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.add()" class="btn btn-primary btn-xs">Add new item</a>
 
     <!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
     <hot-table
