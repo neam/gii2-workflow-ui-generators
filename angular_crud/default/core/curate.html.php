@@ -20,9 +20,18 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 
 <p>TODO INCLUDE ITEM TYPE HINT HERE</p>
 
+<div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
+    Loading <?= lcfirst($modelClassPluralWords) ?>...
+</div>
+
 <div class="alert alert-warning"
-     ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.length == 0">
-    You have no <?= $modelClassPluralWords ?>.
+     ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2 && <?= lcfirst($modelClassPlural) ?>.length == 0">
+    You have no <?= lcfirst($modelClassPluralWords) ?>.
+</div>
+
+<div class="alert alert-danger"
+     ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 2">
+    A problem was encountered when loading the <?= lcfirst($modelClassPluralWords) ?>.. Please re-load the page.
 </div>
 
 <!--
@@ -31,51 +40,55 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 </div>
 -->
 
-<a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.addPlaceholder()" class="btn btn-primary btn-xs">Add new item</a>
+<div ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
 
-<!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
-<hot-table
-    settings="{manualRowMove: true, manualColumnMove: true, fixedColumnsLeft: 0, manualColumnResize: true, manualRowResize: true}"
-    currentRowClassName="'current-row'"
-    currentColumnClassName="'current-column'"
-    rowHeaders="false"
-    colHeaders="true"
-    contextMenu="false"
-    persistentState="true"
-    minSpareRows="0"
-    datarows="<?= lcfirst($modelClassPlural) ?>"
-    dataSchema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema"
-    afterChange="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterChange">
+    <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.addPlaceholder()" class="btn btn-primary btn-xs">Add new item</a>
 
-    <!--
-    <hot-column data="_delete" title="'Delete'" type="'checkbox'" width="65" checkedTemplate="1"
-                uncheckedTemplate="null"></hot-column>
-    -->
+    <!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
+    <hot-table
+        settings="{manualRowMove: true, manualColumnMove: true, fixedColumnsLeft: 0, manualColumnResize: true, manualRowResize: true}"
+        currentRowClassName="'current-row'"
+        currentColumnClassName="'current-column'"
+        rowHeaders="false"
+        colHeaders="true"
+        contextMenu="false"
+        persistentState="true"
+        minSpareRows="0"
+        datarows="<?= lcfirst($modelClassPlural) ?>"
+        dataSchema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema"
+        afterChange="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterChange">
 
-    <?php foreach ($model->flowSteps() as $step => $stepAttributes): ?>
+        <!--
+        <hot-column data="_delete" title="'Delete'" type="'checkbox'" width="65" checkedTemplate="1"
+                    uncheckedTemplate="null"></hot-column>
+        -->
 
-    <!-- step: <?= $step ?> --><?php foreach ($stepAttributes as $attribute): ?>
+        <?php foreach ($model->flowSteps() as $step => $stepAttributes): ?>
 
-    <!-- <?= $attribute ?> --><?php
+        <!-- step: <?= $step ?> --><?php foreach ($stepAttributes as $attribute): ?>
 
-        $prepend = $generator->prependActiveFieldForAttribute("hot-column." . $attribute, $model);
-        $field = $generator->activeFieldForAttribute("hot-column." . $attribute, $model);
-        $append = $generator->appendActiveFieldForAttribute("hot-column." . $attribute, $model);
+        <!-- <?= $attribute ?> --><?php
 
-        if ($prepend) {
-            echo "\n" . $prepend . "";
-        }
-        if ($field) {
-            echo "\n" . $field . "";
-        }
-        if ($append) {
-            echo "\n" . $append . "";
-        }
+            $prepend = $generator->prependActiveFieldForAttribute("hot-column." . $attribute, $model);
+            $field = $generator->activeFieldForAttribute("hot-column." . $attribute, $model);
+            $append = $generator->appendActiveFieldForAttribute("hot-column." . $attribute, $model);
 
-    endforeach;
-    endforeach; ?>
+            if ($prepend) {
+                echo "\n" . $prepend . "";
+            }
+            if ($field) {
+                echo "\n" . $field . "";
+            }
+            if ($append) {
+                echo "\n" . $append . "";
+            }
 
-</hot-table>
+        endforeach;
+        endforeach; ?>
+
+    </hot-table>
+
+</div>
 
 <?php else: ?>
 
