@@ -27,7 +27,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
 <div class="alert alert-danger"
      ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 2">
-    A problem was encountered when loading the <?= lcfirst($modelClassPluralWords) ?>.. Please re-load the page.
+    A problem was encountered when loading the <?= lcfirst($modelClassPluralWords) ?>. Please re-load the page.
 </div>
 
 <!--
