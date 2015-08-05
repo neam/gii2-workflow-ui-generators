@@ -110,7 +110,7 @@ endforeach;
             // add item to collection
             collection.unshift(newItem);
             // find index of item in collection
-            var index = _.indexOf(collection, item);
+            var index = _.indexOf(collection, newItem);
             // add item on server
             newItem.$save(function(data) {
                 // success
