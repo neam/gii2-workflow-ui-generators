@@ -213,19 +213,28 @@ endforeach;
                     obj[tags[len]] = value;
                 }
 
-                _.each(editObjects, function (changeObject, index, list) {
+                _.each(editObjects, function (editObjects, index, list) {
 
                     var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
-                        return item.attributes.id == changeObject.id;
+                        return item.attributes.id == editObjects.id;
                     });
 
-                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: changeObject, item', changeObject, item);
+                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: editObjects, item', editObjects, item);
 
-                    setDepth(item, changeObject.prop, changeObject.newVal);
-                    item.$save(function (savedObject, putResponseHeaders) {
+                    setDepth(item, editObjects.prop, editObjects.newVal);
+                    item.$update(function (savedObject, putResponseHeaders) {
                         console.log('<?= lcfirst($modelClassSingular) ?>Crud: savedObject', savedObject);
                         //putResponseHeaders => $http header getter
                     });
+
+                });
+
+                _.each(newObjects, function (newObjects, index, list) {
+
+                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: newObjects', newObjects);
+
+                    // create new item
+                    <?= lcfirst($modelClassPlural) ?>.add(); // TODO: add at the correct index where the new row was inserted
 
                 });
 
