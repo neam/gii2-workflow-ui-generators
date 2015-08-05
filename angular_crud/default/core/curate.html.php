@@ -46,7 +46,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 
     <!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
     <hot-table
-        settings="{manualRowMove: true, manualColumnMove: true, fixedColumnsLeft: 0, manualColumnResize: true, manualRowResize: true}"
+        settings="{}"
         currentRowClassName="'current-row'"
         currentColumnClassName="'current-column'"
         rowHeaders="false"
@@ -54,6 +54,13 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
         contextMenu="false"
         persistentState="true"
         minSpareRows="0"
+        manualRowMove="true"
+        manualColumnMove="true"
+        fixedColumnsLeft="0"
+        manualColumnResize="true"
+        manualRowResize="true"
+        manualColumnResize="true"
+        manualRowResize="true"
         datarows="<?= lcfirst($modelClassPlural) ?>"
         dataSchema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema"
         afterChange="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterChange">
