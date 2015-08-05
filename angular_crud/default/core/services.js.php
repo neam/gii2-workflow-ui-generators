@@ -241,11 +241,10 @@ endforeach;
             },
 
             deleteButtonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var $button = $('<button>Delete</button>');
+                var $button = $('<a href="javascript:void();"><i class="fa fa-icon-large fa-trash-o" style="color: red;"></i></a>');
 
                 var id = instance.getDataAtRowProp(row, 'attributes.id');
 
-                //$button.html(value);
                 $button.click(function() {
 
                     console.log('delclick');
