@@ -9,7 +9,6 @@ $model = $generator->getModel();
 <!--
 Template for <?= ltrim($generator->modelClass, '\\') ?> model, step "<?=$step?>"
 -->
-?>
 <?php foreach ($attributes as $attribute): ?>
 
 <!-- <?= $attribute ?> --><?php
