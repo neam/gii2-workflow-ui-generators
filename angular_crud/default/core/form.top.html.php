@@ -16,5 +16,8 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     <div class="col-sm-12">
         <h2>{{<?= lcfirst($modelClassSingular) ?>.item_label}}</h2>
         <input type="submit" value="Save"/>
+        <!-- Hint start -->
+        <?= \ItemTypes::hint($modelClassSingular) . "\n" ?>
+        <!-- Hint stop -->
     </div>
 </div>

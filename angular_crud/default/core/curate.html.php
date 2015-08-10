@@ -18,7 +18,9 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 <h2><?= $modelClassPluralWords ?></h2>
 <?php if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')))): ?>
 
-<p>TODO INCLUDE ITEM TYPE HINT HERE</p>
+<!-- Hint start -->
+<?=\ItemTypes::hint($modelClassSingular) . "\n"?>
+<!-- Hint stop -->
 
 <div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
     Loading <?= lcfirst($modelClassPluralWords) ?>...

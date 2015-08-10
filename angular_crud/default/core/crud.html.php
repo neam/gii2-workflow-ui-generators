@@ -14,7 +14,9 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 ?>
 <h2><?= $modelClassPluralWords ?></h2>
 
-<p>TODO INCLUDE ITEM TYPE HINT HERE</p>
+<!-- Hint start -->
+<?=\ItemTypes::hint($modelClassSingular) . "\n"?>
+<!-- Hint stop -->
 
 <div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
     Loading <?= lcfirst($modelClassPluralWords) ?>...
