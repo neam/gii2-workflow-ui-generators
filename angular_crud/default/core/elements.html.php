@@ -7,6 +7,7 @@ use yii\helpers\Html;
 $model = $generator->getModel();
 
 $modelClassSingular = get_class($model);
+$modelClassSingularId = Inflector::camel2id($modelClassSingular);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
@@ -29,7 +30,7 @@ if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item
 
                     <!-- step: <?= $step ?> -->
                     <tab heading="<?= Html::encode(!empty($stepCaptions[$step]) ? $stepCaptions[$step] : ucfirst($step)) ?>" ng-show="showStep('<?= $step ?>')">
-                        <div ng-include="'crud/<?= lcfirst($modelClassSingular) ?>/steps/<?= $step ?>.html'"></div>
+                        <div ng-include="'crud/<?= $modelClassSingularId ?>/steps/<?= $step ?>.html'"></div>
                     </tab>
 
                 <?php endforeach; ?>

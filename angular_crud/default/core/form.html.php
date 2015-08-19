@@ -6,9 +6,11 @@ use yii\helpers\StringHelper;
 $model = $generator->getModel();
 
 $modelClassSingular = get_class($model);
+$modelClassSingularId = Inflector::camel2id($modelClassSingular);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
+
 // TODO: use item type choiceformat label for labels instead of inflector
 
 ?>
@@ -38,8 +40,8 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
             </nav>
             <div class="animated fadeInUp wrapper-content">
 
-                <div ng-include="'crud/<?= lcfirst($modelClassSingular) ?>/form.top.html'"></div>
-                <div ng-include="'crud/<?= lcfirst($modelClassSingular) ?>/elements.html'"></div>
+                <div ng-include="'crud/<?= $modelClassSingularId ?>/form.top.html'"></div>
+                <div ng-include="'crud/<?= $modelClassSingularId ?>/elements.html'"></div>
 
             </div>
         </div>

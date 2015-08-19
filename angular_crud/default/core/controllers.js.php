@@ -29,9 +29,9 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         console.log('edit<?= $modelClassPlural ?>Controller - $state.params', $state.params);
         var <?= lcfirst($modelClassSingular) ?>;
         if ($state.params.<?= lcfirst($modelClassSingular) ?>Id) {
-            campaign = <?= lcfirst($modelClassSingular) ?>Resource.get({id: $state.params.<?= lcfirst($modelClassSingular) ?>Id});
+            <?= lcfirst($modelClassSingular) ?> = <?= lcfirst($modelClassSingular) ?>Resource.get({id: $state.params.<?= lcfirst($modelClassSingular) ?>Id});
         } else {
-            campaign = new <?= lcfirst($modelClassSingular) ?>Resource(<?= lcfirst($modelClassSingular) ?>Resource.dataSchema);
+            <?= lcfirst($modelClassSingular) ?> = new <?= lcfirst($modelClassSingular) ?>Resource(<?= lcfirst($modelClassSingular) ?>Resource.dataSchema);
         }
 
         // Form step visibility function

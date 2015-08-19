@@ -23,7 +23,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 <!-- Hint stop -->
 
 <div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
-    Loading <?= lcfirst($modelClassPluralWords) ?>...
+    Loading <?= strtolower($modelClassPluralWords) ?>...
 </div>
 
 <div class="alert alert-warning"
@@ -33,7 +33,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 
 <div class="alert alert-danger"
      ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 2">
-    A problem was encountered when loading the <?= lcfirst($modelClassPluralWords) ?>. Please re-load the page.
+    A problem was encountered when loading the <?= strtolower($modelClassPluralWords) ?>. Please re-load the page.
 </div>
 
 <!--
