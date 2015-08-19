@@ -15,11 +15,21 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     var module = angular.module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-controllers', []);
 
-    module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
+    module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, $location, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         $scope.<?= lcfirst($modelClassSingular) ?>Resource = <?= lcfirst($modelClassSingular) ?>Resource;
         $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
         $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
+
+        // Activate refresh when $location.search() has changed
+        var firstLocationChangeEvent = true;
+        $scope.$on('$locationChangeSuccess', function (event, newLoc, oldLoc) {
+            if (!firstLocationChangeEvent) {
+                console.log('list<?= $modelClassPlural ?>Controller refresh due to $locationChangeSuccess event');
+                <?= lcfirst($modelClassPlural) ?>.refresh();
+            }
+            firstLocationChangeEvent = false;
+        });
 
     });
 

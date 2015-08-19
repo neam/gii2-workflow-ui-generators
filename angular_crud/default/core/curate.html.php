@@ -26,9 +26,18 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
     Loading <?= strtolower($modelClassPluralWords) ?>...
 </div>
 
+<div class="alert alert-info" ng-show="<?= lcfirst($modelClassPlural) ?>.$refreshing">
+    Refreshing <?= strtolower($modelClassPluralWords) ?>...
+</div>
+
 <div class="alert alert-warning"
      ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1 && <?= lcfirst($modelClassPlural) ?>.length == 0">
-    You have no <?= lcfirst($modelClassPluralWords) ?>.
+    <div ng-show="<?= lcfirst($modelClassPlural) ?>.filtered()">
+        You have no <?= strtolower($modelClassPluralWords) ?>.
+    </div>
+    <div ng-show="!<?= lcfirst($modelClassPlural) ?>.filtered()">
+        No <?= strtolower($modelClassPluralWords) ?> matched the current filters.
+    </div>
 </div>
 
 <div class="alert alert-danger"

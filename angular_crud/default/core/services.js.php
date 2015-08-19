@@ -19,7 +19,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
             {id : '@id'},
@@ -96,58 +96,115 @@ endforeach;
 ?>
             }
         };
+        resource.collection = function() {
+
+            // Use $location.search as params
+            var filter = $location.search();
+
+            // Collection
+            var collection = resource.query(filter);
+
+            // State variable for "refreshing"-state
+            collection.$refreshing = false;
+
+            // State variable for current filter
+            collection.filter = angular.copy(filter);
+
+            // Method to check if current collection is filtered
+            collection.filtered = function() {
+                return angular.equals(collection.filter, {});
+            };
+
+            // Function to refresh the collection with items from server
+            collection.refresh = function () {
+                var filter = $location.search(); // necessary to not get outdated filter
+                // Update state variable for current filter
+                collection.filter = angular.copy(filter);
+                var refreshedItems = resource.query(filter);
+                collection.$refreshing = true;
+                refreshedItems.$promise.then(function () {
+                    collection.$refreshing = false;
+                    collection.replace(refreshedItems);
+                });
+            };
+
+            collection.replace = function (items) {
+                // empty original array then fill with the new items so that references to the collection (and thus view variables etc) are maintained
+                collection.length = 0; // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
+                _.each(items, function (element, index, list) {
+                    var resourceItem = new resource(element);
+                    collection.push(resourceItem);
+                });
+            };
+
+            // Function to add a new item to the collection and server
+            collection.add = function () {
+                var newItem = new resource(resource.dataSchema);
+                // add item to collection
+                collection.unshift(newItem);
+                // find index of item in collection
+                var index = _.indexOf(collection, newItem);
+                // add item on server
+                newItem.$save(function(data) {
+                    // success
+                    console.log('<?= lcfirst($modelClassSingular) ?>.add(): data', data);
+                }, function(e) {
+                    // on failure, remove item
+                    collection.splice(index, 1);
+                });
+            }
+
+            // Function to add an existing item object to the collection (the item may or may not be available on the server)
+            collection.addExisting = function (item) {
+                // add item to collection
+                collection.unshift(newItem);
+            }
+
+            // Function to remove an item from the collection and server
+            collection.remove = function (id) {
+                var item = _.find(collection, function (item) {
+                    return item.attributes.id == id;
+                });
+                // find index of item in collection
+                var index = _.indexOf(collection, item);
+                // remote item from collection
+                collection.splice(index, 1);
+                // delete item on server
+                item.$delete(function(data) {
+                    // success
+                    console.log('<?= lcfirst($modelClassSingular) ?>.remove(): data', data);
+                }, function(e) {
+                    // on failure, re-add item...
+                    if (index > collection.length-1) {
+                        collection.push(item);
+                    } else {
+                        collection.splice(index, 0, item);
+                    }
+                });
+            }
+
+            // Function to remove an existing item object to the collection (the item may or may not be available on the server)
+            collection.removeExisting = function (item) {
+                // find index of item in collection
+                var index = _.indexOf(collection, item);
+                // remote item from collection
+                collection.splice(index, 1);
+            }
+
+            return collection;
+
+        };
         return resource;
     });
 
     /**
-     * Inject to get an actual populated modifiable array of items from database
+     * Inject to get a singleton of populated modifiable array of items from database
      */
     module.service('<?= lcfirst($modelClassPlural) ?>', function (<?= lcfirst($modelClassSingular) ?>Resource) {
 
-        // Collection
-        var collection = <?= lcfirst($modelClassSingular) ?>Resource.query();
-
-        // Function to add a new item to the collection
-        collection.add = function () {
-            var newItem = new <?= lcfirst($modelClassSingular) ?>Resource(<?= lcfirst($modelClassSingular) ?>Resource.dataSchema);
-            // add item to collection
-            collection.unshift(newItem);
-            // find index of item in collection
-            var index = _.indexOf(collection, newItem);
-            // add item on server
-            newItem.$save(function(data) {
-                // success
-                console.log('<?= lcfirst($modelClassSingular) ?>.add(): data', data);
-            }, function(e) {
-                // on failure, remove item
-                collection.splice(index, 1);
-            });
-        }
-
-        // Function to remove an item from the collection
-        collection.remove = function (id) {
-            var item = _.find(collection, function (item) {
-                return item.attributes.id == id;
-            });
-            // find index of item in collection
-            var index = _.indexOf(collection, item);
-            // remote item from collection
-            collection.splice(index, 1);
-            // delete item on server
-            item.$delete(function(data) {
-                // success
-                console.log('<?= lcfirst($modelClassSingular) ?>.remove(): data', data);
-            }, function(e) {
-                // on failure, re-add item...
-                if (index > collection.length-1) {
-                    collection.push(item);
-                } else {
-                    collection.splice(index, 0, item);
-                }
-            });
-        }
-
+        var collection = <?= lcfirst($modelClassSingular) ?>Resource.collection();
         return collection;
+
     });
 
     /**
