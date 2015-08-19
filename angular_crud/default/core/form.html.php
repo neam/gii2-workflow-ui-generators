@@ -33,11 +33,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     <div ng-show="<?= lcfirst($modelClassSingular) ?>.$resolved && <?= lcfirst($modelClassSingular) ?>.$promise.$$state.status !== 2">
 
         <!-- Wrapper-->
-        <div id="wrapper" class="new-<?= lcfirst($modelClassSingular) ?>">
-            <!-- Navigation -->
-            <nav class="navbar-default navbar-static-side" role="navigation">
-                <div id="side-menu" class="nav" ng-include="'views/navigation/side-menu.html'"></div>
-            </nav>
+        <div id="wrapper" class="new-<?= $modelClassSingularId ?>">
             <div class="animated fadeInUp wrapper-content">
 
                 <div ng-include="'crud/<?= $modelClassSingularId ?>/form.top.html'"></div>
