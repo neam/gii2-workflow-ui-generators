@@ -72,6 +72,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
         manualRowResize="true"
         manualColumnResize="true"
         manualRowResize="true"
+        afterSelectionEndByProp="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterSelectionEndByPropCallback"
         datarows="<?= lcfirst($modelClassPlural) ?>"
         dataSchema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema"
         afterChange="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterChange">

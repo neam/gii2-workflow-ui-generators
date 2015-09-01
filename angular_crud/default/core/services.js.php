@@ -137,9 +137,10 @@ endforeach;
                 });
             };
 
-            // Function to add a new item to the collection and server
-            collection.add = function () {
-                var newItem = new resource(resource.dataSchema);
+            // Function to add a new item (optionally with preset attributes) to the collection and server
+            collection.add = function (itemAttributes, success, failure) {
+                var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema, itemAttributes) : resource.dataSchema);
+                var newItem = new resource(attributes);
                 // add item to collection
                 collection.unshift(newItem);
                 // find index of item in collection
@@ -148,9 +149,11 @@ endforeach;
                 newItem.$save(function(data) {
                     // success
                     console.log('<?= lcfirst($modelClassSingular) ?>.add(): data', data);
+                    success && success(newItem);
                 }, function(e) {
                     // on failure, remove item
                     collection.splice(index, 1);
+                    failure && failure();
                 });
             }
 
@@ -210,13 +213,51 @@ endforeach;
     /**
      * Service that contains the main objects for CRUD logic
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function (<?= lcfirst($modelClassPlural) ?><?php
+    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, <?= lcfirst($modelClassPlural) ?><?php
         $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
         foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
         $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
         $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
         $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
             ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?><?php endforeach; ?>) {
+
+        // A singleton service-specific scope that we use to make that there is always only a single set of column-specific keycombos active at a time
+        if (!$rootScope.$columnSpecificKeyComboScope) {
+            $rootScope.$columnSpecificKeyComboScope = $rootScope.$new();
+        }
+
+        var reset$columnSpecificKeyComboScope = function() {
+            $rootScope.$columnSpecificKeyComboScope.$destroy();
+            $rootScope.$columnSpecificKeyComboScope = $rootScope.$new();
+        };
+
+        /**
+         * Used to prevent select2 editor opening when not desired by hooking into select2-handsontable's onBeginEditing callback
+         * for which a false return value results in that the editor does not open.
+         *
+         * @param initialValue
+         * @param event
+         * @returns {boolean}
+         */
+        var onBeginEditingCallbackThatRequiresManualEditorStart = function (initialValue, event) {
+            console.log('onBeginEditingCallbackThatRequiresManualEditorStart', initialValue, event);
+            // Assume undefined is from double-click since onDblClick() runs openEditor() without arguments
+            if (!initialValue && !event) {
+                return true;
+            }
+            // Allow only opening via ENTER and F2
+            var keyCodes = Handsontable.helper.keyCode;
+            var ctrlDown = (event.ctrlKey || event.metaKey) && !event.altKey;
+            if (ctrlDown) {
+                return false;
+            }
+            switch (event.keyCode) {
+                case keyCodes.F2:
+                case keyCodes.ENTER:
+                    return true;
+            }
+            return false;
+        };
 
         var handsontable = {
 
@@ -300,6 +341,128 @@ endforeach;
 
             },
 
+            /**
+             * After selection end callback (with arguments to callback with property instead of column numbers)
+             * responsible for registering and de-registering key combos for updating the currently selected cell
+             *
+             * @param row
+             * @param property
+             * @param row2
+             * @param property2
+             */
+            afterSelectionEndByPropCallback: function (row, property, row2, property2) {
+                console.log('afterSelectionEndByPropCallback', row, property, row2, property2, this);
+
+                // Skip if more than one column is selected
+                if (property !== property2) {
+                    console.log('reset due to multiple columns selected');
+                    reset$columnSpecificKeyComboScope();
+                    return;
+                }
+
+                // Skip if editor is open
+                var instance = this;
+                var activeEditor = instance.getActiveEditor();
+                if (activeEditor.isOpened()) {
+                    console.log('reset due to open editor');
+                    reset$columnSpecificKeyComboScope();
+                    return;
+                }
+
+                // Get column name
+                var selectedColumn = property.replace("attributes.", "").replace(".id", "");
+
+                // Skip if not a relevant column
+                if (!handsontable.columnLogic[selectedColumn] || !handsontable.columnLogic[selectedColumn].relatedCollection) {
+                    console.log('reset due to no existing key combo configuration');
+                    reset$columnSpecificKeyComboScope();
+                    return;
+                }
+
+                // The cell-specific callback for key combos
+                var onKeyCombo = function (item) {
+                    // Set the cell values to the item id
+                    var firstSelectedRow = Math.min(row, row2);
+                    var lastSelectedRow = Math.max(row, row2);
+                    for (i = firstSelectedRow; i < lastSelectedRow+1; i++) {
+                        instance.setDataAtRowProp(i, property, item.id);
+                    }
+                    // Select the cell directly beneath the previous selection, if not already on last row
+                    var lastRow = instance.countRows();
+                    if (lastSelectedRow < lastRow) {
+                        instance.selectCellByProp(lastSelectedRow+1, property);
+                    }
+                };
+
+                // Manage keyboard shortcuts related to collection
+                var keyComboManager = {
+                    activateKeyCombos: function (collection) {
+
+                        // Find key combos
+                        var itemsWithShortcuts = _.filter(collection, function (item) {
+                            return item.attributes.key_combo;
+                        });
+
+                        _.each(itemsWithShortcuts, function (item, index, list) {
+
+                            // Delete existing if exists
+                            hotkeys.del(item.attributes.key_combo);
+
+                            // Add key combo
+                            // when you bind it to the controller's scope, it will automatically unbind
+                            // the hotkey when the scope is destroyed (due to ng-if or something that changes the DOM)
+                            hotkeys.bindTo($rootScope.$columnSpecificKeyComboScope)
+                                .add({
+                                    combo: item.attributes.key_combo,
+                                    description: 'Set value of current cell to "' + item.item_label + '"',
+                                    callback: function (e) {
+                                        onKeyCombo(item);
+                                    }
+                                });
+                        });
+
+                        console.log('activateKeyCombos - itemsWithShortcuts', itemsWithShortcuts);
+
+                    },
+                    deactivateKeyCombos: function (collection) {
+
+                        // Find key combos
+                        var itemsWithShortcuts = _.filter(collection, function (item) {
+                            return item.attributes.key_combo;
+                        });
+
+                        // Delete key combos
+                        _.each(itemsWithShortcuts, function (item, index, list) {
+                            hotkeys.del(item.attributes.key_combo);
+                        });
+
+                    }
+                }
+
+                var collection = handsontable.columnLogic[selectedColumn].relatedCollection;
+
+                // Remove cell-specific key combos not related to collection by resetting keycombo binding object
+                reset$columnSpecificKeyComboScope();
+
+                // Add key combos for collection
+                keyComboManager.activateKeyCombos(collection);
+
+                // Update key combos when underlying data changes
+                $rootScope.$columnSpecificKeyComboScope.collection = collection;
+                $rootScope.$columnSpecificKeyComboScope.$watch('collection', function (newCollection, oldCollection) {
+
+                    console.log('$rootScope.$columnSpecificKeyComboScope.$watch newCollection - length', newCollection.length);
+
+                    // Delete keyboard shortcuts found in old collection
+                    keyComboManager.deactivateKeyCombos(oldCollection);
+
+                    // Add key combos for new collection
+                    keyComboManager.activateKeyCombos(newCollection);
+
+                }, true);
+
+            },
+
             deleteButtonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var $button = $('<a href="javascript:void(0);"><i class="fa fa-icon-large fa-trash-o" style="color: red;"></i></a>');
 
@@ -339,6 +502,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 
 ?>
                 '<?=$attribute?>': {
+                    relatedCollection: <?= lcfirst($relatedModelClassPlural) ?>,
                     cellRenderer: function (instance, td, row, col, prop, value, cellProperties) {
 
                         var rowItemId = instance.getDataAtRowProp(row, 'attributes.id');
@@ -349,12 +513,83 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                         Handsontable.TextCell.renderer.apply(this, arguments);
 
                         value = item.attributes.<?=$attribute?>.item_label;
-                        var markup = value;
-                        td.innerHTML = markup;
+
+                        if (value === '[[none]]' /* && item.attributes.<?=$attribute?>.id === null Not using requirement since id sets first on updates before label is updated. If anything, shown loader or similar */) {
+
+                            // Empty value = Suggest selection or add new
+
+                            // Select button
+                            var $selectButton = $('<a href="javascript:void(0);"><i class="fa fa-icon-large fa-caret-down" style="color: blue;"></i></a>');
+                            $selectButton.click(function (event) {
+
+                                console.log('selclick');
+
+                                Handsontable.Dom.enableImmediatePropagation(event);
+                                event.stopImmediatePropagation();
+                                event.preventDefault();
+
+                                // Open editor
+                                var activeEditor = instance.getActiveEditor();
+                                var keyCodes = Handsontable.helper.keyCode;
+                                var keyboardEvent = jQuery.Event('keydown');
+                                keyboardEvent.keyCode = keyboardEvent.which = keyCodes.F2;
+                                var initialValue = value;
+                                activeEditor.beginEditing(initialValue, keyboardEvent);
+                                keyboardEvent.preventDefault();
+
+                            });
+                            var $addButton = $('<a href="javascript:void(0);"><i class="fa fa-icon-large fa-plus-circle" style="color: green;"></i></a>');
+                            $addButton.click(function (event) {
+
+                                console.log('addclick');
+
+                                Handsontable.Dom.enableImmediatePropagation(event);
+                                event.stopImmediatePropagation();
+                                event.preventDefault();
+
+                                // add an item to the collection
+                                <?= lcfirst($relatedModelClassPlural) ?>.add({}, function(newItem) {
+
+                                    // success callback sets this cell value to the new id
+                                    instance.setDataAtRowProp(row, 'attributes.<?=$attribute?>.id', newItem.id);
+
+                                });
+
+                            });
+                            var $keyComboButton = $('<a href="javascript:void(0);"><i class="fa fa-icon-large fa-keyboard-o" style="color: black;"></i></a>');
+                            $keyComboButton.click(function (event) {
+
+                                console.log('keycomboclick start');
+
+                                Handsontable.Dom.enableImmediatePropagation(event);
+                                event.stopImmediatePropagation();
+                                event.preventDefault();
+
+                                hotkeys.toggleCheatSheet();
+
+                                console.log('keycomboclick end');
+
+                            });
+                            $(td).empty() //empty is needed because we are rendering to an existing cell
+                                .append($selectButton)
+                                .append($('<span>&nbsp;</span>'))
+                                .append($addButton)
+                                .append($('<span>&nbsp;</span>'))
+                                .append($keyComboButton);
+
+                        } else {
+
+                            // Existing value, render value
+                            var markup = value;
+                            td.innerHTML = markup;
+
+                        }
+
                         return td;
 
                     },
                     select2Options: {
+                        onBeginEditing: onBeginEditingCallbackThatRequiresManualEditorStart,
                         /**
                          * Ajax mode in select2 is used for two reasons:
                          * 1. It allows the input to be initialized before the selections/options are available
