@@ -11,6 +11,10 @@ $itemTypeSingularRef = Inflector::camel2id($modelClassSingular, '_');
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
+// http://www.yiiframework.com/doc-2.0/guide-rest-response-formatting.html
+$itemsResponseKey = 'items';
+$metadataResponseKey = '_meta';
+
 ?>
 (function () {
 
@@ -19,7 +23,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $rootScope) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
             {id : '@id'},
@@ -28,8 +32,44 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
                     method: 'GET',
                     isArray: true,
                     params: {
-                        page: 1,
-                        limit: 100
+                        <?= $modelClassSingular ?>_page: 1,
+                        <?= $modelClassSingular ?>_limit: 100
+                    },
+
+                    // The response is not a JSON array as expected by $resource but rather a
+                    // JSON object that contains the actual result with additional metadata.
+                    // It is therefore necessary to extract the payload before it can be
+                    // processed by the resource.
+                    transformResponse: function (data) {
+                        var wrappedResult = angular.fromJson(data);
+                        wrappedResult.<?=$itemsResponseKey?>.$metadata = wrappedResult.<?=$metadataResponseKey?>;
+                        return wrappedResult.<?=$itemsResponseKey?>;
+                    },
+
+                    // The response ist not a JSON array as expected by $resource but rather a
+                    // JSON object that contains the actual result with additional metadata.
+                    // It is therefore necessary to extract the payload before it can be
+                    // processed by the resource.
+
+                    // The array returned by transformResponse is not passed directly to the
+                    // application logic, $resource only copies its contents. Due to this we
+                    // cannot directly access the added metadata. But fortunately for us
+                    // we can register a response interceptor in addition to transformResponse.
+                    // Inside the interceptor we can access the array of instances that is
+                    // returned by the query and the original data we parsed in
+                    // transformResponse, so that we can add the metadata.
+                    //
+                    // CAVEAT: This depends on the fact that the actual result is exposed as
+                    // response.resource which might change in future versions
+                    interceptor: {
+                        response: function (response) {
+                            response.resource.$metadata = response.data.$metadata;
+
+                            // Tmp workaround for the fact that <?= lcfirst($modelClassPlural) ?>.$metadata is not watchable (no change is detected, even on equality watch) from the controller scope for whatever reason
+                            $rootScope.$broadcast('<?= $modelClassSingular ?>_metadataUpdated', response.resource.$metadata);
+
+                            return response.resource;
+                        }
                     }
                 },
                 update: {
