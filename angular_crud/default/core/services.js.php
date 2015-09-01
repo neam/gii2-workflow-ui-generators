@@ -333,7 +333,7 @@ endforeach;
                         return;
                     }
 
-                    if (source === 'edit') {
+                    if (source === 'edit' || source === 'paste') {
                         changeObject.id = self.getDataAtRowProp(changeObject.row, 'attributes.id');
                         editObjects.push(changeObject);
                     }
