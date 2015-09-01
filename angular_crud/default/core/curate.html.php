@@ -64,7 +64,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
     <hot-table
         settings="{}"
         currentRowClassName="'current-row'"
-        currentColumnClassName="'current-column'"
+        currentColClassName="'current-column'"
         rowHeaders="false"
         colHeaders="true"
         contextMenu="false"

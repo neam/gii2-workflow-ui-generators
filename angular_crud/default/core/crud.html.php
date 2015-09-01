@@ -60,7 +60,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     <hot-table
         settings="{}"
         currentRowClassName="'current-row'"
-        currentColumnClassName="'current-column'"
+        currentColClassName="'current-column'"
         rowHeaders="false"
         colHeaders="true"
         contextMenu="false"
