@@ -344,7 +344,8 @@ endforeach;
 
                 });
 
-                console.log('<?= lcfirst($modelClassSingular) ?>Crud: <?= lcfirst($modelClassPlural) ?>, editObjects, newObjects', <?= lcfirst($modelClassPlural) ?>, editObjects, newObjects);
+                //console.log('<?= lcfirst($modelClassSingular) ?>Crud: <?= lcfirst($modelClassPlural) ?>, editObjects, newObjects', <?= lcfirst($modelClassPlural) ?>, editObjects, newObjects);
+                console.log('<?= lcfirst($modelClassSingular) ?>Crud: editObjects, newObjects', editObjects, newObjects);
 
                 function setDepth(obj, path, value) {
                     var tags = path.split("."), len = tags.length - 1;
