@@ -26,7 +26,7 @@ $metadataResponseKey = '_meta';
     module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $rootScope) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
-            {id : '@id'},
+            {id: '@id'},
             {
                 query: {
                     method: 'GET',
@@ -136,7 +136,7 @@ endforeach;
 ?>
             }
         };
-        resource.collection = function() {
+        resource.collection = function () {
 
             // Use $location.search as params
             var filter = $location.search();
@@ -151,7 +151,7 @@ endforeach;
             collection.filter = angular.copy(filter);
 
             // Method to check if current collection is filtered
-            collection.filtered = function() {
+            collection.filtered = function () {
                 return angular.equals(collection.filter, {});
             };
 
@@ -186,11 +186,11 @@ endforeach;
                 // find index of item in collection
                 var index = _.indexOf(collection, newItem);
                 // add item on server
-                newItem.$save(function(data) {
+                newItem.$save(function (data) {
                     // success
                     console.log('<?= lcfirst($modelClassSingular) ?>.add(): data', data);
                     success && success(newItem);
-                }, function(e) {
+                }, function (e) {
                     // on failure, remove item
                     collection.splice(index, 1);
                     failure && failure();
@@ -213,12 +213,12 @@ endforeach;
                 // remote item from collection
                 collection.splice(index, 1);
                 // delete item on server
-                item.$delete(function(data) {
+                item.$delete(function (data) {
                     // success
                     console.log('<?= lcfirst($modelClassSingular) ?>.remove(): data', data);
-                }, function(e) {
+                }, function (e) {
                     // on failure, re-add item...
-                    if (index > collection.length-1) {
+                    if (index > collection.length - 1) {
                         collection.push(item);
                     } else {
                         collection.splice(index, 0, item);
@@ -282,7 +282,7 @@ endforeach;
             $rootScope.$columnSpecificKeyComboScope = $rootScope.$new();
         }
 
-        var reset$columnSpecificKeyComboScope = function() {
+        var reset$columnSpecificKeyComboScope = function () {
             $rootScope.$columnSpecificKeyComboScope.$destroy();
             $rootScope.$columnSpecificKeyComboScope = $rootScope.$new();
         };
@@ -323,7 +323,7 @@ endforeach;
              * @param change 2D array containing information about each of the edited cells [[row, prop, oldVal, newVal], ...]
              * @param source one of the strings: "alter", "empty", "edit", "populateFromArray", "loadData", "autofill", "paste".
              */
-            afterChange: function(changes, source) {
+            afterChange: function (changes, source) {
 
                 if (source === 'loadData') {
                     return; // for performance reasons, the changes array is null for "loadData" source.
@@ -441,13 +441,13 @@ endforeach;
                     // Set the cell values to the item id
                     var firstSelectedRow = Math.min(row, row2);
                     var lastSelectedRow = Math.max(row, row2);
-                    for (i = firstSelectedRow; i < lastSelectedRow+1; i++) {
+                    for (i = firstSelectedRow; i < lastSelectedRow + 1; i++) {
                         instance.setDataAtRowProp(i, property, item.id);
                     }
                     // Select the cell directly beneath the previous selection, if not already on last row
                     var lastRow = instance.countRows();
                     if (lastSelectedRow < lastRow) {
-                        instance.selectCellByProp(lastSelectedRow+1, property);
+                        instance.selectCellByProp(lastSelectedRow + 1, property);
                     }
                 };
 
@@ -525,7 +525,7 @@ endforeach;
 
                 var id = instance.getDataAtRowProp(row, 'attributes.id');
 
-                $button.click(function() {
+                $button.click(function () {
 
                     console.log('delclick');
 
@@ -605,7 +605,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                                 event.preventDefault();
 
                                 // add an item to the collection
-                                <?= lcfirst($relatedModelClassPlural) ?>.add({}, function(newItem) {
+                                <?= lcfirst($relatedModelClassPlural) ?>.add({}, function (newItem) {
 
                                     // success callback sets this cell value to the new id
                                     instance.setDataAtRowProp(row, 'attributes.<?=$attribute?>.id', newItem.id);

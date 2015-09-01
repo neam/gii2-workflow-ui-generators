@@ -37,7 +37,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         });
 
         // Listen to page changes in pagination controls
-        $scope.pageChanged = function() {
+        $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
             $location.search('<?= $modelClassSingular ?>_page', $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
         };
@@ -47,7 +47,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     module.controller('edit<?= $modelClassSingular ?>Controller', function ($scope, $state, <?= lcfirst($modelClassSingular) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         // Form step visibility function
-        $scope.showStep = function(step) {
+        $scope.showStep = function (step) {
             console.log('TODO: determine if step should be visible', step);
             return true;
         };
