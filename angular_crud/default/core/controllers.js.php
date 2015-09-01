@@ -44,16 +44,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     });
 
-    module.controller('edit<?= $modelClassSingular ?>Controller', function ($scope, $state, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
-
-        // Load existing or create new <?= $modelClassSingular ?> based on the existance of <?= lcfirst($modelClassSingular) ?>Id in the route
-        console.log('edit<?= $modelClassPlural ?>Controller - $state.params', $state.params);
-        var <?= lcfirst($modelClassSingular) ?>;
-        if ($state.params.<?= lcfirst($modelClassSingular) ?>Id) {
-            <?= lcfirst($modelClassSingular) ?> = <?= lcfirst($modelClassSingular) ?>Resource.get({id: $state.params.<?= lcfirst($modelClassSingular) ?>Id});
-        } else {
-            <?= lcfirst($modelClassSingular) ?> = new <?= lcfirst($modelClassSingular) ?>Resource(<?= lcfirst($modelClassSingular) ?>Resource.dataSchema);
-        }
+    module.controller('edit<?= $modelClassSingular ?>Controller', function ($scope, $state, <?= lcfirst($modelClassSingular) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         // Form step visibility function
         $scope.showStep = function(step) {
