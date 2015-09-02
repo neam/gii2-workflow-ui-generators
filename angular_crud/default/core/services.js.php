@@ -320,8 +320,14 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                         },
                         processResults: function (data, page) {
                             // parse the results into the format expected by Select2.
-                            // since we are using custom formatting functions we do not need to
-                            // alter the remote JSON data
+                            for (var i = 0; i < data.length; i++) {
+                                var item = data[i];
+                                item.text = item.item_label;
+                            }
+                            // note: if we are using custom formatting functions we do not need to
+                            // alter the remote JSON data, but using .text for the text attribute
+                            // simplifies things since select2's "Loading" and similar texts use
+                            // that attribute name
                             return {
                                 results: data
                             };
@@ -380,11 +386,11 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                         return markup;
                     },
                     minimumInputLength: 0,
-                    templateResult: function (item) {
-                        return item.item_label;
+                    templateResult: function (selection) {
+                        return selection.text;
                     },
-                    templateSelection: function (item) {
-                        return item.item_label;
+                    templateSelection: function (selection) {
+                        return selection.text;
                     }
                 }
             },
