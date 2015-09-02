@@ -44,7 +44,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     });
 
-    module.controller('edit<?= $modelClassSingular ?>Controller', function ($scope, $state, <?= lcfirst($modelClassSingular) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
+    module.controller('edit<?= $modelClassSingular ?>Controller', function ($scope, $state, $rootScope, <?= lcfirst($modelClassSingular) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         // Form step visibility function
         $scope.showStep = function (step) {
@@ -85,6 +85,10 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
             }
             $scope.<?= lcfirst($modelClassSingular) ?> = angular.copy($scope.original<?= $modelClassSingular ?>);
         };
+
+        // Share scope on rootScope so that side-menu can access it easily
+        $rootScope.edit<?= $modelClassSingular ?>Controller = {};
+        $rootScope.edit<?= $modelClassSingular ?>Controller.$scope = $scope;
 
     });
 
