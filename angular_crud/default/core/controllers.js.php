@@ -53,10 +53,14 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         };
 
         // Form submit handling
-        $scope.submit = function () {
+        $scope.persistModel = function (form) {
             <?= lcfirst($modelClassSingular) ?>.$promise.then(function () {
                 <?= lcfirst($modelClassSingular) ?>.$update(function (data) {
                     console.log('<?= $modelClassSingular ?> save success', data);
+                    if (form) {
+                        form.$setPristine();
+                        form.$setUntouched();
+                    }
                 }, function (error) {
                     console.log('<?= $modelClassSingular ?> save error', error);
                 });
@@ -66,6 +70,21 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         $scope.<?= lcfirst($modelClassSingular) ?>Resource = <?= lcfirst($modelClassSingular) ?>Resource;
         $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
         $scope.<?= lcfirst($modelClassSingular) ?> = <?= lcfirst($modelClassSingular) ?>;
+
+        // Save a original copy of the item so that we can reset the form
+        $scope.original<?= $modelClassSingular ?> = {};
+        <?= lcfirst($modelClassSingular) ?>.$promise.then(function () {
+            $scope.original<?= $modelClassSingular ?> = angular.copy(<?= lcfirst($modelClassSingular) ?>);
+        });
+
+        // Reset form function
+        $scope.reset = function (form) {
+            if (form) {
+                form.$setPristine();
+                form.$setUntouched();
+            }
+            $scope.<?= lcfirst($modelClassSingular) ?> = angular.copy($scope.original<?= $modelClassSingular ?>);
+        };
 
     });
 
