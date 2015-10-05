@@ -21,16 +21,6 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
         $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
 
-        // Activate refresh when $location.search() has changed
-        var firstLocationChangeEvent = true;
-        $scope.$on('$locationChangeSuccess', function (event, newLoc, oldLoc) {
-            if (!firstLocationChangeEvent) {
-                console.log('list<?= $modelClassPlural ?>Controller refresh due to $locationChangeSuccess event');
-                <?= lcfirst($modelClassPlural) ?>.refresh();
-            }
-            firstLocationChangeEvent = false;
-        });
-
         // Tmp workaround for the fact that <?= lcfirst($modelClassPlural) ?>.$metadata is not watchable (no change is detected, even on equality watch) from the controller scope for whatever reason
         $scope.$on('<?= $modelClassSingular ?>_metadataUpdated', function (ev, metadata) {
             angular.extend(<?= lcfirst($modelClassPlural) ?>.$metadata, metadata);
@@ -40,6 +30,12 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
             $location.search('<?= $modelClassSingular ?>_page', $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
+        };
+
+        // Prepare handsontable configuration with default callbacks
+        $scope.handsontableSettings = {
+            onAfterSelectionEndByProp: <?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterSelectionEndByPropCallback,
+            onAfterChange: <?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterChange
         };
 
     });

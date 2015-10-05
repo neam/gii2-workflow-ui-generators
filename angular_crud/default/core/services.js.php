@@ -23,7 +23,7 @@ $metadataResponseKey = '_meta';
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $rootScope) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $rootScope, routeBasedFilters, $q) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
             {id: '@id'},
@@ -136,15 +136,64 @@ endforeach;
 ?>
             }
         };
-        resource.collection = function () {
+        resource.activeFilter = {};
+        resource.$scope = $rootScope.$new();
+        resource.getItemTypeFilter = function () {
 
-            // Use $location.search as params
-            var filter = $location.search();
+            // Filters are stored in $location.search and the service routeBasedFilters
+            var allFilters = angular.merge({}, $location.search(), routeBasedFilters);
+
+            // Filter on item type by namespace
+            //console.log('getItemTypeFilters - allFilters', allFilters);
+
+            return _.reduce(allFilters, function (obj, val, key) {
+                if (key.indexOf("<?= $modelClassSingular ?>_") === 0) {
+                    obj[key] = val;
+                }
+                return obj;
+            }, {});
+
+        };
+        resource.collection = function (params) {
+
+            params = params || {};
+
+            var filter = resource.getItemTypeFilter();
+            console.log('<?= lcfirst($modelClassSingular) ?> - filter', filter);
 
             // Collection
-            var collection = resource.query(filter);
+            var collection = resource.query(angular.merge(filter, params));
 
-            // State variable for "refreshing"-state
+            collection.$promise.then(function () {
+
+                // Set active filter
+                resource.activeFilter = angular.copy(filter);
+
+                // Activate refresh when filter has changed
+                resource.$scope.$watch(function ($scope) {
+                        return resource.getItemTypeFilter();
+                    },
+                    function (newVal, oldVal) {
+                        if (JSON.stringify(newVal) !== JSON.stringify(oldVal) && JSON.stringify(newVal) !== JSON.stringify(resource.activeFilter)) {
+                            console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to getItemTypeFilter() change', newVal, oldVal);
+                            collection.refresh();
+                        }
+                    },
+                    true
+                );
+
+            });
+
+            // Returns a promise which resolves the next time the collection is refreshed
+            collection.newRefreshDeferredObject = function() {
+                collection.refreshDeferredObject = $q.defer();
+                return collection.refreshDeferredObject;
+            };
+
+            // Set initial refresh deferred object
+            collection.newRefreshDeferredObject();
+
+            // State initial variable for "refreshing"-state
             collection.$refreshing = false;
 
             // State variable for current filter
@@ -157,14 +206,16 @@ endforeach;
 
             // Function to refresh the collection with items from server
             collection.refresh = function () {
-                var filter = $location.search(); // necessary to not get outdated filter
+                var filter = resource.getItemTypeFilter(); // necessary to not get outdated filter
                 // Update state variable for current filter
                 collection.filter = angular.copy(filter);
                 var refreshedItems = resource.query(filter);
                 collection.$refreshing = true;
                 refreshedItems.$promise.then(function () {
                     collection.$refreshing = false;
+                    resource.activeFilter = angular.copy(filter);
                     collection.replace(refreshedItems);
+                    collection.refreshDeferredObject.resolve(refreshedItems);
                 });
             };
 
@@ -179,7 +230,7 @@ endforeach;
 
             // Function to add a new item (optionally with preset attributes) to the collection and server
             collection.add = function (itemAttributes, success, failure) {
-                var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema, itemAttributes) : resource.dataSchema);
+                var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema, itemAttributes) : resource.dataSchema); // TODO: deep extend is necessary for this to wrok
                 var newItem = new resource(attributes);
                 // add item to collection
                 collection.unshift(newItem);
@@ -269,13 +320,13 @@ endforeach;
     /**
      * Service that contains the main objects for CRUD logic
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, <?= lcfirst($modelClassPlural) ?><?php
+    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php
         $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
         foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
         $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
         $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
         $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?><?php endforeach; ?>) {
+            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource<?php endforeach; ?>) {
 
         // General relations logic
         var relations = {
@@ -301,6 +352,8 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
             '<?=$attribute?>': {
                 relatedCollection: <?= lcfirst($relatedModelClassPlural) ?>,
                 select2Options: {
+                    placeholder:'Select an option',
+                    allowClear: true,
                     /**
                      * Ajax mode in select2 is used for two reasons:
                      * 1. It allows the input to be initialized before the selections/options are available
@@ -311,7 +364,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                      */
                     ajax: {
                         dataType: 'json',
-                        delay: 0,
+                        delay: 300,
                         data: function (params) {
                             return {
                                 q: params.term, // search term
@@ -319,19 +372,19 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                             };
                         },
                         processResults: function (data, page) {
-                            // parse the results into the format expected by Select2.
+                            // parse the results into the format expected by Select2, which are plain objects with id and text (ngResource objects will NOT work)
+                            // additional attributes can be supplied in order to be utilized in templating functions
+                            var plainObjects = [];
                             for (var i = 0; i < data.length; i++) {
                                 var item = data[i];
-                                item.text = item.item_label;
+                                plainObjects.push({
+                                    id: item.id,
+                                    text: item.item_label,
+                                })
                             }
-                            // note: if we are using custom formatting functions we do not need to
-                            // alter the remote JSON data, but using .text for the text attribute
-                            // simplifies things since select2's "Loading" and similar texts use
-                            // that attribute name
                             return {
-                                results: data
-                            };
-                        },
+                                results: plainObjects
+                            };                        },
                         // @param params The object containing the parameters used to generate the
                         //   request.
                         // @param success A callback function that takes `data`, the results from the
@@ -342,10 +395,25 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                         //   the request if needed.
                         transport: function (params, success, failure) {
 
-                            <?= lcfirst($relatedModelClassPlural) ?>.$promise.then(function () {
+                            var relatedItemsCollection = <?= lcfirst($relatedModelClassPlural) ?>;
+                            var relatedItemsPromise;
+
+                            // If no search string or the same as before is entered, we can re-use the existing global collection without modification
+                            if ($.trim(relatedItemsCollection.filter.<?= $relatedModelClassSingular ?>_search) === $.trim(params.data.q)) {
+                                relatedItemsPromise = relatedItemsCollection.$promise;
+                            } else {
+                                // Get a promise that will resolve after the collection has been refreshed
+                                relatedItemsPromise = relatedItemsCollection.newRefreshDeferredObject().promise;
+                                // Set global filter which will trigger a refresh (within a timeout so that a digest cycle is run after the modification)
+                                $timeout(function () {
+                                    $location.search('<?= $relatedModelClassSingular ?>_search', params.data.q);
+                                });
+                            }
+
+                            relatedItemsPromise.then(function () {
 
                                 // Filter available results to match the entered text
-                                var filtered = _.filter(<?= lcfirst($relatedModelClassPlural) ?>, function (data, iterator, context) {
+                                var filtered = _.filter(relatedItemsCollection, function (data, iterator, context) {
 
                                     // If there are no search terms, return all of the data
                                     if ($.trim(params.data.q) === '') {
@@ -359,15 +427,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                                     return false;
                                 });
 
-                                // Add a choice for not selecting anything
-                                var choices = _.union([
-                                    {
-                                        id: "",
-                                        item_label: '&lt;none&gt;'
-                                    }
-                                ], filtered);
-
-                                success(choices);
+                                success(filtered);
 
                             }).catch(failure);
 
@@ -430,7 +490,7 @@ endforeach;
                 return true;
             }
             // Allow only opening via ENTER and F2
-            var keyCodes = Handsontable.helper.keyCode;
+            var keyCodes = Handsontable.helper.KEY_CODES;
             var ctrlDown = (event.ctrlKey || event.metaKey) && !event.altKey;
             if (ctrlDown) {
                 return false;
@@ -499,15 +559,15 @@ endforeach;
                     obj[tags[len]] = value;
                 }
 
-                _.each(editObjects, function (editObjects, index, list) {
+                _.each(editObjects, function (editObject, index, list) {
 
                     var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
-                        return item.attributes.id == editObjects.id;
+                        return item.attributes.id == editObject.id;
                     });
 
-                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: editObjects, item', editObjects, item);
+                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: editObject, item', editObject, item);
 
-                    setDepth(item, editObjects.prop, editObjects.newVal);
+                    setDepth(item, editObject.prop, editObject.newVal);
                     item.$update(function (savedObject, putResponseHeaders) {
                         console.log('<?= lcfirst($modelClassSingular) ?>Crud: savedObject', savedObject);
                         //putResponseHeaders => $http header getter
@@ -515,12 +575,12 @@ endforeach;
 
                 });
 
-                _.each(newObjects, function (newObjects, index, list) {
+                _.each(newObjects, function (newObject, index, list) {
 
-                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: newObjects', newObjects);
+                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: newObject', newObject);
 
                     // create new item
-                    <?= lcfirst($modelClassPlural) ?>.add(); // TODO: add at the correct index where the new row was inserted
+                    <?= lcfirst($modelClassPlural) ?>.add(); // TODO: add existing attributes + at the correct index where the new row was inserted
 
                 });
 
@@ -690,6 +750,14 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                     cellRenderer: function (instance, td, row, col, prop, value, cellProperties) {
 
                         var rowItemId = instance.getDataAtRowProp(row, 'attributes.id');
+
+                        // If rowItemId is null, we can not know what item is to be rendered
+                        if (!rowItemId) {
+                            td.innerHTML = '?';
+                            return;
+                        }
+
+                        // Find the item that belongs to this row
                         var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
                             return item.attributes.id == rowItemId;
                         });
@@ -698,7 +766,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 
                         value = item.attributes.<?=$attribute?>.item_label;
 
-                        if (value === '[[none]]' /* && item.attributes.<?=$attribute?>.id === null Not using requirement since id sets first on updates before label is updated. If anything, shown loader or similar */) {
+                        if (value === '[[none]]' /* && item.attributes.<?=$attribute?>.id === null Not using requirement since id sets first on updates before label is updated. If anything, show loader or similar */) {
 
                             // Empty value = Suggest selection or add new
 
@@ -708,13 +776,12 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 
                                 console.log('selclick');
 
-                                Handsontable.Dom.enableImmediatePropagation(event);
-                                event.stopImmediatePropagation();
+                                Handsontable.Dom.stopImmediatePropagation(event);
                                 event.preventDefault();
 
                                 // Open editor
                                 var activeEditor = instance.getActiveEditor();
-                                var keyCodes = Handsontable.helper.keyCode;
+                                var keyCodes = Handsontable.helper.KEY_CODES;
                                 var keyboardEvent = jQuery.Event('keydown');
                                 keyboardEvent.keyCode = keyboardEvent.which = keyCodes.F2;
                                 var initialValue = value;
@@ -727,8 +794,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 
                                 console.log('addclick');
 
-                                Handsontable.Dom.enableImmediatePropagation(event);
-                                event.stopImmediatePropagation();
+                                Handsontable.Dom.stopImmediatePropagation(event);
                                 event.preventDefault();
 
                                 // add an item to the collection
@@ -745,8 +811,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 
                                 console.log('keycomboclick start');
 
-                                Handsontable.Dom.enableImmediatePropagation(event);
-                                event.stopImmediatePropagation();
+                                Handsontable.Dom.stopImmediatePropagation(event);
                                 event.preventDefault();
 
                                 hotkeys.toggleCheatSheet();

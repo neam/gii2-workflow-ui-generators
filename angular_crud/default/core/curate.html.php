@@ -51,7 +51,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 </div>
 -->
 
-<div> <!-- Commented due to Handsontable rendering bug: ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2" -->
+<div ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
 
     <p>Total count: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.totalCount }}</p>
     <p>Current page: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.currentPage }}</p>
@@ -62,25 +62,25 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 
     <!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
     <hot-table
-        settings="{}"
-        currentRowClassName="'current-row'"
-        currentColClassName="'current-column'"
-        rowHeaders="false"
-        colHeaders="true"
-        contextMenu="false"
-        persistentState="true"
-        minSpareRows="0"
-        manualRowMove="true"
-        manualColumnMove="true"
-        fixedColumnsLeft="0"
-        manualColumnResize="true"
-        manualRowResize="true"
-        manualColumnResize="true"
-        manualRowResize="true"
-        afterSelectionEndByProp="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterSelectionEndByPropCallback"
+        settings="handsontableSettings"
+        current-row-className="'current-row'"
+        current-col-className="'current-column'"
+        row-headers="false"
+        col-headers="true"
+        context-menu="false"
+        persistent-state="true"
+        min-spare-rows="0"
+        manual-row-move="true"
+        manual-column-move="true"
+        fixed-columns-left="0"
+        manual-column-resize="true"
+        manual-row-resize="true"
+        manual-column-resize="true"
+        manual-row-resize="true"
+        formulas="false"
+        comments="true"
         datarows="<?= lcfirst($modelClassPlural) ?>"
-        dataSchema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema"
-        afterChange="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterChange">
+        data-schema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema">
 
         <!--
         <hot-column data="_delete" title="'Delete'" type="'checkbox'" width="65" checkedTemplate="1"

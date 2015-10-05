@@ -58,25 +58,25 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     <!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
     <hot-table
-        settings="{}"
-        currentRowClassName="'current-row'"
-        currentColClassName="'current-column'"
-        rowHeaders="false"
-        colHeaders="true"
-        contextMenu="false"
-        persistentState="true"
-        minSpareRows="0"
-        manualRowMove="true"
-        manualColumnMove="true"
-        fixedColumnsLeft="0"
-        manualColumnResize="true"
-        manualRowResize="true"
-        manualColumnResize="true"
-        manualRowResize="true"
-        afterSelectionEndByProp="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterSelectionEndByPropCallback"
+        settings="handsontableSettings"
+        current-row-className="'current-row'"
+        current-col-className="'current-column'"
+        row-headers="false"
+        col-headers="true"
+        context-menu="false"
+        persistent-state="true"
+        min-spare-rows="0"
+        manual-row-move="true"
+        manual-column-move="true"
+        fixed-columns-left="0"
+        manual-column-resize="true"
+        manual-row-resize="true"
+        manual-column-resize="true"
+        manual-row-resize="true"
+        formulas="false"
+        comments="true"
         datarows="<?= lcfirst($modelClassPlural) ?>"
-        dataSchema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema"
-        afterChange="<?= lcfirst($modelClassSingular) ?>Crud.handsontable.afterChange">
+        data-schema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema">
 
         <!--
         <hot-column data="_delete" title="'Delete'" type="'checkbox'" width="65" checkedTemplate="1"
