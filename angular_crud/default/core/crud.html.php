@@ -47,7 +47,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 </div>
 -->
 
-<div ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
+<div ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
 
     <p>Total count: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.totalCount }}</p>
     <p>Current page: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.currentPage }}</p>
@@ -56,54 +56,10 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.add()" ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1" class="btn btn-primary btn-xs">Add new item</a>
 
-    <!--contextMenu="['row_above', 'row_below', 'remove_row']"-->
-    <hot-table
+    <simple-handsontable
         settings="handsontableSettings"
-        current-row-className="'current-row'"
-        current-col-className="'current-column'"
-        row-headers="false"
-        col-headers="true"
-        context-menu="false"
-        persistent-state="true"
-        min-spare-rows="0"
-        manual-row-move="true"
-        manual-column-move="true"
-        fixed-columns-left="0"
-        manual-column-resize="true"
-        manual-row-resize="true"
-        manual-column-resize="true"
-        manual-row-resize="true"
-        formulas="false"
-        comments="true"
-        datarows="<?= lcfirst($modelClassPlural) ?>"
-        data-schema="<?= lcfirst($modelClassSingular) ?>Resource.dataSchema">
-
-        <!--
-        <hot-column data="_delete" title="'Delete'" type="'checkbox'" width="65" checkedTemplate="1"
-                    uncheckedTemplate="null"></hot-column>
-        -->
-
-        <?php foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo): ?>
-
-        <!-- <?= $attribute ?> --><?php
-
-            $prepend = $generator->prependActiveFieldForAttribute("hot-column." . $attribute, $model);
-            $field = $generator->activeFieldForAttribute("hot-column." . $attribute, $model);
-            $append = $generator->appendActiveFieldForAttribute("hot-column." . $attribute, $model);
-
-            if ($prepend) {
-                echo "\n" . $prepend . "";
-            }
-            if ($field) {
-                echo "\n" . $field . "";
-            }
-            if ($append) {
-                echo "\n" . $append . "";
-            }
-
-        endforeach; ?>
-
-    </hot-table>
+        data="<?= lcfirst($modelClassPlural) ?>">
+    </simple-handsontable>
 
 </div>
 
