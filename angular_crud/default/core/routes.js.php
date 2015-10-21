@@ -68,11 +68,11 @@ $labelPlural = $unprefixedModelClassPluralWords;
 
             /*
              .state('root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.dashboard', {
-         url: "/dashboard",
-         templateUrl: "crud/<?= $modelClassSingularId ?>/dashboard.html",
-         data: {pageTitle: '<?= $labelPlural ?> Dashboard'}
-         })
-         */
+             url: "/dashboard",
+             templateUrl: "crud/<?= $modelClassSingularId ?>/dashboard.html",
+             data: {pageTitle: '<?= $labelPlural ?> Dashboard'}
+             })
+             */
 
             .state('root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.view', {
                 url: "/view",
@@ -100,7 +100,22 @@ $labelPlural = $unprefixedModelClassPluralWords;
                 }
             })
 
-            <?php foreach ($model->flowSteps() as $stepReference => $stepAttributes):
+            <?php
+            $flowSteps = $model->flowSteps();
+            $flowStepReference = array_keys($flowSteps);
+            $firstStepReference = reset($flowStepReference);
+            ?>
+
+            // Add initial alias for "first-step" TODO: Refactor to have dynamic step logic in angular logic
+            .state('root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.continue-editing', {
+                url: "/continue-editing",
+                templateUrl: "crud/<?= $modelClassSingularId ?>/steps/<?= $firstStepReference ?>.html",
+                data: {pageTitle: 'Edit <?= $labelSingular ?>'}
+            })
+
+            <?php
+
+            foreach ($flowSteps as $stepReference => $stepAttributes):
 
             // Determine level of step
             $stepHierarchy = explode(".", $stepReference);
