@@ -48,7 +48,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
             fixedColumnsLeft: 0,
             manualRowResize: true,
             manualColumnResize: true,
-            formular: true,
+            formulas: true,
             comments: true,
             dataSchema: <?= lcfirst($modelClassSingular) ?>Resource.dataSchema
         };
