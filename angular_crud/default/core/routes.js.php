@@ -97,7 +97,8 @@ $labelPlural = $unprefixedModelClassPluralWords;
                     'sidebar@root': {
                         templateUrl: "crud/<?= $modelClassSingularId ?>/navigation.html"
                     }
-                }
+                },
+                data: {showSideMenu: true}
             })
 
             <?php
