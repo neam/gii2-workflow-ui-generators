@@ -11,52 +11,52 @@ class CallbackProvider extends \schmunk42\giiant\base\Provider
     public $columnFormats = [];
     public $relationGrids = [];
 
-    public function activeFieldForAttribute($attribute, $model)
+    public function activeFieldForAttribute($attribute, $model, $params = [])
     {
         $key = $this->findValue($this->getModelKey($attribute, $model), $this->activeFields);
         if ($key) {
-            return $this->activeFields[$key]($attribute, $model);
+            return $this->activeFields[$key]($attribute, $model, $params);
         }
     }
 
-    public function prependActiveFieldForAttribute($attribute, $model)
+    public function prependActiveFieldForAttribute($attribute, $model, $params = [])
     {
         $key = $this->findValue($this->getModelKey($attribute, $model), $this->prependActiveFields);
         if ($key) {
-            return $this->prependActiveFields[$key]($attribute, $model);
+            return $this->prependActiveFields[$key]($attribute, $model, $params);
         }
     }
 
-    public function appendActiveFieldForAttribute($attribute, $model)
+    public function appendActiveFieldForAttribute($attribute, $model, $params = [])
     {
         $key = $this->findValue($this->getModelKey($attribute, $model), $this->appendActiveFields);
         if ($key) {
-            return $this->appendActiveFields[$key]($attribute, $model);
+            return $this->appendActiveFields[$key]($attribute, $model, $params);
         }
     }
 
 
-    public function attributeFormatForAttribute($attribute, $model)
+    public function attributeFormatForAttribute($attribute, $model, $params = [])
     {
         $key = $this->findValue($this->getModelKey($attribute, $model), $this->attributeFormats);
         if ($key) {
-            return $this->attributeFormats[$key]($attribute, $model);
+            return $this->attributeFormats[$key]($attribute, $model, $params);
         }
     }
 
-    public function columnFormatForAttribute($attribute, $model)
+    public function columnFormatForAttribute($attribute, $model, $params = [])
     {
         $key = $this->findValue($this->getModelKey($attribute, $model), $this->columnFormats);
         if ($key) {
-            return $this->columnFormats[$key]($attribute, $model);
+            return $this->columnFormats[$key]($attribute, $model, $params);
         }
     }
 
-    public function relationGridForAttribute($attribute, $model)
+    public function relationGridForAttribute($attribute, $model, $params = [])
     {
         $key = $this->findValue($this->getModelKey($attribute, $model), $this->relationGrids);
         if ($key) {
-            return $this->relationGrids[$key]($attribute, $model);
+            return $this->relationGrids[$key]($attribute, $model, $params);
         }
     }
 

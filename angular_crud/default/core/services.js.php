@@ -302,22 +302,6 @@ endforeach;
     });
 
     /**
-     * Inject to load existing or create new <?= $modelClassSingular ?> based on the existance of <?= lcfirst($modelClassSingular) ?>Id in the route
-     */
-    module.service('<?= lcfirst($modelClassSingular) ?>', function ($state, <?= lcfirst($modelClassSingular) ?>Resource) {
-
-        var <?= lcfirst($modelClassSingular) ?>;
-        if ($state.params.<?= lcfirst($modelClassSingular) ?>Id) {
-            <?= lcfirst($modelClassSingular) ?> = <?= lcfirst($modelClassSingular) ?>Resource.get({id: $state.params.<?= lcfirst($modelClassSingular) ?>Id});
-        } else {
-            <?= lcfirst($modelClassSingular) ?> = new <?= lcfirst($modelClassSingular) ?>Resource(<?= lcfirst($modelClassSingular) ?>Resource.dataSchema);
-        }
-
-        return <?= lcfirst($modelClassSingular) ?>;
-
-    });
-
-    /**
      * Service that contains the main objects for CRUD logic
      */
     module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php

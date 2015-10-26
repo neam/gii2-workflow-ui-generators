@@ -242,13 +242,13 @@ class Generator extends \schmunk42\giiant\crud\Generator
      *
      * @return mixed|string
      */
-    public function activeFieldForAttribute($attribute, $model = null)
+    public function activeFieldForAttribute($attribute, $model = null, $params = [])
     {
         Yii::trace("Rendering activeField for '{$attribute}'", __METHOD__);
         if ($model === null) {
             $model = $this->modelClass;
         }
-        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model, $params);
         if ($code !== null) {
             return $code;
         } else {
@@ -256,31 +256,31 @@ class Generator extends \schmunk42\giiant\crud\Generator
         };
     }
 
-    public function prependActiveFieldForAttribute($attribute, $model = null)
+    public function prependActiveFieldForAttribute($attribute, $model = null, $params = [])
     {
         Yii::trace("Rendering activeField for '{$attribute}'", __METHOD__);
         if ($model === null) {
             $model = $this->modelClass;
         }
-        return $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        return $this->callProviderQueue(__FUNCTION__, $attribute, $model, $params);
     }
 
-    public function appendActiveFieldForAttribute($attribute, $model = null)
+    public function appendActiveFieldForAttribute($attribute, $model = null, $params = [])
     {
         Yii::trace("Rendering activeField for '{$attribute}'", __METHOD__);
         if ($model === null) {
             $model = $this->modelClass;
         }
-        return $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        return $this->callProviderQueue(__FUNCTION__, $attribute, $model, $params);
     }
 
-    public function columnFormatForAttribute($attribute, $model = null)
+    public function columnFormatForAttribute($attribute, $model = null, $params = [])
     {
         Yii::trace("Rendering columnFormat for '{$attribute}'", __METHOD__);
         if ($model === null) {
             $model = $this->modelClass;
         }
-        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model, $params);
         if ($code !== null) {
             return $code;
         } else {
@@ -288,13 +288,13 @@ class Generator extends \schmunk42\giiant\crud\Generator
         };
     }
 
-    public function attributeFormatForAttribute($attribute, $model = null)
+    public function attributeFormatForAttribute($attribute, $model = null, $params = [])
     {
         Yii::trace("Rendering attributeFormat for '{$attribute}'", __METHOD__);
         if ($model === null) {
             $model = $this->modelClass;
         }
-        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model);
+        $code = $this->callProviderQueue(__FUNCTION__, $attribute, $model, $params);
         if ($code !== null) {
             return $code;
         }
