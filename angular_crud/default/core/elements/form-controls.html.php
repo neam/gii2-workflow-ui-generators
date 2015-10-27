@@ -13,16 +13,16 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 ?>
 <button
         type="submit"
-        class="btn btn-primary btn-xs"
+        class="btn btn-primary"
         ng-click="persistModel(<?= lcfirst($modelClassSingular) ?>Form)"
         ng-disabled="<?= lcfirst($modelClassSingular) ?>Form.$pristine || !<?= lcfirst($modelClassSingular) ?>Form.$valid || !<?= lcfirst($modelClassSingular) ?>.$resolved"
         >
     Save
 </button>
-&nbsp;
+
 <button
         type="button"
-        class="btn btn-default btn-xs"
+        class="btn btn-default"
         ng-disabled="<?= lcfirst($modelClassSingular) ?>Form.$pristine || !<?= lcfirst($modelClassSingular) ?>.$resolved"
         ng-click="reset(<?= lcfirst($modelClassSingular) ?>Form)"
         >Reset Form

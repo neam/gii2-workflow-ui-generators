@@ -13,12 +13,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 // TODO: use item type choiceformat label for labels instead of inflector
 
 ?>
-<div class="row wrapper border-bottom white-bg page-heading">
-    <div class="col-sm-12">
-        <h2>{{<?= lcfirst($modelClassSingular) ?>.item_label}}</h2>
-        <div ng-include="'crud/<?= $modelClassSingularId ?>/elements/form-controls.html'"></div>
-        <!-- Hint start -->
-        <?= \ItemTypes::hint($modelClassSingular) . "\n" ?>
-        <!-- Hint stop -->
-    </div>
+<div class="row wrapper border-bottom white-bg page-heading ">
+    <h1 class="pull-left">{{$state.current.data.stepCaption}}</h1>
+    <div class="pull-right top-buttons" ng-include="'crud/<?= $modelClassSingularId ?>/elements/form-controls.html'"></div>
 </div>
