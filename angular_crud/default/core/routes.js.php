@@ -36,6 +36,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
     module.config(function ($stateProvider) {
 
         $stateProvider
+
 <?php
 
             $step = false;
