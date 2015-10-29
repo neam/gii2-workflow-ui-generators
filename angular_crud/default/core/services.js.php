@@ -95,10 +95,13 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
         case "has-many-relation":
         case "many-many-relation":
 
-            if (!isset($relations[$attribute])) {
-                throw new Exception("Model ".get_class($model)." does not have a relation '$attribute'");
+            $_ = explode("RelatedBy", $attribute);
+            $relationAttribute = $_[0];
+            $relations = $model->relations();
+            if (!isset($relations[$relationAttribute])) {
+                throw new Exception("Model " . get_class($model) . " does not have a relation '$relationAttribute'");
             }
-            $relationInfo = $relations[$attribute];
+            $relationInfo = $relations[$relationAttribute];
             $relatedModelClass = $relationInfo[1];
 
             // tmp until memory allocation has been resolved
