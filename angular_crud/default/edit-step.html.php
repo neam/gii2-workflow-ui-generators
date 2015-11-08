@@ -9,6 +9,12 @@ $model = $generator->getModel();
 <!--
 Template for <?= ltrim($generator->modelClass, '\\') ?> model, step "<?=$step?>"
 -->
+
+<div class="ibox float-e-margins ibox-top-margin">
+    <div class="ibox-content">
+        <fieldset>
+            <div class="form-group cfg">
+
 <?php foreach ($attributes as $attribute): ?>
 
 <!-- <?= $attribute ?> --><?php
@@ -29,3 +35,7 @@ Template for <?= ltrim($generator->modelClass, '\\') ?> model, step "<?=$step?>"
 
 endforeach; ?>
 
+            </div>
+        </fieldset>
+    </div>
+</div>
