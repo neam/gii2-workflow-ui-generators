@@ -25,8 +25,8 @@ $unprefixedModelClassPlural = Inflector::camelize($unprefixedModelClassPluralWor
 $unprefixedModelClassPluralId = Inflector::camel2id($unprefixedModelClassPlural);
 
 // TODO: fix choiceformat interpretation in yii2 and use item type choiceformat label for labels instead of inflector-created labels
-$labelSingular = $unprefixedModelClassSingularWords;
-$labelPlural = $unprefixedModelClassPluralWords;
+$labelSingular = ucfirst(strtolower($unprefixedModelClassSingularWords));
+$labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
 ?>
 <div class="row wrapper border-bottom white-bg page-heading">
@@ -34,7 +34,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
         <h2><?= $labelPlural ?></h2>
         <ol class="breadcrumb">
             <li>
-                <a ui-sref="{{env.DEFAULT_UI_STATE}}">Home</a>
+                <a ui-sref="root.start">Home</a>
             </li>
             <li class="active">
                 <strong><?= $labelPlural ?></strong>
@@ -45,7 +45,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
 
 <div class="row">
     <div class="col-lg-12">
-        <div class="wrapper wrapper-content animated fadeInUp list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
+        <div class="wrapper wrapper-content animated fadeIn list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
 
             <div class="ibox">
                 <div class="ibox-title">
