@@ -62,6 +62,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 <?php if ($workflowItem): ?>
 <?php foreach ($model->flowSteps() as $step => $stepAttributes): ?>
             // step: <?= $step . "\n" ?>
+            '<?= $step ?>': [
 <?php foreach ($stepAttributes as $attribute): ?>
 <?php
                 echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
@@ -70,6 +71,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
                 echo "\n";
                 ?>
 <?php endforeach;?>
+            ],
 <?php endforeach; ?>
 <?php endif; ?>
         ];
@@ -86,7 +88,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
         // Set default columns
 <?php if ($workflowItem): ?>
-        $scope.handsontableSettings.columns = $scope.workflowColumns;
+        $scope.handsontableSettings.columns = $state.current.data.stepMetadata ? $scope.workflowColumns[$state.current.data.stepMetadata.stepReference] : $scope.crudColumns;
 <?php else: ?>
         $scope.handsontableSettings.columns = $scope.crudColumns;
 <?php endif; ?>
