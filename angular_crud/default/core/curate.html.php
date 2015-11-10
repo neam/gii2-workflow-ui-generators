@@ -15,12 +15,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 // TODO: fix choiceformat interpretation in yii2 and use item type choiceformat label for labels instead of inflector-created labels
 
 ?>
-<h2><?= $modelClassPluralWords ?></h2>
 <?php if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')))): ?>
-
-<!-- Hint start -->
-<?=\ItemTypes::hint($modelClassSingular) . "\n"?>
-<!-- Hint stop -->
 
 <div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
     Loading <?= strtolower($modelClassPluralWords) ?>...
@@ -52,6 +47,8 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 -->
 
 <div ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
+
+    <!--<dna-collection-curation-widget template="" handsontableColumns="handsontableColumns" crud="crud" collection="collection"/>-->
 
     <p>Total count: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.totalCount }}</p>
     <p>Current page: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.currentPage }}</p>

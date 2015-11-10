@@ -45,7 +45,7 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
 <div class="row">
     <div class="col-lg-12">
-        <div class="wrapper wrapper-content animated fadeIn list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
+        <div class="wrapper wrapper-content animated fadeIn list-<?= $modelClassPluralId ?>">
 
             <div class="ibox">
                 <div class="ibox-title">
@@ -117,7 +117,7 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
 <div class="row">
     <div class="col-lg-12">
-        <div class="wrapper wrapper-content animated fadeInUp list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
+        <div class="wrapper wrapper-content animated fadeInUp list-<?= $modelClassPluralId ?>">
 
             <div class="ibox">
                 <div class="ibox-title">

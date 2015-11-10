@@ -11,6 +11,8 @@ $itemTypeSingularRef = Inflector::camel2id($modelClassSingular, '_');
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
+$workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')));
+
 // http://www.yiiframework.com/doc-2.0/guide-rest-response-formatting.html
 $itemsResponseKey = 'items';
 $metadataResponseKey = '_meta';
@@ -23,7 +25,7 @@ $metadataResponseKey = '_meta';
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $rootScope, routeBasedFilters, $q) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $rootScope, contentFilters, $q) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
             {id: '@id'},
@@ -143,18 +145,8 @@ endforeach;
         resource.$scope = $rootScope.$new();
         resource.getItemTypeFilter = function () {
 
-            // Filters are stored in $location.search and the service routeBasedFilters
-            var allFilters = angular.merge({}, $location.search(), routeBasedFilters);
-
-            // Filter on item type by namespace
-            //console.log('getItemTypeFilters - allFilters', allFilters);
-
-            return _.reduce(allFilters, function (obj, val, key) {
-                if (key.indexOf("<?= $modelClassSingular ?>_") === 0) {
-                    obj[key] = val;
-                }
-                return obj;
-            }, {});
+            // Content filters
+            return contentFilters.itemTypeSpecific("<?= $modelClassSingular ?>");
 
         };
         resource.collection = function (params) {
@@ -841,7 +833,36 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 endforeach;
 ?>
             }
-        }
+        };
+
+        /** Column definitions */
+        handsontable.workflowColumns = {
+<?php if ($workflowItem): ?>
+<?php foreach ($model->flowSteps() as $step => $stepAttributes): ?>
+            // step: <?= $step . "\n" ?>
+            '<?= $step ?>': [
+<?php foreach ($stepAttributes as $attribute): ?>
+<?php
+                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                echo "\n";
+                ?>
+<?php endforeach;?>
+            ],
+<?php endforeach; ?>
+<?php endif; ?>
+        };
+        handsontable.crudColumns = [
+<?php foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo): ?>
+<?php
+                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                echo "\n";
+                ?>
+<?php endforeach ?>
+        ];
 
         return {
             relations: relations,

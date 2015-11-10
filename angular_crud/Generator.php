@@ -68,6 +68,15 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                 );
             }
 
+            // Curate workflow views
+            foreach ($this->getModel()->flowSteps() as $step => $attributes) {
+                $this->getModel()->scenario = "curate-step";
+                $files[] = new CodeFile(
+                    $this->jsTemplateDestination("curate-steps/$step.html"),
+                    $this->render('curate-step.html.php', compact("step", "attributes"))
+                );
+            }
+
             // Translate workflow views
             foreach ($this->getModel()->flowSteps() as $step => $attributes) {
 

@@ -15,7 +15,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     var module = angular.module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-controllers', []);
 
-    module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, $location, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
+    module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, $location, visibilitySettings, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         $scope.<?= lcfirst($modelClassSingular) ?>Resource = <?= lcfirst($modelClassSingular) ?>Resource;
         $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
@@ -29,7 +29,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         // Listen to page changes in pagination controls
         $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
-            $location.search('<?= $modelClassSingular ?>_page', $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
+            $location.search('cf_<?= $modelClassSingular ?>_page', $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
         };
 
         // Handsontable base configuration
@@ -57,40 +57,25 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         $workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')));
         ?>
 
-        // Handsontable columns
-        $scope.workflowColumns = [
+        // Decide which columns to display
 <?php if ($workflowItem): ?>
-<?php foreach ($model->flowSteps() as $step => $stepAttributes): ?>
-            // step: <?= $step . "\n" ?>
-            '<?= $step ?>': [
-<?php foreach ($stepAttributes as $attribute): ?>
-<?php
-                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo "\n";
-                ?>
-<?php endforeach;?>
-            ],
-<?php endforeach; ?>
-<?php endif; ?>
-        ];
-        $scope.crudColumns = [
-<?php foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo): ?>
-<?php
-                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo "\n";
-                ?>
-<?php endforeach ?>
-        ];
+        // Decide which columns to display
+        visibleColumns = function() {
 
-        // Set default columns
-<?php if ($workflowItem): ?>
-        $scope.handsontableSettings.columns = $state.current.data.stepMetadata ? $scope.workflowColumns[$state.current.data.stepMetadata.stepReference] : $scope.crudColumns;
+            var vs = visibilitySettings.itemTypeSpecific('<?= $modelClassSingular ?>');
+
+            if (vs.<?= $modelClassSingular ?>_columns_by_step) {
+                return <?= lcfirst($modelClassSingular) ?>Crud.handsontable.workflowColumns[vs.<?= $modelClassSingular ?>_columns_by_step];
+            }
+
+            // TODO: consider _hide_source_relation
+
+            return <?= lcfirst($modelClassSingular) ?>Crud.handsontable.crudColumns;
+
+        };
+        $scope.handsontableSettings.columns = visibleColumns();
 <?php else: ?>
-        $scope.handsontableSettings.columns = $scope.crudColumns;
+        $scope.handsontableSettings.columns = <?= lcfirst($modelClassSingular) ?>Crud.handsontable.crudColumns;
 <?php endif; ?>
 
     });
