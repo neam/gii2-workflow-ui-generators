@@ -29,35 +29,18 @@ $labelSingular = ucfirst(strtolower($unprefixedModelClassSingularWords));
 $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
 ?>
-<div class="row wrapper border-bottom white-bg page-heading">
-    <div class="col-sm-4">
-        <h2><?= $labelPlural ?></h2>
-        <ol class="breadcrumb">
-            <li>
-                <a ui-sref="root.start">Home</a>
-            </li>
-            <li class="active">
-                <strong><?= $labelPlural ?></strong>
-            </li>
-        </ol>
-    </div>
-</div>
 
 <div class="row">
     <div class="col-lg-12">
         <div class="wrapper wrapper-content animated fadeIn list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
 
-            <div class="ibox">
-                <div class="ibox-title">
-                    <h5><?= $labelPlural ?></h5>
+            <div>
 
-                    <div class="ibox-tools">
-                        <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.add()"
-                           ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1"
-                           class="btn btn-primary btn-xs">Create new <?= lcfirst($labelSingular) ?></a>
-                    </div>
-                </div>
-                <div class="ibox-content">
+                <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.add()"
+                   ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1"
+                   class="btn btn-primary">Create new <?= lcfirst($labelSingular) ?></a>
+
+                <div>
 
                     <div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
                         Loading <?= lcfirst($labelPlural) ?>...
