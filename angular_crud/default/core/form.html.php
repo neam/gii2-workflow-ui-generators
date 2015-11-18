@@ -39,7 +39,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
     <div ng-show="<?= lcfirst($modelClassSingular) ?>.$resolved && <?= lcfirst($modelClassSingular) ?>.$promise.$$state.status !== 2">
 
         <!-- Wrapper-->
-        <div id="wrapper" class="new-<?= $modelClassSingularId ?>">
+        <div id="wrapper" class="<?= $modelClassSingularId ?>">
             <div class="animated fadeIn wrapper-content">
 
                 <div ng-include="'crud/<?= $modelClassSingularId ?>/form.top.html'"></div>
