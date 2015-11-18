@@ -25,7 +25,7 @@ $metadataResponseKey = '_meta';
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $rootScope, contentFilters, $q) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, contentFilters, $q) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
             {id: '@id'},
@@ -128,7 +128,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
             $relatedModelClass = $relationInfo[1];
 
 ?>
-                '<?=$attribute?>': {id: null, item_label: null, item_type: 'todo'},
+                '<?=$attribute?>': {id: $state.params.<?=$attribute."Id"?>, item_label: null, item_type: 'todo'},
 <?php
             break;
         case "ordinary":
