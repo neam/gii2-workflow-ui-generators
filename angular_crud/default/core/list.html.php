@@ -102,8 +102,8 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
                                     <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.view({apiEndpoint: activeApiEndpoint.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})"
                                        href="#" class="btn btn-white btn-sm"><i class="fa fa-folder"></i> View </a>
                                     <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.continue-editing({apiEndpoint: activeApiEndpoint.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})"
-                                       href="#" class="btn btn-white btn-sm"><i
-                                            class="fa fa-pencil"></i> Edit </a>
+                                       href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                    <a href="javascript:void(0);" ng-click="<?= lcfirst($modelClassPlural) ?>.remove(<?= lcfirst($modelClassSingular) ?>.id)" class="btn btn-white btn-sm"><i class="fa fa-trash-o"></i> Delete </a>
                                 </td>
                             </tr>
                             </tbody>
