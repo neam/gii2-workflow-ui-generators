@@ -101,9 +101,8 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
             $relationAttribute = $_[0];
             $relations = $model->relations();
             if (!isset($relations[$relationAttribute])) {
-        $class = get_class($model);
 ?>
-                // "$attribute" - Model $class does not have a relation '$relationAttribute'
+                // "<?=$attribute?>" - Model <?=get_class($model)?> does not have a relation '<?=$relationAttribute?>'
 <?php
                 break;
                 //throw new Exception("Model " . get_class($model) . " does not have a relation '$relationAttribute'");
@@ -111,9 +110,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
             $relationInfo = $relations[$relationAttribute];
             $relatedModelClass = $relationInfo[1];
 
-            // tmp until memory allocation has been resolved
-            break;
-
+            // hint that an array is expected
 ?>
                 '<?=$attribute?>': [],
 <?php
