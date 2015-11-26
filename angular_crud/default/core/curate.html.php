@@ -59,6 +59,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
     <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.add()" ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1" class="btn btn-primary btn-xs">Add new item</a>
 
     <simple-handsontable
+        ng-if="<?= lcfirst($modelClassPlural) ?>.length > 0"
         settings="handsontableSettings"
         data="<?= lcfirst($modelClassPlural) ?>">
     </simple-handsontable>
