@@ -79,7 +79,8 @@ $metadataResponseKey = '_meta';
                 }
             }
         );
-        resource.dataSchema = {
+        resource.dataSchema = function() {
+            return {
             'id': null,
 <?php if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_graph_relatable')))): ?>
             'node_id': null,
@@ -142,6 +143,7 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 endforeach;
 ?>
             }
+        };
         };
         resource.activeFilter = {};
         resource.$scope = $rootScope.$new();
@@ -227,7 +229,7 @@ endforeach;
 
             // Function to add a new item (optionally with preset attributes) to the collection and server
             collection.add = function (itemAttributes, success, failure) {
-                var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema, itemAttributes) : resource.dataSchema); // TODO: deep extend is necessary for this to wrok
+                var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema(), itemAttributes) : resource.dataSchema()); // TODO: deep extend is necessary for this to wrok
                 var newItem = new resource(attributes);
                 // add item to collection
                 collection.unshift(newItem);

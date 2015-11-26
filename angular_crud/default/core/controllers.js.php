@@ -50,7 +50,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
             manualColumnResize: true,
             formulas: true,
             comments: true,
-            dataSchema: <?= lcfirst($modelClassSingular) ?>Resource.dataSchema
+            dataSchema: <?= lcfirst($modelClassSingular) ?>Resource.dataSchema()
         };
 
         <?php
