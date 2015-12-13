@@ -17,28 +17,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 ?>
 <?php if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')))): ?>
 
-<div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
-    Loading <?= strtolower($modelClassPluralWords) ?>...
-</div>
-
-<div class="alert alert-info" ng-show="<?= lcfirst($modelClassPlural) ?>.$refreshing">
-    Refreshing <?= strtolower($modelClassPluralWords) ?>...
-</div>
-
-<div class="alert alert-warning"
-     ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1 && <?= lcfirst($modelClassPlural) ?>.length == 0">
-    <div ng-show="<?= lcfirst($modelClassPlural) ?>.filtered()">
-        You have no <?= strtolower($modelClassPluralWords) ?>.
-    </div>
-    <div ng-show="!<?= lcfirst($modelClassPlural) ?>.filtered()">
-        No <?= strtolower($modelClassPluralWords) ?> matched the current filters.
-    </div>
-</div>
-
-<div class="alert alert-danger"
-     ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 2">
-    A problem was encountered when loading the <?= strtolower($modelClassPluralWords) ?>. Please re-load the page.
-</div>
+<div ng-include="'crud/<?= lcfirst($modelClassSingularId) ?>/elements/loading-status.html'"></div>
 
 <!--
 <div ng-repeat="<?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>">

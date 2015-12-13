@@ -42,19 +42,7 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
                 <div>
 
-                    <div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
-                        Loading <?= lcfirst($labelPlural) ?>...
-                    </div>
-
-                    <div class="alert alert-warning"
-                         ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2 && <?= lcfirst($modelClassPlural) ?>.length == 0">
-                        You have no <?= lcfirst($labelPlural) ?>.
-                    </div>
-
-                    <div class="alert alert-danger"
-                         ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 2">
-                        A problem was encountered when loading the <?= lcfirst($labelPlural) ?>. Please re-load the page.
-                    </div>
+                    <div ng-include="'crud/<?= lcfirst($modelClassSingularId) ?>/elements/loading-status.html'"></div>
 
                     <div class="project-list" ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved">
 
