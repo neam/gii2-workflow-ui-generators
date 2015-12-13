@@ -36,7 +36,8 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         A problem was encountered when loading the <?= lcfirst($modelClassSingular) ?>. Please re-load the page.
     </div>
 
-    <div ng-show="<?= lcfirst($modelClassSingular) ?>.$resolved && <?= lcfirst($modelClassSingular) ?>.$promise.$$state.status !== 2">
+    <!-- By using ng-if instead of ng-show below, the form elements are not initialized until the item is fully loaded, something that helps certain UI elements (for instance select2) to initialize properly -->
+    <div ng-if="<?= lcfirst($modelClassSingular) ?>.$resolved && <?= lcfirst($modelClassSingular) ?>.$promise.$$state.status !== 2">
 
         <!-- Wrapper-->
         <div id="wrapper" class="<?= $modelClassSingularId ?>">
