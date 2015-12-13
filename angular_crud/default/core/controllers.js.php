@@ -54,11 +54,8 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         };
 
         <?php
-        $workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')));
+        $workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')));if ($workflowItem):
         ?>
-
-        // Decide which columns to display
-<?php if ($workflowItem): ?>
         // Decide which columns to display
         visibleColumns = function() {
 

@@ -429,8 +429,8 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
                         return markup;
                     },
                     minimumInputLength: 0,
-                    templateResult: function (selection) {
-                        return selection.text;
+                    templateResult: function (result) {
+                        return result.text;
                     },
                     templateSelection: function (selection) {
                         return selection.text;
