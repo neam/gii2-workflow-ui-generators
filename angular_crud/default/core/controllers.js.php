@@ -53,9 +53,10 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
             dataSchema: <?= lcfirst($modelClassSingular) ?>Resource.dataSchema()
         };
 
-        <?php
-        $workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')));if ($workflowItem):
-        ?>
+<?php
+$workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')));
+if ($workflowItem):
+?>
         // Decide which columns to display
         visibleColumns = function() {
 

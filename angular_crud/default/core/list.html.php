@@ -66,19 +66,19 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
                         <table class="table table-hover">
                             <tbody>
                             <tr ng-repeat="<?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>">
-                                <?php /*
+<?php /*
                                 <td class="project-status">
                                     <span class="label label-warning">A label</span>
                                 </td>
                                 */ ?>
                                 <td class="project-label">
                                     <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.continue-editing({apiEndpoint: activeApiEndpoint.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})">{{<?= lcfirst($modelClassSingular) ?>.item_label}}</a>
-                                    <?php /*
+<?php /*
                                     <br/>
                                     <small>{{<?= lcfirst($modelClassSingular) ?>.attributes.start}} - {{<?= lcfirst($modelClassSingular) ?>.attributes.stop}}</small>
                                     */ ?>
                                 </td>
-                                <?php /*
+<?php /*
                                 <td class="project-completion">
                                     <small>Completion with: X%</small>
                                     <div class="progress progress-mini">

@@ -151,7 +151,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
         foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo) {
             if ($attributeInfo["type"] == "has-one-relation") {
                 if (!isset($relations[$attribute])) {
-                    throw new Exception("Model " . get_class($model) . " does not have a relation '$attribute'");
+                    throw new \Exception("Model " . get_class($model) . " does not have a relation '$attribute'");
                 }
                 $relationInfo = $relations[$attribute];
                 $relatedModelClass = $relationInfo[1];

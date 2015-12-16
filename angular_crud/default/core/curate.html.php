@@ -6,6 +6,7 @@ use yii\helpers\StringHelper;
 $model = $generator->getModel();
 
 $modelClassSingular = get_class($model);
+$modelClassSingularId = Inflector::camel2id($modelClassSingular);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
