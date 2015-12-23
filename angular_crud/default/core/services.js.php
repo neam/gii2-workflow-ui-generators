@@ -5,7 +5,7 @@ use yii\helpers\StringHelper;
 
 $model = $generator->getModel();
 
-$modelClassSingular = get_class($model);
+$modelClassSingular = $modelClass = get_class($model);
 $modelClassSingularId = Inflector::camel2id($modelClassSingular);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $itemTypeSingularRef = Inflector::camel2id($modelClassSingular, '_');
@@ -82,69 +82,17 @@ $metadataResponseKey = '_meta';
         );
         resource.dataSchema = function() {
             return {
-            'id': null,
+                'id': null,
 <?php if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_graph_relatable')))): ?>
-            'node_id': null,
+                'node_id': null,
 <?php endif; ?>
-            'item_type': '<?= $itemTypeSingularRef ?>',
-            'attributes': {
+                'item_type': '<?= $itemTypeSingularRef ?>',
+                'attributes': {
 <?php
-if (!method_exists($model, 'itemTypeAttributes')) {
-    throw new Exception("Model ".get_class($model)." does not have method itemTypeAttributes()");
-}
-$relations = $model->relations();
-foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
-
-    switch ($attributeInfo["type"]) {
-        case "has-many-relation":
-        case "many-many-relation":
-
-            $_ = explode("RelatedBy", $attribute);
-            $relationAttribute = $_[0];
-            $relations = $model->relations();
-            if (!isset($relations[$relationAttribute])) {
+echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttributes" => $itemTypeAttributes, "level" => $level = 0, "modelClass" => get_class($model)]);
 ?>
-                // "<?=$attribute?>" - Model <?=get_class($model)?> does not have a relation '<?=$relationAttribute?>'
-<?php
-                break;
-                //throw new Exception("Model " . get_class($model) . " does not have a relation '$relationAttribute'");
-            }
-            $relationInfo = $relations[$relationAttribute];
-            $relatedModelClass = $relationInfo[1];
-
-            // hint that an array is expected
-?>
-                '<?=$attribute?>': [],
-<?php
-            break;
-        case "has-one-relation":
-        case "belongs-to-relation":
-
-            if (!isset($relations[$attribute])) {
-                throw new Exception("Model ".get_class($model)." does not have a relation '$attribute'");
-            }
-            $relationInfo = $relations[$attribute];
-            $relatedModelClass = $relationInfo[1];
-
-?>
-                '<?=$attribute?>': {id: $state.params.<?=$attribute."Id"?>, item_label: null, item_type: 'todo'},
-<?php
-            break;
-        case "ordinary":
-        case "primary-key":
-?>
-                '<?=$attribute?>': null,
-<?php
-            break;
-        default:
-            // ignore
-            break;
-    }
-
-endforeach;
-?>
-            }
-        };
+                }
+            };
         };
         resource.activeFilter = {};
         resource.$scope = $rootScope.$new();
@@ -230,7 +178,7 @@ endforeach;
 
             // Function to add a new item (optionally with preset attributes) to the collection and server
             collection.add = function (itemAttributes, success, failure) {
-                var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema(), itemAttributes) : resource.dataSchema()); // TODO: deep extend is necessary for this to wrok
+                var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema(), itemAttributes) : resource.dataSchema()); // TODO: deep extend is necessary for this to work
                 var newItem = new resource(attributes);
                 // add item to collection
                 collection.unshift(newItem);
@@ -302,29 +250,43 @@ endforeach;
     });
 
     /**
-     * Service that contains the main objects for CRUD logic
+     * Service that contains the item's relations' metadata
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php
+    module.service('<?= lcfirst($modelClassSingular) ?>Relations', function ($rootScope, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php
         $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
         foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
         $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
         $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
         $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource<?php endforeach; ?>) {
+            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource, $injector<?php endforeach; ?>) {
 
         // General relations logic
         var relations = {
 <?php
-foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
+foreach ($itemTypeAttributes as $attribute => $attributeInfo):
+
+    // Attribute referencing other item type's attribute
+    $isDeepAttribute = strpos($attribute, '/') !== false;
 
     switch ($attributeInfo["type"]) {
         case "has-one-relation":
 
-            if (!isset($relations[$attribute])) {
-                throw new Exception("Model ".get_class($model)." does not have a relation '$attribute'");
+            if ($isDeepAttribute) {
+                $_ = explode("/", $attribute);
+                $throughModelClassSingular = $_[0];
+                $referencedAttribute = $_[1];
+?>
+            '<?=$attribute?>': $injector.get('<?= lcfirst($throughModelClassSingular) ?>Relations').<?= $referencedAttribute ?>,
+<?php
+                continue;
             }
-            $relationInfo = $relations[$attribute];
-            $relatedModelClass = $relationInfo[1];
+
+            if (!isset($attributeInfo['relatedModelClass'])) {
+                throw new Exception(
+                    "$modelClass.$attribute - No relation information available"
+                );
+            }
+            $relatedModelClass = $attributeInfo['relatedModelClass'];
 
             $relatedModelClassSingular = $relatedModelClass;
             $relatedModelClassSingularWords = Inflector::camel2words($relatedModelClassSingular);
@@ -448,6 +410,24 @@ foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
 endforeach;
 ?>
         };
+
+        return relations;
+
+    });
+
+    /**
+     * Service that contains the main objects for CRUD logic
+     */
+    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Relations<?php
+        $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
+        foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
+        $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
+        $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
+        $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
+            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource, <?= lcfirst($hasOneRelatedModelClass) ?>Relations<?php endforeach; ?>) {
+
+        // General relations logic
+        var relations = <?= lcfirst($modelClassSingular) ?>Relations;
 
         // A singleton service-specific scope that we use to make that there is always only a single set of column-specific keycombos active at a time
         if (!$rootScope.$columnSpecificKeyComboScope) {
@@ -712,16 +692,22 @@ endforeach;
             columnLogic: {
 
 <?php
-foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo):
+foreach ($itemTypeAttributes as $attribute => $attributeInfo):
+
+    // Do not consider attributes referencing other item types
+    if (strpos($attribute, '/') !== false) {
+        continue;
+    }
 
     switch ($attributeInfo["type"]) {
         case "has-one-relation":
 
-            if (!isset($relations[$attribute])) {
-                throw new Exception("Model ".get_class($model)." does not have a relation '$attribute'");
+            if (!isset($attributeInfo['relatedModelClass'])) {
+                throw new Exception(
+                    "$modelClass.$attribute - No relation information available"
+                );
             }
-            $relationInfo = $relations[$attribute];
-            $relatedModelClass = $relationInfo[1];
+            $relatedModelClass = $attributeInfo['relatedModelClass'];
 
             $relatedModelClassSingular = $relatedModelClass;
             $relatedModelClassSingularWords = Inflector::camel2words($relatedModelClassSingular);
@@ -859,7 +845,7 @@ endforeach;
 <?php endif; ?>
         };
         handsontable.crudColumns = [
-<?php foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo): ?>
+<?php foreach ($itemTypeAttributes as $attribute => $attributeInfo): ?>
 <?php
                 echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
                 echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model);

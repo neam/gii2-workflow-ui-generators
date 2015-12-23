@@ -15,11 +15,17 @@ use yii\helpers\Inflector;
 class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
 {
 
+    /**
+     * @inheritdoc
+     */
     public function getName()
     {
         return 'AngularJS Workflow UI CRUD Generator';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getDescription()
     {
         return 'This generator generates angularjs files that implement CRUD (Create, Read, Update, Delete)
@@ -56,6 +62,12 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
     {
         $files = [];
 
+        $itemTypeAttributes = $this->getItemTypeAttributes($this->getModel());
+
+        //if (get_class($this->getModel()) == "Campaign") {var_dump(__LINE__, $itemTypeAttributes);exit(1);}
+
+        $generator = $this;
+
         // Workflow-related templates
         if (in_array(get_class($this->getModel()), array_keys(\ItemTypes::where('is_workflow_item')))) {
 
@@ -64,7 +76,10 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                 $this->getModel()->scenario = "edit-step";
                 $files[] = new CodeFile(
                     $this->jsTemplateDestination("steps/$step.html"),
-                    $this->render('edit-step.html.php', compact("step", "attributes"))
+                    $this->render(
+                        'edit-step.html.php',
+                        compact("step", "attributes", "itemTypeAttributes", "generator")
+                    )
                 );
             }
 
@@ -73,7 +88,10 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                 $this->getModel()->scenario = "curate-step";
                 $files[] = new CodeFile(
                     $this->jsTemplateDestination("curate-steps/$step.html"),
-                    $this->render('curate-step.html.php', compact("step", "attributes"))
+                    $this->render(
+                        'curate-step.html.php',
+                        compact("step", "attributes", "itemTypeAttributes", "generator")
+                    )
                 );
             }
 
@@ -89,7 +107,10 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                 $this->getModel()->scenario = "translate-step";
                 $files[] = new CodeFile(
                     $this->jsTemplateDestination("translate/steps/$step.html"),
-                    $this->render('translate-step.html.php', compact("step", "translatableAttributes"))
+                    $this->render(
+                        'translate-step.html.php',
+                        compact("step", "translatableAttributes", "itemTypeAttributes", "generator")
+                    )
                 );
             }
 
@@ -110,7 +131,8 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
         foreach (scandir($templatePath) as $file) {
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 $files[] = new CodeFile(
-                    $this->jsTemplateDestination($file), $this->render("core/$file")
+                    $this->jsTemplateDestination($file),
+                    $this->render("core/$file", compact("itemTypeAttributes", "generator"))
                 );
             }
         }
@@ -118,7 +140,8 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
         foreach (scandir($templatePath) as $file) {
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 $files[] = new CodeFile(
-                    $this->jsTemplateDestination('elements/' . $file), $this->render("core/elements/$file")
+                    $this->jsTemplateDestination('elements/' . $file),
+                    $this->render("core/elements/$file", compact("itemTypeAttributes", "generator"))
                 );
             }
         }
@@ -146,19 +169,169 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
     public function hasOneRelatedModelClasses()
     {
         $model = $this->getModel();
-        $relations = $model->relations();
         $return = [];
-        foreach ($model->itemTypeAttributes() as $attribute => $attributeInfo) {
-            if ($attributeInfo["type"] == "has-one-relation") {
-                if (!isset($relations[$attribute])) {
-                    throw new \Exception("Model " . get_class($model) . " does not have a relation '$attribute'");
-                }
-                $relationInfo = $relations[$attribute];
-                $relatedModelClass = $relationInfo[1];
-                $return[] = $relatedModelClass;
+        foreach ($this->getItemTypeAttributes($model) as $attribute => $attributeInfo) {
+            // Do not consider attributes referencing other item types
+            if (strpos($attribute, '/') !== false) {
+                continue;
+            }
+            if ($attributeInfo['type'] == 'has-one-relation') {
+                $return[] = $attributeInfo['relatedModelClass'];
             }
         }
         return array_unique($return);
+    }
+
+    /**
+     * Get item type attributes with additional metadata required during generation
+     * TODO: Do not keep copy-pasted copies here and in yii1_rest_model/Generator
+     */
+    public function getItemTypeAttributes($model)
+    {
+        $modelClass = get_class($model);
+        if (!method_exists($model, 'itemTypeAttributes')) {
+            throw new \Exception("Model $modelClass does not have method itemTypeAttributes()");
+        }
+        $itemTypeAttributes = $model->itemTypeAttributes();
+        foreach ($itemTypeAttributes as $attribute => &$attributeInfo) {
+
+            // Do not decorate deep attributes with relation information yet - they are decorated on a needs basis further down
+            if (strpos($attribute, '/') !== false) {
+                continue;
+            }
+
+            // Decorate with relation information
+            $this->decorateRelationInfo($modelClass, $attribute, $attributeInfo);
+
+        }
+        foreach ($itemTypeAttributes as $attribute => &$attributeInfo) {
+            // Decorate with additional information about nested attributes
+            if (strpos($attribute, '/') !== false) {
+                $_ = explode('/', $attribute);
+                $throughAttribute = $_[0];
+                $deepAttribute = $_[1];
+                // Nest deep attribute information
+                $attributeInfo['throughAttribute'] = $itemTypeAttributes[$throughAttribute];
+                $relatedModelClass = $attributeInfo['throughAttribute']['relatedModelClass'];
+                $this->decorateRelationInfo($relatedModelClass, $deepAttribute, $attributeInfo);
+                $itemTypeAttributes[$throughAttribute]['deepAttributes'][$deepAttribute] = $attributeInfo;
+                continue;
+            }
+        }
+        return $itemTypeAttributes;
+    }
+
+    public function decorateRelationInfo($modelClass, $attribute, &$attributeInfo)
+    {
+
+        $tableMapClass = "\\propel\\models\\Map\\{$modelClass}TableMap";
+        if (!class_exists($tableMapClass)) {
+            throw new \Exception(
+                "Propel object model classes seem to be missing for model class $modelClass - specifically $tableMapClass does not exist"
+            );
+        }
+        /** @var \Propel\Runtime\Map\TableMap $tableMap */
+        $tableMap = $tableMapClass::getTableMap();
+
+        try {
+
+            $relations = [];
+
+            switch ($attributeInfo['type']) {
+                case "has-many-relation":
+                case "many-many-relation":
+                case "belongs-to-relation":
+
+                    foreach ($tableMap->getRelations() as $relation) {
+                        if ($relation->getType() === \Propel\Runtime\Map\RelationMap::ONE_TO_MANY) {
+                            $relations[] = $relation->getName();
+                        }
+                    }
+
+                    /** @var \Propel\Runtime\Map\RelationMap $relationInfo */
+                    $relationInfo = null;
+                    if (!empty($attributeInfo['db_column'])) {
+                        // Method 1 - Use db_column information
+                        $_ = explode(".", $attributeInfo['db_column']);
+                        $relatedTable = $_[0];
+                        $relatedColumn = $_[1];
+
+                        $relations = $tableMap->getRelations();
+                        foreach ($relations as $relation) {
+                            var_dump(
+                                __LINE__,
+                                $relation->getColumnMappings(),
+                                $relation->getForeignTable()->getName(),
+                                $relatedTable
+                            );
+                        }
+                        throw new \Exception("TODO");
+                        exit(1);
+
+                        $column = $tableMap->getColumn();
+                        $relationInfo = $column->getRelation();
+                    } else {
+                        // Method 2 - Guess based on attribute name
+                        $_ = explode("RelatedBy", $attribute);
+                        $relatedModelClass = Inflector::singularize(ucfirst($_[0]));
+                        if (in_array($relatedModelClass, $relations)) {
+                            $relationName = $relatedModelClass;
+                        } elseif (in_array($relatedModelClass . "RelatedBy" . $_[1], $relations)) {
+                            $relationName = $relatedModelClass . "RelatedBy" . $_[1];
+                        } else {
+                            $relationName = $attribute;
+                        }
+                        $relationInfo = $tableMap->getRelation($relationName);
+
+                    }
+
+                    $attributeInfo['relatedModelClass'] = $relationInfo->getForeignTable()->getPhpName();
+                    $attributeInfo['relatedItemSetterMethod'] = "set" . $relationInfo->getName();
+
+                    break;
+                case "has-one-relation":
+
+                    foreach ($tableMap->getRelations() as $relation) {
+                        if ($relation->getType() === \Propel\Runtime\Map\RelationMap::MANY_TO_ONE) {
+                            $relations[] = $relation->getName();
+                        }
+                    }
+
+                    /** @var \Propel\Runtime\Map\RelationMap $relationInfo */
+                    $relationInfo = null;
+                    if (!empty($attributeInfo['db_column'])) {
+                        // Method 1 - Use db_column information
+                        $column = $tableMap->getColumn($attributeInfo['db_column']);
+                        $relationInfo = $column->getRelation();
+                    } else {
+                        // Method 2 - Guess based on attribute name
+                        $relationName = ucfirst($attribute);
+                        $relationInfo = $tableMap->getRelation($relationName);
+                    }
+
+                    /** @var \Propel\Runtime\Map\ColumnMap $localColumn */
+                    $localColumn = array_shift($relationInfo->getLocalColumns());
+                    $attributeInfo['relatedModelClass'] = $relationInfo->getForeignTable()->getPhpName();
+                    $attributeInfo['fkAttribute'] = $localColumn->getName();
+                    $attributeInfo['relatedItemSetterMethod'] = "set" . $relationInfo->getName();
+
+                    break;
+                case "ordinary":
+                case "primary-key":
+                    break;
+                default:
+                    // ignore
+                    break;
+            }
+
+        } catch (\Propel\Runtime\Map\Exception\RelationNotFoundException $e) {
+            throw new \Exception(
+                "Could not find {$attributeInfo['type']} relation information for $modelClass->$attribute: " . $e->getMessage(
+                ) . "\nAvailable relations for {$tableMap->getPhpName()}: \n - " . implode("\n - ", $relations)
+                . (empty($attributeInfo['db_column']) ? "\n\nHint: By setting the db_column property in the item type attribute metadata, the relation information can be determined without guessing" : "")
+            );
+        }
+
     }
 
 }
