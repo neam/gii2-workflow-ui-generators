@@ -7,7 +7,7 @@ $level++;
 
 foreach ($itemTypeAttributes as $attribute => $attributeInfo):
 
-    // Do not consider attributes referencing other item types
+    // Deep attributes are handled indirectly via their parent attributes
     if (strpos($attribute, '/') !== false) {
         continue;
     }
