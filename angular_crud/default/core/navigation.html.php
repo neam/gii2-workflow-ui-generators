@@ -31,7 +31,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
 ?>
 <nav class="navbar-default navbar-static-side animated slideInLeft" role="navigation">
 
-    <ul side-navigation class="nav" id="side-menu" ng-include="'crud/<?= $modelClassSingularId ?>/side-menu.html'" ng-controller="ApiEndpointController">
+    <ul side-navigation class="nav" id="side-menu" ng-include="'crud/<?= $modelClassSingularId ?>/side-menu.html'" ng-controller="DataEnvironmentController">
 
     </ul>
 
