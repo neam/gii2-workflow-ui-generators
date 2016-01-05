@@ -72,7 +72,7 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
                                 </td>
                                 */ ?>
                                 <td class="project-label">
-                                    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.continue-editing({dataEnvironment: activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})">{{<?= lcfirst($modelClassSingular) ?>.item_label}}</a>
+                                    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.continue-editing({dataEnvironment: $root.activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})">{{<?= lcfirst($modelClassSingular) ?>.item_label}}</a>
 <?php /*
                                     <br/>
                                     <small>{{<?= lcfirst($modelClassSingular) ?>.attributes.start}} - {{<?= lcfirst($modelClassSingular) ?>.attributes.stop}}</small>
@@ -87,9 +87,9 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
                                 </td>
                                 */ ?>
                                 <td class="project-actions">
-                                    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.view({dataEnvironment: activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})"
+                                    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.view({dataEnvironment: $root.activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})"
                                        href="#" class="btn btn-white btn-sm"><i class="fa fa-folder"></i> View </a>
-                                    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.continue-editing({dataEnvironment: activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})"
+                                    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.continue-editing({dataEnvironment: $root.activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: <?= lcfirst($modelClassSingular) ?>.id})"
                                        href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
                                     <a href="javascript:void(0);" ng-click="<?= lcfirst($modelClassPlural) ?>.remove(<?= lcfirst($modelClassSingular) ?>.id)" class="btn btn-white btn-sm"><i class="fa fa-trash-o"></i> Delete </a>
                                 </td>

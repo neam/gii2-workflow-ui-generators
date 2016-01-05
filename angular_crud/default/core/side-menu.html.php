@@ -59,7 +59,7 @@ if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item
             default: ?>
 
 <li ui-sref-active="active" ng-show="activeDataEnvironment.available">
-    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.<?= $stepReference ?>({dataEnvironment: activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: $state.params.<?= lcfirst($modelClassSingular) ?>Id})"
+    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.<?= $stepReference ?>({dataEnvironment: $root.activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: $state.params.<?= lcfirst($modelClassSingular) ?>Id})"
        href="#"><i class="fa fa-check-circle"></i> <span class="nav-label"><?= Html::encode($stepCaption) ?></span></a>
 </li>
 
