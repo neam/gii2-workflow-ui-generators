@@ -252,31 +252,31 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                     $relationInfo = null;
                     if (!empty($attributeInfo['db_column'])) {
                         // Method 1 - Use db_column information
+
+                        if (strpos($attributeInfo['db_column'], ".") === false) {
+                            throw new \Exception($attributeInfo['type']. " db_column needs to contain a dot that separates the related table with the relation attribute");
+                        }
+
                         $_ = explode(".", $attributeInfo['db_column']);
                         $relatedTable = $_[0];
                         $relatedColumn = $_[1];
 
                         $relations = $tableMap->getRelations();
-                        foreach ($relations as $relation) {
-                            var_dump(
-                                __LINE__,
-                                $relation->getColumnMappings(),
-                                $relation->getForeignTable()->getName(),
-                                $relatedTable
-                            );
+                        $relationInfo = null;
+                        foreach ($relations as $candidateRelation) {
+                            $columnMappings = $candidateRelation->getColumnMappings();
+                            if (array_key_exists($attributeInfo['db_column'], $columnMappings)) {
+                                $relationInfo = $candidateRelation;
+                                break;
+                            }
                         }
-                        throw new \Exception("TODO");
-                        exit(1);
-
-                        $column = $tableMap->getColumn();
-                        $relationInfo = $column->getRelation();
                     } else {
                         // Method 2 - Guess based on attribute name
                         $_ = explode("RelatedBy", $attribute);
                         $relatedModelClass = Inflector::singularize(ucfirst($_[0]));
                         if (in_array($relatedModelClass, $relations)) {
                             $relationName = $relatedModelClass;
-                        } elseif (in_array($relatedModelClass . "RelatedBy" . $_[1], $relations)) {
+                        } elseif (isset($_[1]) && in_array($relatedModelClass . "RelatedBy" . $_[1], $relations)) {
                             $relationName = $relatedModelClass . "RelatedBy" . $_[1];
                         } else {
                             $relationName = $attribute;
@@ -286,6 +286,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                     }
 
                     $attributeInfo['relatedModelClass'] = $relationInfo->getForeignTable()->getPhpName();
+                    $attributeInfo['relatedItemGetterMethod'] = "get" . $relationInfo->getName();
                     $attributeInfo['relatedItemSetterMethod'] = "set" . $relationInfo->getName();
 
                     break;
@@ -310,9 +311,11 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                     }
 
                     /** @var \Propel\Runtime\Map\ColumnMap $localColumn */
-                    $localColumn = array_shift($relationInfo->getLocalColumns());
+                    $localColumns = $relationInfo->getLocalColumns();
+                    $localColumn = array_shift($localColumns);
                     $attributeInfo['relatedModelClass'] = $relationInfo->getForeignTable()->getPhpName();
                     $attributeInfo['fkAttribute'] = $localColumn->getName();
+                    $attributeInfo['relatedItemGetterMethod'] = "get" . $relationInfo->getName();
                     $attributeInfo['relatedItemSetterMethod'] = "set" . $relationInfo->getName();
 
                     break;
@@ -329,6 +332,12 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                 "Could not find {$attributeInfo['type']} relation information for $modelClass->$attribute: " . $e->getMessage(
                 ) . "\nAvailable relations for {$tableMap->getPhpName()}: \n - " . implode("\n - ", $relations)
                 . (empty($attributeInfo['db_column']) ? "\n\nHint: By setting the db_column property in the item type attribute metadata, the relation information can be determined without guessing" : "")
+            );
+        } catch (\Propel\Runtime\Map\Exception\ColumnNotFoundException $e) {
+            throw new \Exception(
+                "Could not find {$attributeInfo['type']} relation information for $modelClass->$attribute due to a column not found exception: " . $e->getMessage(
+                ) . "\nAvailable relations for {$tableMap->getPhpName()}: \n - " . implode("\n - ", $relations)
+                . (empty($attributeInfo['db_column']) ? "\n\nHint: Make sure that the db_column property in the item type attribute metadata points to an existing column" : "")
             );
         }
 
