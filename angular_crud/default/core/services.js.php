@@ -252,7 +252,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
     /**
      * Service that contains the item's relations' metadata
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Relations', function ($rootScope, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php
+    module.service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php
         $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
         foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
         $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
@@ -276,7 +276,7 @@ foreach ($itemTypeAttributes as $attribute => $attributeInfo):
                 $throughModelClassSingular = $_[0];
                 $referencedAttribute = $_[1];
 ?>
-            '<?=$attribute?>': $injector.get('<?= lcfirst($throughModelClassSingular) ?>Relations').<?= $referencedAttribute ?>,
+            '<?=$attribute?>': $injector.get('<?= lcfirst($throughModelClassSingular) ?>RelationsMetadata').<?= $referencedAttribute ?>,
 <?php
                 continue;
             }
@@ -418,16 +418,16 @@ endforeach;
     /**
      * Service that contains the main objects for CRUD logic
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Relations<?php
+    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>RelationsMetadata<?php
         $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
         foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
         $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
         $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
         $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource, <?= lcfirst($hasOneRelatedModelClass) ?>Relations<?php endforeach; ?>) {
+            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource, <?= lcfirst($hasOneRelatedModelClass) ?>RelationsMetadata<?php endforeach; ?>) {
 
         // General relations logic
-        var relations = <?= lcfirst($modelClassSingular) ?>Relations;
+        var relations = <?= lcfirst($modelClassSingular) ?>RelationsMetadata;
 
         // A singleton service-specific scope that we use to make that there is always only a single set of column-specific keycombos active at a time
         if (!$rootScope.$columnSpecificKeyComboScope) {
