@@ -14,7 +14,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 // TODO: use item type choiceformat label for labels instead of inflector
 
 ?>
-<form name="<?= lcfirst($modelClassSingular) ?>Form" ng-submit="persistModel()" novalidate>
+<form name="<?= lcfirst($modelClassSingular) ?>Form" ng-submit="saveOrRefresh(campaignForm)" novalidate>
 
     <div class="wrapper-content" ng-show="!<?= lcfirst($modelClassSingular) ?>.$resolved">
         <i class="fa fa-circle-o-notch fa-spin fa-5x"></i>

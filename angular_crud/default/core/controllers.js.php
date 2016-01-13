@@ -87,6 +87,22 @@ if ($workflowItem):
         };
 
         // Form submit handling
+        $scope.saveOrRefresh = function(form) {
+            if (form.$pristine) {
+                $scope.refreshModel();
+            } else {
+                $scope.persistModel(form);
+            }
+        };
+        $scope.refreshModel = function () {
+            <?= lcfirst($modelClassSingular) ?>.$promise.then(function () {
+                <?= lcfirst($modelClassSingular) ?>.$get(function (data) {
+                    console.log('<?= $modelClassSingular ?> refresh success', data);
+                }, function (error) {
+                    console.log('<?= $modelClassSingular ?> refresh error', error);
+                });
+            });
+        };
         $scope.persistModel = function (form) {
             <?= lcfirst($modelClassSingular) ?>.$promise.then(function () {
                 <?= lcfirst($modelClassSingular) ?>.$update(function (data) {
