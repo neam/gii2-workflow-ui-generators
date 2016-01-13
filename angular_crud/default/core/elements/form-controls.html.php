@@ -14,7 +14,6 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 <button
         type="submit"
         class="btn btn-primary"
-        ng-click="persistModel(<?= lcfirst($modelClassSingular) ?>Form)"
         ng-disabled="<?= lcfirst($modelClassSingular) ?>Form.$pristine || !<?= lcfirst($modelClassSingular) ?>Form.$valid || !<?= lcfirst($modelClassSingular) ?>.$resolved"
         >
     Save
