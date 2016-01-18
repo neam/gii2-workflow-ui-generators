@@ -58,7 +58,7 @@ $workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_w
 if ($workflowItem):
 ?>
         // Decide which columns to display
-        visibleColumns = function() {
+        visibleColumns = function () {
 
             var vs = visibilitySettings.itemTypeSpecific('<?= $modelClassSingular ?>');
 
@@ -87,7 +87,7 @@ if ($workflowItem):
         };
 
         // Form submit handling
-        $scope.saveOrRefresh = function(form) {
+        $scope.saveOrRefresh = function (form) {
             if (form.$pristine) {
                 $scope.refreshModel();
             } else {
