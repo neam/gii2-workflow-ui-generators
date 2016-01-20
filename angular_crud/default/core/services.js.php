@@ -149,7 +149,8 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
             // Method to check if current collection is filtered
             collection.filtered = function () {
-                return angular.equals(collection.filter, {});
+                var filtersAreEmpty = angular.equals(collection.filter, {});
+                return !filtersAreEmpty;
             };
 
             // Function to refresh the collection with items from server
