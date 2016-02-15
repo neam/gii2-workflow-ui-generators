@@ -182,6 +182,22 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
         return array_unique($return);
     }
 
+    public function hasOneOrManyRelatedModelClasses()
+    {
+        $model = $this->getModel();
+        $return = [];
+        foreach ($this->getItemTypeAttributes($model) as $attribute => $attributeInfo) {
+            // Do not consider attributes referencing other item types
+            if (strpos($attribute, '/') !== false) {
+                continue;
+            }
+            if ($attributeInfo['type'] == 'has-one-relation' || $attributeInfo['type'] == 'has-many-relation') {
+                $return[] = $attributeInfo['relatedModelClass'];
+            }
+        }
+        return array_unique($return);
+    }
+
     /**
      * Get item type attributes with additional metadata required during generation
      * TODO: Do not keep copy-pasted copies here and in yii1_rest_model/Generator
@@ -285,7 +301,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
 
                     }
 
-                    $attributeInfo['relatedModelClass'] = $relationInfo->getForeignTable()->getPhpName();
+                    $attributeInfo['relatedModelClass'] = $relationInfo->getLocalTable()->getPhpName();
                     $attributeInfo['relatedItemGetterMethod'] = "get" . $relationInfo->getName();
                     $attributeInfo['relatedItemSetterMethod'] = "set" . $relationInfo->getName();
 

@@ -254,8 +254,8 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
      * Service that contains the item's relations' metadata
      */
     module.service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php
-        $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
-        foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
+        $hasOneOrManyRelatedModelClasses = $generator->hasOneOrManyRelatedModelClasses();
+        foreach ($hasOneOrManyRelatedModelClasses as $hasOneRelatedModelClass):
         $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
         $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
         $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
@@ -271,6 +271,7 @@ foreach ($itemTypeAttributes as $attribute => $attributeInfo):
 
     switch ($attributeInfo["type"]) {
         case "has-one-relation":
+        case "has-many-relation":
 
             if ($isDeepAttribute) {
                 $_ = explode("/", $attribute);
@@ -298,6 +299,9 @@ foreach ($itemTypeAttributes as $attribute => $attributeInfo):
 ?>
             '<?=$attribute?>': {
                 relatedCollection: <?= lcfirst($relatedModelClassPlural) ?>,
+<?php
+if ($attributeInfo["type"] === "has-one-relation"):
+?>
                 select2Options: {
                     placeholder:'Select an option',
                     allowClear: true,
@@ -400,6 +404,9 @@ foreach ($itemTypeAttributes as $attribute => $attributeInfo):
                         return selection.text;
                     }
                 }
+<?php
+endif;
+?>
             },
 <?php
             break;
