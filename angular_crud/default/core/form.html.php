@@ -17,7 +17,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 <form name="<?= lcfirst($modelClassSingular) ?>Form" ng-submit="saveOrRefresh(<?= lcfirst($modelClassSingular) ?>Form)" novalidate>
 
     <div class="wrapper-content" ng-show="!<?= lcfirst($modelClassSingular) ?>.$resolved">
-        <i class="fa fa-circle-o-notch fa-spin fa-5x"></i>
+        <i class="fa fa-circle-o-notch fa-spin fa-5x centered"></i>
     </div>
 
     <!--
