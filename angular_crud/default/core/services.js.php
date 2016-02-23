@@ -161,7 +161,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 var filter = resource.getItemTypeFilter(); // necessary to not get outdated filter
                 // Update state variable for current filter
                 collection.filter = angular.copy(filter);
-                var refreshedItems = resource.query(filter);
+                var refreshedItems = resource.query(angular.merge(filter, params));
                 collection.$refreshing = true;
                 refreshedItems.$promise.then(function () {
                     collection.$refreshing = false;
@@ -262,7 +262,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
         $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
         $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
         $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource, $injector<?php endforeach; ?>) {
+            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource<?php endforeach; ?>, $injector) {
 
         // General relations logic
         var relations = {
