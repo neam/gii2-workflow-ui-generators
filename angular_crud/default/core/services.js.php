@@ -26,9 +26,23 @@ $metadataResponseKey = '_meta';
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q, DataEnvironmentService) {
+
+        // Silly stand-in for the default string object is necessary to work around the fact that
+        // the url param in ngResource is only evaluated at $resource creation and can not be changed later
+        var url = {};
+        url.value = function() {
+            //console.log('<?= lcfirst($modelClassSingular) ?> url.value()', this, angular.copy(env));
+            return env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id'
+        };
+        url.toLowerCase = function () { return url.value().toLowerCase() };
+        url.substr = function (start, end) { return url.value().substr(start, end) };
+        url.split = function (separator,limit) { return url.value().split(separator,limit) };
+        url.replace = function (match, other) { return url.value().replace(match, other) };
+        url.toString = function() { return url.value(); }
+
         var resource = $resource(
-            env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
+            url,
             {id: '@id'},
             {
                 query: {
@@ -112,10 +126,20 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             var filter = resource.getItemTypeFilter();
             console.log('<?= lcfirst($modelClassSingular) ?> - filter', filter);
 
-            // Collection
-            var collection = resource.query(angular.merge(filter, params));
+            // Collection is a ngResource facade that starts out empty and then gets populated during the refresh logic
+            var collection = [];
+            collection.$metadata = {};
+            collection.$promise = {};
+            collection.$resolved = null; // Neither true nor false, indicating that a request has not even begun
 
-            collection.$promise.then(function () {
+            // Returns a promise which resolves the next time the collection is refreshed
+            collection.newRefreshDeferredObject = function() {
+                collection.refreshDeferredObject = $q.defer();
+                return collection.refreshDeferredObject;
+            };
+
+            // Set initial refresh deferred object + after first query/refresh, start watching for changes in filter for subsequent refreshes
+            collection.newRefreshDeferredObject().promise.then(function () {
 
                 // Set active filter
                 resource.activeFilter = angular.copy(filter);
@@ -135,14 +159,11 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
             });
 
-            // Returns a promise which resolves the next time the collection is refreshed
-            collection.newRefreshDeferredObject = function() {
-                collection.refreshDeferredObject = $q.defer();
-                return collection.refreshDeferredObject;
-            };
-
-            // Set initial refresh deferred object
-            collection.newRefreshDeferredObject();
+            // Activate refresh when active data environment has changed
+            resource.$scope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
+                console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to "activeDataEnvironment.change" event', chosenDataEnvironment);
+                collection.refresh();
+            });
 
             // State initial variable for "refreshing"-state
             collection.$refreshing = false;
@@ -156,7 +177,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 return !filtersAreEmpty;
             };
 
-            // Function to refresh the collection with items from server
+            // Function to query/refresh the collection with items from server
             collection.refresh = function () {
                 var filter = resource.getItemTypeFilter(); // necessary to not get outdated filter
                 // Update state variable for current filter
@@ -164,9 +185,15 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 var refreshedItems = resource.query(angular.merge(filter, params));
                 collection.$refreshing = true;
                 refreshedItems.$promise.then(function () {
-                    collection.$refreshing = false;
                     resource.activeFilter = angular.copy(filter);
                     collection.replace(refreshedItems);
+                }).catch(function () {
+                    collection.replace([]);
+                }).finally(function () {
+                    collection.$refreshing = false;
+                    collection.$metadata = refreshedItems.$metadata;
+                    collection.$promise = refreshedItems.$promise;
+                    collection.$resolved = refreshedItems.$resolved;
                     collection.refreshDeferredObject.resolve(refreshedItems);
                 });
             };
@@ -179,6 +206,12 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     collection.push(resourceItem);
                 });
             };
+
+            // Initial query when active data environment is available
+            DataEnvironmentService.activeDataEnvironment.promise.then(function() {
+                console.log('Initial query when active data environment is available due to activeDataEnvironment resolve');
+                collection.refresh();
+            });
 
             // Function to add a new item (optionally with preset attributes) to the collection and server
             collection.add = function (itemAttributes, success, failure) {

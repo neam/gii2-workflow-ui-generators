@@ -16,12 +16,12 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 
 ?>
 
-<div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$resolved">
-    Loading <?= strtolower($modelClassPluralWords) ?>...
+<div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$refreshing && <?= lcfirst($modelClassPlural) ?>.$resolved === null">
+    No active data environment to load <?= strtolower($modelClassPluralWords) ?> from...
 </div>
 
 <div class="alert alert-info" ng-show="<?= lcfirst($modelClassPlural) ?>.$refreshing">
-    Refreshing <?= strtolower($modelClassPluralWords) ?>...
+    Loading <?= strtolower($modelClassPluralWords) ?>...
 </div>
 
 <div class="alert alert-warning"
