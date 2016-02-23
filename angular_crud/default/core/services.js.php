@@ -35,8 +35,6 @@ $metadataResponseKey = '_meta';
             //console.log('<?= lcfirst($modelClassSingular) ?> url.value()', this, angular.copy(env));
             return env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id'
         };
-        url.toLowerCase = function () { return url.value().toLowerCase() };
-        url.substr = function (start, end) { return url.value().substr(start, end) };
         url.split = function (separator,limit) { return url.value().split(separator,limit) };
         url.replace = function (match, other) { return url.value().replace(match, other) };
         url.toString = function() { return url.value(); }
