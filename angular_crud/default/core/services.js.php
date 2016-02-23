@@ -26,7 +26,7 @@ $metadataResponseKey = '_meta';
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, contentFilters, $q) {
+    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q) {
         var resource = $resource(
             env.API_BASE_URL + '/' + env.API_VERSION + '/<?= lcfirst($modelClassSingular) ?>/:id',
             {id: '@id'},
@@ -66,11 +66,14 @@ $metadataResponseKey = '_meta';
                     // response.resource which might change in future versions
                     interceptor: {
                         response: function (response) {
-                            response.resource.$metadata = response.data.$metadata;
+                            if (response.data && response.data.$metadata) {
+                                response.resource.$metadata = response.data.$metadata;
 
-                            // Tmp workaround for the fact that <?= lcfirst($modelClassPlural) ?>.$metadata is not watchable (no change is detected, even on equality watch) from the controller scope for whatever reason
-                            $rootScope.$broadcast('<?= $modelClassSingular ?>_metadataUpdated', response.resource.$metadata);
+                                // Inform angular that we have updated auth data by implicitly calling $apply via $timeout
+                                $timeout(function () {
+                                });
 
+                            }
                             return response.resource;
                         }
                     }

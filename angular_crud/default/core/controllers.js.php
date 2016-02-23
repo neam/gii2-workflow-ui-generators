@@ -21,11 +21,6 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
         $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
 
-        // Tmp workaround for the fact that <?= lcfirst($modelClassPlural) ?>.$metadata is not watchable (no change is detected, even on equality watch) from the controller scope for whatever reason
-        $scope.$on('<?= $modelClassSingular ?>_metadataUpdated', function (ev, metadata) {
-            angular.extend(<?= lcfirst($modelClassPlural) ?>.$metadata, metadata);
-        });
-
         // Listen to page changes in pagination controls
         $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage);
