@@ -82,7 +82,7 @@ if ($workflowItem):
     module.service('edit<?= $modelClassSingular ?>ControllerService', function ($state, $rootScope, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         return {
-            loadIntoScope: function ($scope, importSession) {
+            loadIntoScope: function ($scope, <?= lcfirst($modelClassSingular) ?>) {
 
                 // Form step visibility function
                 $scope.showStep = function (step) {
