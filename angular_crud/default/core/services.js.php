@@ -81,7 +81,7 @@ $metadataResponseKey = '_meta';
                             if (response.data && response.data.$metadata) {
                                 response.resource.$metadata = response.data.$metadata;
 
-                                // Inform angular that we have updated auth data by implicitly calling $apply via $timeout
+                                // Inform angular that we have updated data by implicitly calling $apply via $timeout
                                 $timeout(function () {
                                 });
 
