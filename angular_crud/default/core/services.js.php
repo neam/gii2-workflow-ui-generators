@@ -205,6 +205,9 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     var resourceItem = new resource(element);
                     collection.push(resourceItem);
                 });
+                if (items.$metadata) {
+                    collection.$metadata = items.$metadata;
+                }
             };
 
             // Initial query when active data environment is available
