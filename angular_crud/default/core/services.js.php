@@ -127,7 +127,6 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             // Collection is a ngResource facade that starts out empty and then gets populated during the refresh logic
             var collection = [];
             collection.$metadata = {};
-            collection.$promise = {};
             collection.$resolved = null; // Neither true nor false, indicating that a request has not even begun
 
             // Returns a promise which resolves the next time the collection is refreshed
@@ -136,8 +135,11 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 return collection.refreshDeferredObject;
             };
 
-            // Set initial refresh deferred object + after first query/refresh, start watching for changes in filter for subsequent refreshes
-            collection.newRefreshDeferredObject().promise.then(function () {
+            // Set initial refresh deferred object and promise
+            collection.$promise = collection.newRefreshDeferredObject().promise;
+
+            // After first query/refresh, start watching for changes in filter for subsequent refreshes
+            collection.$promise.then(function () {
 
                 // Set active filter
                 resource.activeFilter = angular.copy(filter);
