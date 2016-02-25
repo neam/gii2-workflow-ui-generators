@@ -138,33 +138,6 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             // Set initial refresh deferred object and promise
             collection.$promise = collection.newRefreshDeferredObject().promise;
 
-            // After first query/refresh, start watching for changes in filter for subsequent refreshes
-            collection.$promise.then(function () {
-
-                // Set active filter
-                resource.activeFilter = angular.copy(filter);
-
-                // Activate refresh when filter has changed
-                resource.$scope.$watch(function ($scope) {
-                        return resource.getItemTypeFilter();
-                    },
-                    function (newVal, oldVal) {
-                        if (JSON.stringify(newVal) !== JSON.stringify(oldVal) && JSON.stringify(newVal) !== JSON.stringify(resource.activeFilter)) {
-                            console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to getItemTypeFilter() change', newVal, oldVal);
-                            collection.refresh();
-                        }
-                    },
-                    true
-                );
-
-            });
-
-            // Activate refresh when active data environment has changed
-            resource.$scope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
-                console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to "activeDataEnvironment.change" event', chosenDataEnvironment);
-                collection.refresh();
-            });
-
             // State initial variable for "refreshing"-state
             collection.$refreshing = false;
 
@@ -212,8 +185,28 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
             // Initial query when active data environment is available
             DataEnvironmentService.activeDataEnvironment.promise.then(function() {
-                console.log('Initial query when active data environment is available due to activeDataEnvironment resolve');
+                console.log('<?= lcfirst($modelClassSingular) ?> - initial query when active data environment is available due to activeDataEnvironment resolve');
                 collection.refresh();
+
+                // Activate refresh when filter has changed
+                resource.$scope.$watch(function ($scope) {
+                        return resource.getItemTypeFilter();
+                    },
+                    function (newVal, oldVal) {
+                        if (JSON.stringify(newVal) !== JSON.stringify(oldVal) && JSON.stringify(newVal) !== JSON.stringify(resource.activeFilter)) {
+                            console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to getItemTypeFilter() change', newVal, oldVal);
+                            collection.refresh();
+                        }
+                    },
+                    true
+                );
+
+                // Activate refresh when active data environment has changed
+                resource.$scope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
+                    console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to "activeDataEnvironment.change" event', chosenDataEnvironment);
+                    collection.refresh();
+                });
+
             });
 
             // Function to add a new item (optionally with preset attributes) to the collection and server
