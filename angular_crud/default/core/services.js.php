@@ -542,18 +542,24 @@ endforeach;
                     }
 
                     if (source === 'edit' || source === 'paste') {
+                        if (typeof editedRowChanges[changeObject.row] === "undefined") {
+                            editedRowChanges[changeObject.row] = [];
+                        }
                         changeObject.id = self.getDataAtRowProp(changeObject.row, 'attributes.id');
-                        editObjects.push(changeObject);
+                        editedRowChanges[changeObject.row].push(changeObject);
                     }
 
                     if (source === 'empty') {
-                        newObjects.push(changeObject);
+                        if (typeof newRowChanges[changeObject.row] === "undefined") {
+                            newRowChanges[changeObject.row] = [];
+                        }
+                        newRowChanges[changeObject.row].push(changeObject);
                     }
 
                 });
 
                 //console.log('<?= lcfirst($modelClassSingular) ?>Crud: <?= lcfirst($modelClassPlural) ?>, editObjects, newObjects', <?= lcfirst($modelClassPlural) ?>, editObjects, newObjects);
-                console.log('<?= lcfirst($modelClassSingular) ?>Crud: editObjects, newObjects', editObjects, newObjects);
+                console.log('<?= lcfirst($modelClassSingular) ?>Crud: editedRowChanges, newRowChanges', editedRowChanges, newRowChanges);
 
                 function setDepth(obj, path, value) {
                     var tags = path.split("."), len = tags.length - 1;
@@ -563,15 +569,18 @@ endforeach;
                     obj[tags[len]] = value;
                 }
 
-                _.each(editObjects, function (editObject, index, list) {
+                _.each(editedRowChanges, function (rowChanges, index, list) {
 
                     var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
-                        return item.attributes.id == editObject.id;
+                        return item.attributes.id == rowChanges[0].id;
                     });
 
-                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: editObject, item', editObject, item);
+                    _.each(rowChanges, function (editObject, index, list) {
+                        setDepth(item, editObject.prop, editObject.newVal);
+                    });
 
-                    setDepth(item, editObject.prop, editObject.newVal);
+                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: rowChanges, item', rowChanges, item);
+
                     item.$update(function (savedObject, putResponseHeaders) {
                         console.log('<?= lcfirst($modelClassSingular) ?>Crud: savedObject', savedObject);
                         //putResponseHeaders => $http header getter
@@ -579,14 +588,26 @@ endforeach;
 
                 });
 
-                _.each(newObjects, function (newObject, index, list) {
+                _.each(newRowChanges, function (rowChanges, index, list) {
 
                     console.log('<?= lcfirst($modelClassSingular) ?>Crud: newObject', newObject);
 
-                    // create new item
-                    <?= lcfirst($modelClassPlural) ?>.add(); // TODO: add existing attributes + at the correct index where the new row was inserted
+                    var item = angular.extend({}, <?= lcfirst($modelClassSingular) ?>Resource.dataSchema());
 
-                });
+                    _.each(rowChanges, function (newObject, index, list) {
+                        setDepth(item, newObject.prop, newObject.newVal);
+                    });
+
+                    console.log('<?= lcfirst($modelClassSingular) ?>Crud: rowChanges, item', rowChanges, item);
+
+                    // create new item
+                    <?= lcfirst($modelClassPlural) ?>.add(item, function (savedNewObject, putResponseHeaders) {
+                        console.log('<?= lcfirst($modelClassSingular) ?>Crud: savedNewObject', savedNewObject);
+                        //putResponseHeaders => $http header getter
+                    }); // TODO: add existing attributes + at the correct index where the new row was inserted
+
+                });                
+                
 
             },
 
