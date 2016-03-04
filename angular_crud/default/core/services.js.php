@@ -523,8 +523,8 @@ endforeach;
 
                 console.log('<?= lcfirst($modelClassSingular) ?>Crud: changes, source, this, $(this)', changes, source, this, $(this));
 
-                var editObjects = [];
-                var newObjects = [];
+                var editedRowChanges = {};
+                var newRowChanges = {};
                 var self = this;
 
                 _.each(changes, function (change, index, list) {
