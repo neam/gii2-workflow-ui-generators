@@ -389,7 +389,7 @@ if ($attributeInfo["type"] === "has-one-relation"):
                                 relatedItemsPromise = relatedItemsCollection.newRefreshDeferredObject().promise;
                                 // Set global filter which will trigger a refresh (within a timeout so that a digest cycle is run after the modification)
                                 $timeout(function () {
-                                    $location.search('<?= $relatedModelClassSingular ?>_search', params.data.q);
+                                    $location.search('cf_<?= $relatedModelClassSingular ?>_search', params.data.q);
                                 });
                             }
 
