@@ -43,7 +43,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
             fixedColumnsLeft: 0,
             manualRowResize: true,
             manualColumnResize: true,
-            formulas: true,
+            formulas: false, // false since formula support is experimental and we want less bugs by default
             comments: true,
             dataSchema: <?= lcfirst($modelClassSingular) ?>Resource.dataSchema()
         };
