@@ -36,5 +36,6 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 
 <div class="alert alert-danger"
      ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 2">
-    A problem was encountered when loading the <?= strtolower($modelClassPluralWords) ?>. Please re-load the page.
+    A problem was encountered when loading the <?= strtolower($modelClassPluralWords) ?>.
+    <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.refresh()" class="btn btn-primary btn-xs">Click here to retry</a>
 </div>
