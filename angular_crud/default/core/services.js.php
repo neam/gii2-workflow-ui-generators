@@ -210,11 +210,15 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             });
 
             // Function to add a new item (optionally with preset attributes) to the collection and server
-            collection.add = function (itemAttributes, success, failure) {
+            collection.add = function (itemAttributes, success, failure, atIndex) {
                 var attributes = (itemAttributes ? angular.extend({}, resource.dataSchema(), itemAttributes) : resource.dataSchema()); // TODO: deep extend is necessary for this to work
                 var newItem = new resource(attributes);
                 // add item to collection
-                collection.unshift(newItem);
+                if (typeof atIndex !== "undefined") {
+                    collection.splice(atIndex, 0, newItem);
+                } else {
+                    collection.unshift(newItem);
+                }
                 // find index of item in collection
                 var index = _.indexOf(collection, newItem);
                 // add item on server
