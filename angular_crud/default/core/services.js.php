@@ -511,6 +511,142 @@ endforeach;
             return false;
         };
 
+        var updateCurrentItemInFocus = function(row, property, row2, property2, instance) {
+
+                // De-select if multiple rows are selected
+                if (row !== row2) {
+                    <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = null;
+                }
+
+                var id = instance.getDataAtRowProp(row, 'attributes.id');
+
+                var collection = <?= lcfirst($modelClassPlural) ?>;
+
+                var item = _.find(collection, function (item) {
+                    return item.attributes.id == id;
+                });
+
+                <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = item;
+
+                //console.log('updateCurrent<?= $modelClassSingular ?>() - <?= lcfirst($modelClassPlural) ?>.currentItemInFocus', <?= lcfirst($modelClassPlural) ?>.currentItemInFocus);
+
+                // Inform angular that we have updated data by implicitly calling $apply via $timeout
+                $timeout(function () {
+                });
+
+            };
+
+        var registerKeyCombos = function(row, property, row2, property2, instance) {
+
+                // Skip if more than one column is selected
+                if (property !== property2) {
+                    console.log('reset due to multiple columns selected');
+                    reset$columnSpecificKeyComboScope();
+                    return;
+                }
+
+                // Skip if editor is open
+                var activeEditor = instance.getActiveEditor();
+                if (activeEditor.isOpened()) {
+                    console.log('reset due to open editor');
+                    reset$columnSpecificKeyComboScope();
+                    return;
+                }
+
+                // Get column name
+                var selectedColumn = property.replace("attributes.", "").replace(".id", "");
+
+                // Skip if not a relevant column
+                if (!relations[selectedColumn] || !relations[selectedColumn].relatedCollection) {
+                    console.log('reset due to no existing key combo configuration');
+                    reset$columnSpecificKeyComboScope();
+                    return;
+                }
+
+                // The cell-specific callback for key combos
+                var onKeyCombo = function (item) {
+                    // Set the cell values to the item id
+                    var firstSelectedRow = Math.min(row, row2);
+                    var lastSelectedRow = Math.max(row, row2);
+                    for (i = firstSelectedRow; i < lastSelectedRow + 1; i++) {
+                        instance.setDataAtRowProp(i, property, item.id);
+                    }
+                    // Select the cell directly beneath the previous selection, if not already on last row
+                    var lastRow = instance.countRows();
+                    if (lastSelectedRow < lastRow) {
+                        instance.selectCellByProp(lastSelectedRow + 1, property);
+                    }
+                };
+
+                // Manage keyboard shortcuts related to collection
+                var keyComboManager = {
+                    activateKeyCombos: function (collection) {
+
+                        // Find key combos
+                        var itemsWithShortcuts = _.filter(collection, function (item) {
+                            return item.attributes.key_combo;
+                        });
+
+                        _.each(itemsWithShortcuts, function (item, index, list) {
+
+                            // Delete existing if exists
+                            hotkeys.del(item.attributes.key_combo);
+
+                            // Add key combo
+                            // when you bind it to the controller's scope, it will automatically unbind
+                            // the hotkey when the scope is destroyed (due to ng-if or something that changes the DOM)
+                            hotkeys.bindTo($rootScope.$columnSpecificKeyComboScope)
+                                .add({
+                                    combo: item.attributes.key_combo,
+                                    description: 'Set value of current cell to "' + item.item_label + '"',
+                                    callback: function (e) {
+                                        onKeyCombo(item);
+                                    }
+                                });
+                        });
+
+                        console.log('activateKeyCombos - itemsWithShortcuts', itemsWithShortcuts);
+
+                    },
+                    deactivateKeyCombos: function (collection) {
+
+                        // Find key combos
+                        var itemsWithShortcuts = _.filter(collection, function (item) {
+                            return item.attributes.key_combo;
+                        });
+
+                        // Delete key combos
+                        _.each(itemsWithShortcuts, function (item, index, list) {
+                            hotkeys.del(item.attributes.key_combo);
+                        });
+
+                    }
+                }
+
+                var collection = relations[selectedColumn].relatedCollection;
+
+                // Remove cell-specific key combos not related to collection by resetting keycombo binding object
+                reset$columnSpecificKeyComboScope();
+
+                // Add key combos for collection
+                keyComboManager.activateKeyCombos(collection);
+
+                // Update key combos when underlying data changes
+                $rootScope.$columnSpecificKeyComboScope.collection = collection;
+                $rootScope.$columnSpecificKeyComboScope.$watch('collection', function (newCollection, oldCollection) {
+
+                    console.log('$rootScope.$columnSpecificKeyComboScope.$watch newCollection - length', newCollection.length);
+
+                    // Delete keyboard shortcuts found in old collection
+                    keyComboManager.deactivateKeyCombos(oldCollection);
+
+                    // Add key combos for new collection
+                    keyComboManager.activateKeyCombos(newCollection);
+
+                }, true);
+
+            };
+
         var handsontable = {
 
             /**
@@ -625,116 +761,10 @@ endforeach;
              * @param property2
              */
             afterSelectionEndByPropCallback: function (row, property, row2, property2) {
-                console.log('afterSelectionEndByPropCallback', row, property, row2, property2, this);
-
-                // Skip if more than one column is selected
-                if (property !== property2) {
-                    console.log('reset due to multiple columns selected');
-                    reset$columnSpecificKeyComboScope();
-                    return;
-                }
-
-                // Skip if editor is open
                 var instance = this;
-                var activeEditor = instance.getActiveEditor();
-                if (activeEditor.isOpened()) {
-                    console.log('reset due to open editor');
-                    reset$columnSpecificKeyComboScope();
-                    return;
-                }
-
-                // Get column name
-                var selectedColumn = property.replace("attributes.", "").replace(".id", "");
-
-                // Skip if not a relevant column
-                if (!relations[selectedColumn] || !relations[selectedColumn].relatedCollection) {
-                    console.log('reset due to no existing key combo configuration');
-                    reset$columnSpecificKeyComboScope();
-                    return;
-                }
-
-                // The cell-specific callback for key combos
-                var onKeyCombo = function (item) {
-                    // Set the cell values to the item id
-                    var firstSelectedRow = Math.min(row, row2);
-                    var lastSelectedRow = Math.max(row, row2);
-                    for (i = firstSelectedRow; i < lastSelectedRow + 1; i++) {
-                        instance.setDataAtRowProp(i, property, item.id);
-                    }
-                    // Select the cell directly beneath the previous selection, if not already on last row
-                    var lastRow = instance.countRows();
-                    if (lastSelectedRow < lastRow) {
-                        instance.selectCellByProp(lastSelectedRow + 1, property);
-                    }
-                };
-
-                // Manage keyboard shortcuts related to collection
-                var keyComboManager = {
-                    activateKeyCombos: function (collection) {
-
-                        // Find key combos
-                        var itemsWithShortcuts = _.filter(collection, function (item) {
-                            return item.attributes.key_combo;
-                        });
-
-                        _.each(itemsWithShortcuts, function (item, index, list) {
-
-                            // Delete existing if exists
-                            hotkeys.del(item.attributes.key_combo);
-
-                            // Add key combo
-                            // when you bind it to the controller's scope, it will automatically unbind
-                            // the hotkey when the scope is destroyed (due to ng-if or something that changes the DOM)
-                            hotkeys.bindTo($rootScope.$columnSpecificKeyComboScope)
-                                .add({
-                                    combo: item.attributes.key_combo,
-                                    description: 'Set value of current cell to "' + item.item_label + '"',
-                                    callback: function (e) {
-                                        onKeyCombo(item);
-                                    }
-                                });
-                        });
-
-                        console.log('activateKeyCombos - itemsWithShortcuts', itemsWithShortcuts);
-
-                    },
-                    deactivateKeyCombos: function (collection) {
-
-                        // Find key combos
-                        var itemsWithShortcuts = _.filter(collection, function (item) {
-                            return item.attributes.key_combo;
-                        });
-
-                        // Delete key combos
-                        _.each(itemsWithShortcuts, function (item, index, list) {
-                            hotkeys.del(item.attributes.key_combo);
-                        });
-
-                    }
-                }
-
-                var collection = relations[selectedColumn].relatedCollection;
-
-                // Remove cell-specific key combos not related to collection by resetting keycombo binding object
-                reset$columnSpecificKeyComboScope();
-
-                // Add key combos for collection
-                keyComboManager.activateKeyCombos(collection);
-
-                // Update key combos when underlying data changes
-                $rootScope.$columnSpecificKeyComboScope.collection = collection;
-                $rootScope.$columnSpecificKeyComboScope.$watch('collection', function (newCollection, oldCollection) {
-
-                    console.log('$rootScope.$columnSpecificKeyComboScope.$watch newCollection - length', newCollection.length);
-
-                    // Delete keyboard shortcuts found in old collection
-                    keyComboManager.deactivateKeyCombos(oldCollection);
-
-                    // Add key combos for new collection
-                    keyComboManager.activateKeyCombos(newCollection);
-
-                }, true);
-
+                console.log('afterSelectionEndByPropCallback', row, property, row2, property2, instance);
+                updateCurrentItemInFocus(row, property, row2, property2, instance);
+                registerKeyCombos(row, property, row2, property2, instance);
             },
 
             deleteButtonRenderer: function (instance, td, row, col, prop, value, cellProperties) {

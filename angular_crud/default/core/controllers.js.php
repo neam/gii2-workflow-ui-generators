@@ -149,4 +149,58 @@ if ($workflowItem):
 
     });
 
+    module.controller('current<?= $modelClassSingular ?>ClassificationController', function ($scope, $timeout, edit<?= $modelClassSingular ?>ControllerService, <?= lcfirst($modelClassPlural) ?>) {
+
+        <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = null;
+        $scope.current<?= $modelClassSingular ?> = null;
+
+        var currentIndex = function() {
+            return _.indexOf(<?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassPlural) ?>.currentItemInFocus);
+        };
+
+        var previousCtr = function() {
+            return <?= lcfirst($modelClassPlural) ?>[currentIndex() - 1];
+        };
+
+        var nextCtr = function() {
+            return <?= lcfirst($modelClassPlural) ?>[currentIndex() + 1];
+        };
+
+        $scope.previous = function () {
+            <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = previousCtr();
+        };
+
+        $scope.next = function () {
+            <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = nextCtr();
+        };
+
+        $scope.$watch(function () {
+            //console.log('current<?= $modelClassSingular ?>ClassificationController watch check - <?= lcfirst($modelClassPlural) ?>.currentItemInFocus', <?= lcfirst($modelClassPlural) ?>.currentItemInFocus);
+            return <?= lcfirst($modelClassPlural) ?>.currentItemInFocus;
+        }, function (newVal, oldVal) {
+            if (newVal && newVal.item_type === 'clerk_transaction_row') {
+
+                $scope.current<?= $modelClassSingular ?> = newVal;
+                $scope.current<?= $modelClassSingular ?>.$promise = <?= lcfirst($modelClassPlural) ?>.$promise;
+                $scope.current<?= $modelClassSingular ?>.$resolved = <?= lcfirst($modelClassPlural) ?>.$resolved;
+                //console.log('current<?= $modelClassSingular ?>ClassificationController watch', $scope.current<?= $modelClassSingular ?>);
+
+                edit<?= $modelClassSingular ?>ControllerService.loadIntoScope($scope, $scope.current<?= $modelClassSingular ?>);
+
+                // Animate
+                /*
+                $('#current-classification-form').removeAttr('class').attr('class', '');
+
+                $timeout(function () {
+                    var animation = 'bounce';
+                    $('#current-classification-form').addClass('animated');
+                    $('#current-classification-form').addClass(animation);
+                });
+                */
+
+            }
+        });
+
+    });
+
 })();
