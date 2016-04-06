@@ -225,7 +225,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 }, function (e) {
                     // on failure, remove item
                     collection.splice(index, 1);
-                    failure && failure();
+                    failure && failure(e);
                 });
             }
 
@@ -242,7 +242,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 });
                 // find index of item in collection
                 var index = _.indexOf(collection, item);
-                // remote item from collection
+                // remove item from collection
                 collection.splice(index, 1);
                 // delete item on server
                 item.$delete(function (data) {
@@ -262,7 +262,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             collection.removeExisting = function (item) {
                 // find index of item in collection
                 var index = _.indexOf(collection, item);
-                // remote item from collection
+                // remove item from collection
                 collection.splice(index, 1);
             }
 
