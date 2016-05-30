@@ -801,8 +801,7 @@ endforeach;
                         //putResponseHeaders => $http header getter
                     }); // TODO: add existing attributes + at the correct index where the new row was inserted
 
-                });                
-                
+                });
 
             },
 
