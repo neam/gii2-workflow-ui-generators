@@ -7,6 +7,7 @@ $model = $generator->getModel();
 
 $modelClassSingular = get_class($model);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
+$modelClassSingularIdUnderscored = Inflector::camel2id($modelClassSingular, "_");
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
@@ -178,7 +179,7 @@ if ($workflowItem):
             //console.log('current<?= $modelClassSingular ?>ClassificationController watch check - <?= lcfirst($modelClassPlural) ?>.currentItemInFocus', <?= lcfirst($modelClassPlural) ?>.currentItemInFocus);
             return <?= lcfirst($modelClassPlural) ?>.currentItemInFocus;
         }, function (newVal, oldVal) {
-            if (newVal && newVal.item_type === 'clerk_transaction_row') {
+            if (newVal && newVal.item_type === '<?= $modelClassSingularIdUnderscored ?>') {
 
                 $scope.current<?= $modelClassSingular ?> = newVal;
                 $scope.current<?= $modelClassSingular ?>.$promise = <?= lcfirst($modelClassPlural) ?>.$promise;
