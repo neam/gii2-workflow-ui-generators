@@ -290,6 +290,37 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 collection.splice(index, 1);
             }
 
+            /**
+             * Tries to load from already fetched objects primarly, then from server. If no id is specified, load an empty new resource object
+             * Use where it is assumed that the collection is already loaded, for quicker retrieval of single items
+             * @param id
+             * @returns {*}
+             */
+            collection.loadItem = function (id) {
+                if (id) {
+
+                    if (collection.currentItemInFocus && collection.currentItemInFocus.id == id) {
+                        console.log('<?= lcfirst($modelClassSingular) ?> picked from collection.currentItemInFocus');
+                        return collection.currentItemInFocus;
+                    }
+
+                    // Hot-load from singleton collection if already available
+                    var item = _.find(collection, function (item) {
+                        return item.attributes.id == id;
+                    });
+                    if (item) {
+                        console.log('<?= lcfirst($modelClassSingular) ?> picked from collection');
+                        return item;
+                    }
+
+                    console.log('<?= lcfirst($modelClassSingular) ?> fetched from server');
+                    return resource.get({id: id});
+                } else {
+                    console.log('<?= lcfirst($modelClassSingular) ?> without id - assuming new <?= lcfirst($modelClassSingular) ?>');
+                    return new resource(resource.dataSchema);
+                }
+            };
+
             // Current-item-in-focus logic
             collection.currentIndex = function () {
                 var item = _.find(collection, function (item) {
