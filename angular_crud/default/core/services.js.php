@@ -110,7 +110,6 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             };
         };
         resource.activeFilter = {};
-        resource.$scope = $rootScope.$new();
         resource.getItemTypeFilter = function () {
 
             // Content filters
@@ -119,8 +118,6 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
         };
         resource.collection = function (params) {
 
-            params = params || {};
-
             var filter = resource.getItemTypeFilter();
             console.log('<?= lcfirst($modelClassSingular) ?> - filter', filter);
 
@@ -128,6 +125,15 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             var collection = [];
             collection.$metadata = {};
             collection.$resolved = null; // Neither true nor false, indicating that a request has not even begun
+
+            // Collection-specific filter params
+            collection.params = params || {};
+
+            // Include a reference to the parent resource
+            collection.$resource = resource;
+
+            // A collection-specific scope for watches and event broadcasting
+            collection.$scope = $rootScope.$new();
 
             // Returns a promise which resolves the next time the collection is refreshed
             collection.newRefreshDeferredObject = function() {
@@ -155,7 +161,8 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 var filter = resource.getItemTypeFilter(); // necessary to not get outdated filter
                 // Update state variable for current filter
                 collection.filter = angular.copy(filter);
-                var refreshedItems = resource.query(angular.merge(filter, params));
+                var refreshedItems = resource.query(angular.merge(filter, collection.params));
+                collection.$promise = refreshedItems.$promise;
                 collection.$refreshing = true;
                 refreshedItems.$promise.then(function () {
                     resource.activeFilter = angular.copy(filter);
@@ -165,10 +172,10 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 }).finally(function () {
                     collection.$refreshing = false;
                     collection.$metadata = refreshedItems.$metadata;
-                    collection.$promise = refreshedItems.$promise;
                     collection.$resolved = refreshedItems.$resolved;
-                    collection.refreshDeferredObject.resolve(refreshedItems);
+                    collection.refreshDeferredObject.resolve(collection);
                 });
+                return collection.refreshDeferredObject.promise;
             };
 
             collection.replace = function (items) {
@@ -181,6 +188,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 if (items.$metadata) {
                     collection.$metadata = items.$metadata;
                 }
+                collection.$scope.$broadcast('items.replaced', items);
             };
 
             // Initial query when active data environment is available
@@ -189,7 +197,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 collection.refresh();
 
                 // Activate refresh when filter has changed
-                resource.$scope.$watch(function ($scope) {
+                collection.$scope.$watch(function ($scope) {
                         return resource.getItemTypeFilter();
                     },
                     function (newVal, oldVal) {
@@ -202,7 +210,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 );
 
                 // Activate refresh when active data environment has changed
-                resource.$scope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
+                collection.$scope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
                     console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to "activeDataEnvironment.change" event', chosenDataEnvironment);
                     collection.refresh();
                 });
