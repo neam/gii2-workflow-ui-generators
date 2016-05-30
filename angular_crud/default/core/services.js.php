@@ -116,6 +116,18 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             return contentFilters.itemTypeSpecific("<?= $modelClassSingular ?>");
 
         };
+        resource.getLocationBasedItemTypeFilter = function () {
+
+            // Content filters
+            return contentFilters.itemTypeSpecificLocationBasedContentFilters("<?= $modelClassSingular ?>");
+
+        };
+        resource.hasLocationBasedItemTypeFilter = function () {
+
+            // Content filters
+            return contentFilters.trueIfNonEmpty(contentFilters.itemTypeSpecificLocationBasedContentFilters("<?= $modelClassSingular ?>"));
+
+        };
         resource.collection = function (params) {
 
             var filter = resource.getItemTypeFilter();
