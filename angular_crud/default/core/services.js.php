@@ -270,6 +270,41 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 collection.splice(index, 1);
             }
 
+            // Current-item-in-focus logic
+            collection.currentIndex = function () {
+                var item = _.find(collection, function (item) {
+                    return item.attributes.id == $state.params.<?= lcfirst($modelClassSingular) ?>Id;
+                });
+                return _.indexOf(collection, item);
+            };
+
+            collection.previousItem = function () {
+                return collection[collection.currentIndex() - 1];
+            };
+
+            collection.nextItem = function () {
+                return collection[collection.currentIndex() + 1];
+            };
+
+            collection.goToCurrentItemState = function(item) {
+                var goToStateParams = angular.merge($state.params, {<?= lcfirst($modelClassSingular) ?>Id: item.id});
+                //$state.transitionTo($state.current.name, goToStateParams, { notify: false });
+                if ($state.current.name.indexOf('.current-item') > -1) {
+                    $state.go($state.current.name, goToStateParams);
+                } else {
+                    $state.go($state.current.name + '.current-item', goToStateParams);
+                }
+            };
+
+            collection.setCurrentItemInFocus = function(item) {
+
+                item.$promise = collection.$promise;
+                item.$resolved = collection.$resolved;
+                collection.currentItemInFocus = item;
+                collection.goToCurrentItemState(item);
+
+            };
+
             return collection;
 
         };
@@ -515,7 +550,7 @@ endforeach;
 
                 // De-select if multiple rows are selected
                 if (row !== row2) {
-                    <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = null;
+                    <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(null);
                 }
 
                 var id = instance.getDataAtRowProp(row, 'attributes.id');
@@ -526,7 +561,7 @@ endforeach;
                     return item.attributes.id == id;
                 });
 
-                <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = item;
+                <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(item);
 
                 //console.log('updateCurrent<?= $modelClassSingular ?>() - <?= lcfirst($modelClassPlural) ?>.currentItemInFocus', <?= lcfirst($modelClassPlural) ?>.currentItemInFocus);
 
