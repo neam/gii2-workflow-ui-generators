@@ -26,7 +26,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 </div>
 -->
 
-<div ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
+<div ng-show="!<?= lcfirst($modelClassPlural) ?>.$refreshing" ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status !== 2">
 
     <!--<dna-collection-curation-widget template="" handsontableColumns="handsontableColumns" crud="crud" collection="collection"/>-->
 
