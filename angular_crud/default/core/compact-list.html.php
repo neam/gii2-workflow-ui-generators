@@ -32,7 +32,7 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
 <div class="row">
     <div class="col-lg-12">
-        <div class="wrapper wrapper-content animated fadeIn list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
+        <div class="list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
 
             <div>
 
@@ -86,9 +86,9 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
     </div>
 </div>
 
-<div class="row">
+<div class="row" ng-if="uiModes.currentIsAtLeast(uiModes.modes.ADVANCED)">
     <div class="col-lg-12">
-        <div class="wrapper wrapper-content animated fadeIn list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
+        <div class="list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
 
             <div class="ibox">
                 <div class="ibox-title">
