@@ -56,6 +56,9 @@ $metadataResponseKey = '_meta';
                     // It is therefore necessary to extract the payload before it can be
                     // processed by the resource.
                     transformResponse: function (data) {
+                        if (!data) {
+                            return data;
+                        }
                         var wrappedResult = angular.fromJson(data);
                         wrappedResult.<?=$itemsResponseKey?>.$metadata = wrappedResult.<?=$metadataResponseKey?>;
                         return wrappedResult.<?=$itemsResponseKey?>;
@@ -348,12 +351,16 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             };
 
             collection.setCurrentItemInFocus = function(item) {
-
                 item.$promise = collection.$promise;
                 item.$resolved = collection.$resolved;
                 collection.currentItemInFocus = item;
                 collection.goToCurrentItemState(item);
+            };
 
+            collection.clearCurrentItemInFocus = function() {
+                collection.currentItemInFocus = null;
+                // TODO:
+                //collection.goToNoCurrentItemState(item);
             };
 
             return collection;
@@ -601,7 +608,7 @@ endforeach;
 
                 // De-select if multiple rows are selected
                 if (row !== row2) {
-                    <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(null);
+                    <?= lcfirst($modelClassPlural) ?>.clearCurrentItemInFocus();
                 }
 
                 var id = instance.getDataAtRowProp(row, 'attributes.id');
@@ -611,6 +618,10 @@ endforeach;
                 var item = _.find(collection, function (item) {
                     return item.attributes.id == id;
                 });
+
+                if (!item) {
+                    return;
+                }
 
                 <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(item);
 
