@@ -2,6 +2,7 @@
 
 namespace neam\gii2_workflow_ui_generators\yii1_crud;
 
+use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Yii;
 use yii\gii\CodeFile;
 use neam\gii2_workflow_ui_generators\yii1_crud\providers\CallbackProvider;
@@ -168,13 +169,13 @@ class Generator extends \schmunk42\giiant\crud\Generator
     }
 
     /**
-     * Get model
+     * Get propel model
      */
     public function getModel()
     {
-        /* @var $class CActiveRecord */
-        $class = $this->modelClass;
-        return $class::model();
+        /* @var $class ActiveRecordInterface */
+        $class = '\\propel\\models\\' . $this->modelClass;
+        return new $class();
     }
 
     /**
@@ -189,49 +190,11 @@ class Generator extends \schmunk42\giiant\crud\Generator
     }
 
     /**
-     * Checks if yii 1 model class is valid
+     * Checks if model class is valid
      */
     public function validateModelClass()
     {
-        /* @var $class CActiveRecord */
-        $class = $this->modelClass;
-        $table = $class::model()->getMetaData()->tableSchema;
-        $pk = $table->primaryKey;
-        if (empty($pk)) {
-            $this->addError('modelClass', "The table associated with $class must have primary key(s).");
-        }
-    }
-
-    /**
-     * Returns table schema for current model class or false if it is not an active record
-     * @return boolean|CDbTableSchema
-     */
-    public function getTableSchema()
-    {
-        /* @var $class CActiveRecord */
-        $class = $this->modelClass;
-        if (is_subclass_of($class, '\CActiveRecord')) {
-            return $class::model()->getMetaData()->tableSchema;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @return array model column names
-     */
-    public function getColumnNames()
-    {
-        /* @var $class CActiveRecord */
-        $class = $this->modelClass;
-        if (is_subclass_of($class, '\CActiveRecord')) {
-            return $class::model()->getMetaData()->tableSchema->getColumnNames();
-        } else {
-            /* @var $model \yii\base\Model */
-            $model = new $class();
-
-            return $model->attributes();
-        }
+        return;
     }
 
     /**

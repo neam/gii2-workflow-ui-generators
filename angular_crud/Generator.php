@@ -204,7 +204,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
      */
     public function getItemTypeAttributes($model)
     {
-        $modelClass = get_class($model);
+        $modelClass = str_replace('propel\\models\\', '', get_class($model));
         if (!method_exists($model, 'itemTypeAttributes')) {
             throw new \Exception("Model $modelClass does not have method itemTypeAttributes()");
         }
@@ -285,6 +285,9 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                                 $relationInfo = $candidateRelation;
                                 break;
                             }
+                        }
+                        if (empty($relationInfo)) {
+                            throw new \Exception("Could not determine relation info for $modelClass->$attribute, where db_column metadata = '{$attributeInfo['db_column']}'");
                         }
                     } else {
                         // Method 2 - Guess based on attribute name
