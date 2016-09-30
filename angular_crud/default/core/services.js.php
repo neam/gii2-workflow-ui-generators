@@ -203,7 +203,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 if (items.$metadata) {
                     collection.$metadata = items.$metadata;
                 }
-                collection.$scope.$broadcast('items.replaced', items);
+                collection.$scope.$broadcast('items.replaced', collection);
             };
 
             // Initial query when active data environment is available
@@ -312,6 +312,8 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                         return item.attributes.id == id;
                     });
                     if (item) {
+                        item.$promise = collection.$promise;
+                        item.$resolved = collection.$resolved;
                         console.log('<?= lcfirst($modelClassSingular) ?> picked from collection');
                         return item;
                     }
