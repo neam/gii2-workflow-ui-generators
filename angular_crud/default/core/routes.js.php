@@ -6,7 +6,8 @@ use yii\helpers\Html;
 
 $model = $generator->getModel();
 
-$modelClassSingular = get_class($model);
+$modelClass = $generator->modelClass;
+$modelClassSingular = $modelClass;
 $modelClassSingularId = Inflector::camel2id($modelClassSingular);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
@@ -17,7 +18,7 @@ $labelPlural = ItemTypes::label($modelClassSingular, 2);
 $labelNone = ItemTypes::label($modelClassSingular, 2);
 
 // TODO: handle prefixes through config
-$unprefixedModelClassSingular = str_replace(["Clerk", "Neamtime"], "", get_class($model));
+$unprefixedModelClassSingular = str_replace(["Clerk", "Neamtime"], "", $modelClass);
 $unprefixedModelClassSingularId = Inflector::camel2id($unprefixedModelClassSingular);
 $unprefixedModelClassSingularWords = Inflector::camel2words($unprefixedModelClassSingular);
 $unprefixedModelClassPluralWords = Inflector::pluralize($unprefixedModelClassSingularWords);
@@ -44,7 +45,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
             $parentState = '\' + baseState + \'';
             $rootCrudState = null; // The state where the views for list, view and edit etc are defined the first state - necessary to keep track of in order to be able to reference their ui-views
             $recursionLevel = 0;
-            $params = compact("step", "stepReference", "parentState", "rootCrudState", "recursionLevel", "generator");
+            $params = compact("step", "stepReference", "parentState", "rootCrudState", "recursionLevel", "generator", "itemTypeAttributesWithAdditionalMetadata", "modelClass");
             $attribute = $modelClassPluralId;
 
             echo $generator->prependActiveFieldForAttribute("ui-router-item-type-states." . $attribute, $model, $params);

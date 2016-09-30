@@ -5,7 +5,7 @@ if ($level > 1) {
 }
 $level++;
 
-foreach ($itemTypeAttributes as $attribute => $attributeInfo):
+foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeInfo):
 
     // Deep attributes are handled indirectly via their parent attributes
     if (strpos($attribute, '/') !== false) {
@@ -45,7 +45,7 @@ foreach ($itemTypeAttributes as $attribute => $attributeInfo):
                 // Note: Supplying attributes info in the data schema implies that the relation should always be available and will thus be created automatically
                 attributes: {
 <?php
-echo $this->render('item-type-attributes-data-schema.inc.php', ["itemTypeAttributes" => $attributeInfo['deepAttributes'], "level" => $level, "modelClass" => $attributeInfo["relatedModelClass"]]);
+echo $this->render('item-type-attributes-data-schema.inc.php', ["itemTypeAttributesWithAdditionalMetadata" => $attributeInfo['deepAttributes'], "level" => $level, "modelClass" => $attributeInfo["relatedModelClass"]]);
 ?>
                 },
 <?php endif; ?>

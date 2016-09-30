@@ -6,7 +6,7 @@ use yii\helpers\Html;
 
 $model = $generator->getModel();
 
-$modelClassSingular = get_class($model);
+$modelClassSingular = $generator->modelClass;
 $modelClassSingularId = Inflector::camel2id($modelClassSingular);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
@@ -17,7 +17,7 @@ $labelPlural = ItemTypes::label($modelClassSingular, 2);
 $labelNone = ItemTypes::label($modelClassSingular, 2);
 
 // TODO: handle prefixes through config
-$unprefixedModelClassSingular = str_replace(["Clerk", "Neamtime"], "", get_class($model));
+$unprefixedModelClassSingular = str_replace(["Clerk", "Neamtime"], "", $generator->modelClass);
 $unprefixedModelClassSingularId = Inflector::camel2id($unprefixedModelClassSingular);
 $unprefixedModelClassSingularWords = Inflector::camel2words($unprefixedModelClassSingular);
 $unprefixedModelClassPluralWords = Inflector::pluralize($unprefixedModelClassSingularWords);

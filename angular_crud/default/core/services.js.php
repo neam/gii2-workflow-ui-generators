@@ -5,7 +5,7 @@ use yii\helpers\StringHelper;
 
 $model = $generator->getModel();
 
-$modelClassSingular = $modelClass = get_class($model);
+$modelClassSingular = $modelClass = $generator->modelClass;
 $modelClassSingularId = Inflector::camel2id($modelClassSingular);
 $modelClassSingularWords = Inflector::camel2words($modelClassSingular);
 $itemTypeSingularRef = Inflector::camel2id($modelClassSingular, '_');
@@ -107,7 +107,7 @@ $metadataResponseKey = '_meta';
                 'item_type': '<?= $itemTypeSingularRef ?>',
                 'attributes': {
 <?php
-echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttributes" => $itemTypeAttributes, "level" => $level = 0, "modelClass" => get_class($model)]);
+echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttributesWithAdditionalMetadata" => $itemTypeAttributesWithAdditionalMetadata, "level" => $level = 0, "modelClass" => $generator->modelClass]);
 ?>
                 }
             };
@@ -395,7 +395,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
         // General relations logic
         var relations = {
 <?php
-foreach ($itemTypeAttributes as $attribute => $attributeInfo):
+foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeInfo):
 
     // Attribute referencing other item type's attribute
     $isDeepAttribute = strpos($attribute, '/') !== false;
@@ -885,7 +885,7 @@ endforeach;
             columnLogic: {
 
 <?php
-foreach ($itemTypeAttributes as $attribute => $attributeInfo):
+foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeInfo):
 
     // Do not consider attributes referencing other item types
     if (strpos($attribute, '/') !== false) {
@@ -1027,9 +1027,10 @@ endforeach;
             '<?= $step ?>': [
 <?php foreach ($stepAttributes as $attribute): ?>
 <?php
-                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                $params = compact("step", "itemTypeAttributesWithAdditionalMetadata", "modelClass");
+                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model, $params);
+                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model, $params);
+                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model, $params);
                 echo "\n";
                 ?>
 <?php endforeach;?>
@@ -1038,11 +1039,12 @@ endforeach;
 <?php endif; ?>
         };
         handsontable.crudColumns = [
-<?php foreach ($itemTypeAttributes as $attribute => $attributeInfo): ?>
+<?php foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeInfo): ?>
 <?php
-                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model);
-                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model);
+                $params = compact("step", "itemTypeAttributesWithAdditionalMetadata", "modelClass");
+                echo $generator->prependActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model, $params);
+                echo $generator->activeFieldForAttribute("handsontable-column-settings." . $attribute, $model, $params);
+                echo $generator->appendActiveFieldForAttribute("handsontable-column-settings." . $attribute, $model, $params);
                 echo "\n";
                 ?>
 <?php endforeach ?>

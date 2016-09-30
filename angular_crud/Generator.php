@@ -46,8 +46,9 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
     public function getViewPath()
     {
         if ($this->viewPath !== null) {
+            $modelClass = str_replace('propel\\models\\', '', get_class($this->getModel()));
             return \Yii::getAlias($this->viewPath) . '/' . Inflector::camel2id(
-                get_class($this->getModel())
+                $modelClass
             ); //$this->getControllerID();
         } else {
             return parent::getViewPath();
@@ -62,14 +63,16 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
     {
         $files = [];
 
-        $itemTypeAttributes = $this->getItemTypeAttributes($this->getModel());
+        $itemTypeAttributesWithAdditionalMetadata = $this->getItemTypeAttributesWithAdditionalMetadata($this->getModel());
 
-        //if (get_class($this->getModel()) == "Campaign") {var_dump(__LINE__, $itemTypeAttributes);exit(1);}
+        $modelClass = $this->modelClass;
+
+        //if ($modelClass == "Campaign") {var_dump(__LINE__, $itemTypeAttributes);exit(1);}
 
         $generator = $this;
 
         // Workflow-related templates
-        if (in_array(get_class($this->getModel()), array_keys(\ItemTypes::where('is_workflow_item')))) {
+        if (in_array($modelClass, array_keys(\ItemTypes::where('is_workflow_item')))) {
 
             // Edit workflow views
             foreach ($this->getModel()->flowSteps() as $step => $attributes) {
@@ -78,7 +81,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                     $this->jsTemplateDestination("steps/$step.html"),
                     $this->render(
                         'edit-step.html.php',
-                        compact("step", "attributes", "itemTypeAttributes", "generator")
+                        compact("step", "attributes", "itemTypeAttributesWithAdditionalMetadata", "generator")
                     )
                 );
             }
@@ -90,7 +93,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                     $this->jsTemplateDestination("curate-steps/$step.html"),
                     $this->render(
                         'curate-step.html.php',
-                        compact("step", "attributes", "itemTypeAttributes", "generator")
+                        compact("step", "attributes", "itemTypeAttributesWithAdditionalMetadata", "generator")
                     )
                 );
             }
@@ -109,7 +112,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                     $this->jsTemplateDestination("translate/steps/$step.html"),
                     $this->render(
                         'translate-step.html.php',
-                        compact("step", "translatableAttributes", "itemTypeAttributes", "generator")
+                        compact("step", "translatableAttributes", "itemTypeAttributesWithAdditionalMetadata", "generator")
                     )
                 );
             }
@@ -132,7 +135,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 $files[] = new CodeFile(
                     $this->jsTemplateDestination($file),
-                    $this->render("core/$file", compact("itemTypeAttributes", "generator"))
+                    $this->render("core/$file", compact("itemTypeAttributesWithAdditionalMetadata", "generator"))
                 );
             }
         }
@@ -141,7 +144,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 $files[] = new CodeFile(
                     $this->jsTemplateDestination('elements/' . $file),
-                    $this->render("core/elements/$file", compact("itemTypeAttributes", "generator"))
+                    $this->render("core/elements/$file", compact("itemTypeAttributesWithAdditionalMetadata", "generator"))
                 );
             }
         }
@@ -170,7 +173,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
     {
         $model = $this->getModel();
         $return = [];
-        foreach ($this->getItemTypeAttributes($model) as $attribute => $attributeInfo) {
+        foreach ($this->getItemTypeAttributesWithAdditionalMetadata($model) as $attribute => $attributeInfo) {
             // Do not consider attributes referencing other item types
             if (strpos($attribute, '/') !== false) {
                 continue;
@@ -186,7 +189,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
     {
         $model = $this->getModel();
         $return = [];
-        foreach ($this->getItemTypeAttributes($model) as $attribute => $attributeInfo) {
+        foreach ($this->getItemTypeAttributesWithAdditionalMetadata($model) as $attribute => $attributeInfo) {
             // Do not consider attributes referencing other item types
             if (strpos($attribute, '/') !== false) {
                 continue;
@@ -202,7 +205,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
      * Get item type attributes with additional metadata required during generation
      * TODO: Do not keep copy-pasted copies here and in yii1_rest_model/Generator
      */
-    public function getItemTypeAttributes($model)
+    public function getItemTypeAttributesWithAdditionalMetadata($model)
     {
         $modelClass = str_replace('propel\\models\\', '', get_class($model));
         if (!method_exists($model, 'itemTypeAttributes')) {
