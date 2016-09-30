@@ -33,7 +33,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
 
     var module = angular.module('crud-<?= $modelClassSingularId ?>-routes', []);
 
-    module.config(function ($stateProvider) {
+    var routes = function ($stateProvider, baseState) {
 
         $stateProvider
 
@@ -41,7 +41,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
 
             $step = false;
             $stepReference = false;
-            $parentState = 'root.api-endpoints.existing';
+            $parentState = '\' + baseState + \'';
             $rootCrudState = null; // The state where the views for list, view and edit etc are defined the first state - necessary to keep track of in order to be able to reference their ui-views
             $recursionLevel = 0;
             $params = compact("step", "stepReference", "parentState", "rootCrudState", "recursionLevel", "generator");
@@ -56,6 +56,10 @@ $labelPlural = $unprefixedModelClassPluralWords;
 
         ;
 
+    };
+
+    module.config(function ($stateProvider) {
+        routes($stateProvider, 'root.api-endpoints.existing');
     });
 
 })();
