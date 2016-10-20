@@ -35,13 +35,23 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
             currentRowClassName: 'current-row',
             currentColClassName: 'current-column',
             rowHeaders: false,
+            /*
+            rowHeaders: function(index) {
+              return '';
+            },
+            */
             colHeaders: true,
             contextMenu: false, // ['row_above', 'row_below', 'remove_row'],
-            persistentState: true,
+            persistentState: false,
             minSpareRows: 0,
             manualRowMove: true,
             manualColumnMove: true,
-            fixedColumnsLeft: 0,
+            fixedColumnsLeft: 3,
+            fixedRowsTop: 0,
+            autoRowSize: true,
+            autoColumnSize: true,
+            colWidths: [21, 23, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150],
+            renderAllRows: true, // necessary so that handsontable does not think it is enough to render one or two rows after changing page / filter
             manualRowResize: true,
             manualColumnResize: true,
             formulas: false, // false since formula support is experimental and we want less bugs by default
