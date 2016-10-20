@@ -24,8 +24,13 @@ $unprefixedModelClassPluralId = Inflector::camel2id($unprefixedModelClassPlural)
 
 ?>
 
-<div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$refreshing && <?= lcfirst($modelClassPlural) ?>.$resolved === null">
-    No active data environment to load <?= strtolower($modelClassPluralWords) ?> from...
+<div class="alert alert-info" ng-show="!activeDataEnvironment.available">
+    No active data environment to load <?= strtolower($unprefixedModelClassPluralWords) ?> from...
+</div>
+
+<div class="alert alert-info" ng-show="!<?= lcfirst($modelClassPlural) ?>.$activated && !<?= lcfirst($modelClassPlural) ?>.$refreshing && <?= lcfirst($modelClassPlural) ?>.$resolved === null">
+    <?= ucfirst(strtolower($unprefixedModelClassPluralWords)) ?> not available yet...
+    <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.$activate()" class="btn btn-primary btn-xs">Click here to activate</a>
 </div>
 
 <div class="alert alert-info" ng-show="<?= lcfirst($modelClassPlural) ?>.$refreshing">

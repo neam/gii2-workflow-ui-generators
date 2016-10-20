@@ -18,6 +18,10 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
     module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, $location, visibilitySettings, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
+        // Activate collections used in view
+        <?= lcfirst($modelClassPlural) ?>.$activate();
+
+        // Make collections available to scope
         $scope.<?= lcfirst($modelClassSingular) ?>Resource = <?= lcfirst($modelClassSingular) ?>Resource;
         $scope.<?= lcfirst($modelClassSingular) ?>Crud = <?= lcfirst($modelClassSingular) ?>Crud;
         $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
