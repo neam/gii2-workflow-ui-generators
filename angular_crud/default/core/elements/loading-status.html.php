@@ -24,7 +24,7 @@ $unprefixedModelClassPluralId = Inflector::camel2id($unprefixedModelClassPlural)
 
 ?>
 
-<div class="alert alert-info" ng-show="!activeDataEnvironment.available">
+<div class="alert alert-info" ng-show="!$root.activeDataEnvironment.available">
     No active data environment to load <?= strtolower($unprefixedModelClassPluralWords) ?> from...
 </div>
 
