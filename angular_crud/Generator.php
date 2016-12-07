@@ -99,6 +99,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
             }
 
             // Translate workflow views
+            /*
             foreach ($this->getModel()->flowSteps() as $step => $attributes) {
 
                 $translatableAttributes = $this->getModel()->matchingTranslatable($attributes);
@@ -116,6 +117,7 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                     )
                 );
             }
+            */
 
         }
 
