@@ -294,6 +294,7 @@ class Generator extends \schmunk42\giiant\crud\Generator
                 $c = call_user_func_array(array(&$obj, $func), $args);
                 // until a provider returns not null
                 if ($c !== null) {
+                    /*
                     if (is_object($args)) {
                         $argsString = get_class($args);
                     } elseif (is_array($args)) {
@@ -303,6 +304,7 @@ class Generator extends \schmunk42\giiant\crud\Generator
                     }
                     $msg = 'Using provider ' . get_class($obj) . '::' . $func . ' ' . $argsString;
                     Yii::trace($msg, __METHOD__);
+                    */
                     return $c;
                 }
             }
