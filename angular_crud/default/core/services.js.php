@@ -399,13 +399,21 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
     /**
      * Service that contains the item's relations' metadata
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout, <?= lcfirst($modelClassPlural) ?><?php
+    module.service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout<?php
+
+        $args = [];
+        $args[] = lcfirst($modelClassPlural);
         $hasOneOrManyRelatedModelClasses = $generator->hasOneOrManyRelatedModelClasses();
-        foreach ($hasOneOrManyRelatedModelClasses as $hasOneRelatedModelClass):
-        $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
-        $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
-        $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource<?php endforeach; ?>, $injector) {
+        foreach ($hasOneOrManyRelatedModelClasses as $hasOneRelatedModelClass) {
+            $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
+            $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
+            $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
+            $args[] = lcfirst($hasOneRelatedModelClassPlural);
+            $args[] = lcfirst($hasOneRelatedModelClass) . "Resource";
+        }
+        $args = array_unique($args); // Make sure there are no dupes amongst args
+        foreach ($args as $arg):
+            ?>, <?= $arg ?><?php endforeach; ?>, $injector) {
 
         // General relations logic
         var relations = {
@@ -572,13 +580,24 @@ endforeach;
     /**
      * Service that contains the main objects for CRUD logic
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>RelationsMetadata<?php
+    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout<?php
+
+        $args = [];
+        $args[] = lcfirst($modelClassPlural);
+        $args[] = lcfirst($modelClassSingular) . "RelationsMetadata";
+
         $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
-        foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass):
-        $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
-        $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
-        $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            ?>, <?= lcfirst($hasOneRelatedModelClassPlural) ?>, <?= lcfirst($hasOneRelatedModelClass) ?>Resource, <?= lcfirst($hasOneRelatedModelClass) ?>RelationsMetadata<?php endforeach; ?>) {
+        foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass) {
+            $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
+            $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
+            $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
+            $args[] = lcfirst($hasOneRelatedModelClassPlural);
+            $args[] = lcfirst($hasOneRelatedModelClass) . "Resource";
+            $args[] = lcfirst($hasOneRelatedModelClass) . "RelationsMetadata";
+        }
+        $args = array_unique($args); // Make sure there are no dupes amongst args
+        foreach ($args as $arg):
+            ?>, <?= $arg ?><?php endforeach; ?>) {
 
         // General relations logic
         var relations = <?= lcfirst($modelClassSingular) ?>RelationsMetadata;
