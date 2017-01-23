@@ -15,5 +15,5 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 ?>
 <div class="row wrapper border-bottom white-bg page-heading ">
     <h1 class="pull-left">{{$state.current.data.stepCaption}}</h1>
-    <div class="pull-right top-buttons" ng-include="'crud/<?= $modelClassSingularId ?>/elements/form-controls.html'"></div>
+    <crud-<?= $modelClassSingularId ?>-elements-form-controls class="pull-right top-buttons"></crud-<?= $modelClassSingularId ?>-elements-form-controls>
 </div>

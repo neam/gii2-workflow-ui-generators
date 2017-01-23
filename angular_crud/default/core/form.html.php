@@ -43,7 +43,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         <div id="wrapper" class="<?= $modelClassSingularId ?>">
             <div class="animated fadeIn wrapper-content">
 
-                <div ng-include="'crud/<?= $modelClassSingularId ?>/form.top.html'"></div>
+                <crud-<?= lcfirst($modelClassSingularId) ?>-form-top></crud-<?= lcfirst($modelClassSingularId) ?>-form-top>
                 <ui-view/>
 
             </div>

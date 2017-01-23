@@ -22,4 +22,4 @@ Template for <?= ltrim($generator->modelClass, '\\') ?> model, curate-step "<?=$
 <?=\ItemTypes::hint($modelClassSingular) . "\n"?>
 <!-- Hint stop -->
 
-<div ng-controller="list<?= $modelClassPlural ?>Controller" ng-include="'crud/<?= $modelClassSingularId ?>/curate.html'"></div>
+<crud-<?= lcfirst($modelClassSingularId) ?>-curate></crud-<?= lcfirst($modelClassSingularId) ?>-curate>

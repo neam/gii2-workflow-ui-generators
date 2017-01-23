@@ -48,7 +48,7 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
                 <div>
 
-                    <div ng-include="'crud/<?= lcfirst($modelClassSingularId) ?>/elements/loading-status.html'"></div>
+                    <crud-<?= lcfirst($modelClassSingularId) ?>-elements-loading-status></crud-<?= lcfirst($modelClassSingularId) ?>-elements-loading-status>
 
                     <div class="project-list" ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved">
 

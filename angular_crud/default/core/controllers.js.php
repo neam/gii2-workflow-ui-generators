@@ -12,11 +12,12 @@ $modelClassPluralWords = Inflector::pluralize($modelClassSingularWords);
 $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 
 ?>
-(function () {
+'use strict';
 
-    var module = angular.module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-controllers', []);
+let module = angular
+    .module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-controllers', [])
 
-    module.controller('list<?= $modelClassPlural ?>Controller', function ($scope, $location, visibilitySettings, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
+    .controller('list<?= $modelClassPlural ?>Controller', function ($scope, $location, visibilitySettings, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         // Activate collections used in view
         <?= lcfirst($modelClassPlural) ?>.$activate();
@@ -86,15 +87,15 @@ if ($workflowItem):
         $scope.handsontableSettings.columns = <?= lcfirst($modelClassSingular) ?>Crud.handsontable.crudColumns;
 <?php endif; ?>
 
-    });
+    })
 
-    module.controller('edit<?= $modelClassSingular ?>Controller', function ($scope, <?= lcfirst($modelClassSingular) ?>, edit<?= $modelClassSingular ?>ControllerService) {
+    .controller('edit<?= $modelClassSingular ?>Controller', function ($scope, <?= lcfirst($modelClassSingular) ?>, edit<?= $modelClassSingular ?>ControllerService) {
 
         edit<?= $modelClassSingular ?>ControllerService.loadIntoScope($scope, <?= lcfirst($modelClassSingular) ?>);
 
-    });
+    })
 
-    module.service('edit<?= $modelClassSingular ?>ControllerService', function ($state, $rootScope, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
+    .service('edit<?= $modelClassSingular ?>ControllerService', function ($state, $rootScope, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
 
         return {
             loadIntoScope: function ($scope, <?= lcfirst($modelClassSingular) ?>) {
@@ -162,9 +163,9 @@ if ($workflowItem):
             }
         };
 
-    });
+    })
 
-    module.controller('current<?= $modelClassSingular ?>ClassificationController', function ($scope, $timeout, edit<?= $modelClassSingular ?>ControllerService, <?= lcfirst($modelClassPlural) ?>) {
+    .controller('current<?= $modelClassSingular ?>ClassificationController', function ($scope, $timeout, edit<?= $modelClassSingular ?>ControllerService, <?= lcfirst($modelClassPlural) ?>) {
 
         <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = null;
         $scope.current<?= $modelClassSingular ?> = null;
@@ -218,4 +219,4 @@ if ($workflowItem):
 
     });
 
-})();
+export default module;

@@ -29,45 +29,47 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<!-- <?= $labelSingular ?> editing -->
+<ul class="navbar-default navbar-static-side animated slideInLeft" role="navigation">
 
-<li class="nav-title">
-    <span ng-show="!edit<?= $modelClassSingular ?>Controller.$scope.<?= lcfirst($modelClassSingular) ?>.$resolved">Loading
-        <?= strtolower($labelSingular) ?>...</span>
-    {{edit<?= $modelClassSingular ?>Controller.$scope.<?= lcfirst($modelClassSingular) ?>.item_label}}
-</li>
+    <!-- <?= $labelSingular ?> editing -->
 
-<?php
-if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')))):
-    $stepCaptions = $model->flowStepCaptions();
-    $flowSteps = $model->flowSteps();
-    $flowStepReference = array_keys($flowSteps);
-    $firstStepReference = reset($flowStepReference);
+    <li class="nav-title">
+        <span ng-show="!edit<?= $modelClassSingular ?>Controller.$scope.<?= lcfirst($modelClassSingular) ?>.$resolved">Loading
+            <?= strtolower($labelSingular) ?>...</span>
+        {{edit<?= $modelClassSingular ?>Controller.$scope.<?= lcfirst($modelClassSingular) ?>.item_label}}
+    </li>
 
-    foreach ($flowSteps as $stepReference => $stepAttributes):
+    <?php
+    if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')))):
+        $stepCaptions = $model->flowStepCaptions();
+        $flowSteps = $model->flowSteps();
+        $flowStepReference = array_keys($flowSteps);
+        $firstStepReference = reset($flowStepReference);
 
-        // Determine level of step
-        $stepHierarchy = explode(".", $stepReference);
-        $step = end($stepHierarchy);
-        $stepCaption = !empty($stepCaptions[$step]) ? $stepCaptions[$step] : ucfirst($step);
+        foreach ($flowSteps as $stepReference => $stepAttributes):
 
-        switch (count($stepHierarchy)):
+            // Determine level of step
+            $stepHierarchy = explode(".", $stepReference);
+            $step = end($stepHierarchy);
+            $stepCaption = !empty($stepCaptions[$step]) ? $stepCaptions[$step] : ucfirst($step);
 
-            case 1000: ?>
+            switch (count($stepHierarchy)):
 
-                <?php break;
-            default: ?>
+                case 1000: ?>
 
-<li ui-sref-active="active" ng-show="activeDataEnvironment.available">
-    <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.<?= $stepReference ?>({dataEnvironment: $root.activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: $state.params.<?= lcfirst($modelClassSingular) ?>Id})"
-       href="#"><i class="fa fa-check-circle"></i> <span class="nav-label"><?= Html::encode($stepCaption) ?></span></a>
-</li>
+                    <?php break;
+                default: ?>
 
-            <?php endswitch; ?>
-    <?php endforeach; ?>
+    <li ui-sref-active="active" ng-show="activeDataEnvironment.available">
+        <a ui-sref="root.api-endpoints.existing.<?= $modelClassPluralId ?>.existing.edit.<?= $stepReference ?>({dataEnvironment: $root.activeDataEnvironment.slug, <?= lcfirst($modelClassSingular) ?>Id: $state.params.<?= lcfirst($modelClassSingular) ?>Id})"
+           href="#"><i class="fa fa-check-circle"></i> <span class="nav-label"><?= Html::encode($stepCaption) ?></span></a>
+    </li>
 
-<?php else: ?>
+                <?php endswitch; ?>
+        <?php endforeach; ?>
 
-    // [not a workflow-item]
+    <?php else: ?>
 
-<?php endif; ?>
+        // [not a workflow-item]
+
+    <?php endif; ?></ul>

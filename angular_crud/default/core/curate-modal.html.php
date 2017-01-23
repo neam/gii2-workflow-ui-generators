@@ -22,7 +22,7 @@ if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item
     </div>
     <div class="modal-body">
 
-        <div ng-controller="list<?= $modelClassPlural ?>Controller" ng-include="'crud/<?= lcfirst($modelClassSingularId) ?>/curate.html'"></div>
+        <crud-<?= lcfirst($modelClassSingularId) ?>-curate></crud-<?= lcfirst($modelClassSingularId) ?>-curate>
 
     </div>
     <div class="modal-footer">

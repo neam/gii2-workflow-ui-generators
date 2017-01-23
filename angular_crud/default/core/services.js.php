@@ -19,14 +19,15 @@ $itemsResponseKey = 'items';
 $metadataResponseKey = '_meta';
 
 ?>
-(function () {
+'use strict';
 
-    var module = angular.module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-services', []);
+let module = angular
+    .module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-services', [])
 
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q, DataEnvironmentService) {
+    .service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q, DataEnvironmentService) {
 
         // Silly stand-in for the default string object is necessary to work around the fact that
         // the url param in ngResource is only evaluated at $resource creation and can not be changed later
@@ -384,22 +385,22 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
         };
         return resource;
-    });
+    })
 
     /**
      * Inject to get a singleton of populated modifiable array of items from database
      */
-    module.service('<?= lcfirst($modelClassPlural) ?>', function (<?= lcfirst($modelClassSingular) ?>Resource) {
+    .service('<?= lcfirst($modelClassPlural) ?>', function (<?= lcfirst($modelClassSingular) ?>Resource) {
 
         var collection = <?= lcfirst($modelClassSingular) ?>Resource.collection();
         return collection;
 
-    });
+    })
 
     /**
      * Service that contains the item's relations' metadata
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout<?php
+    .service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout<?php
 
         $args = [];
         $args[] = lcfirst($modelClassPlural);
@@ -575,12 +576,12 @@ endforeach;
 
         return relations;
 
-    });
+    })
 
     /**
      * Service that contains the main objects for CRUD logic
      */
-    module.service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout<?php
+    .service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout<?php
 
         $args = [];
         $args[] = lcfirst($modelClassPlural);
@@ -1091,5 +1092,4 @@ endforeach;
 
     });
 
-
-})();
+export default module;

@@ -18,7 +18,7 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
 ?>
 <?php if (in_array($modelClassSingular, array_keys(\ItemTypes::where('is_workflow_item')))): ?>
 
-<div ng-include="'crud/<?= lcfirst($modelClassSingularId) ?>/elements/loading-status.html'"></div>
+<crud-<?= lcfirst($modelClassSingularId) ?>-elements-loading-status></crud-<?= lcfirst($modelClassSingularId) ?>-elements-loading-status>
 
 <!--
 <div ng-repeat="<?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>">
