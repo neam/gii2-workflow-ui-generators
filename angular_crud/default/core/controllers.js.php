@@ -69,7 +69,7 @@ $workflowItem = in_array($modelClassSingular, array_keys(\ItemTypes::where('is_w
 if ($workflowItem):
 ?>
         // Decide which columns to display
-        visibleColumns = function () {
+        let visibleColumns = function () {
 
             var vs = visibilitySettings.itemTypeSpecific('<?= $modelClassSingular ?>');
 

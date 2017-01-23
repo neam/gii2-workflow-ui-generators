@@ -400,21 +400,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
     /**
      * Service that contains the item's relations' metadata
      */
-    .service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout<?php
-
-        $args = [];
-        $args[] = lcfirst($modelClassPlural);
-        $hasOneOrManyRelatedModelClasses = $generator->hasOneOrManyRelatedModelClasses();
-        foreach ($hasOneOrManyRelatedModelClasses as $hasOneRelatedModelClass) {
-            $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
-            $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
-            $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            $args[] = lcfirst($hasOneRelatedModelClassPlural);
-            $args[] = lcfirst($hasOneRelatedModelClass) . "Resource";
-        }
-        $args = array_unique($args); // Make sure there are no dupes amongst args
-        foreach ($args as $arg):
-            ?>, <?= $arg ?><?php endforeach; ?>, $injector) {
+    .service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout, $q, $ocLazyLoad, $injector) {
 
         // General relations logic
         var relations = {
@@ -453,7 +439,10 @@ foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeIn
 
 ?>
             '<?=$attribute?>': {
-                relatedCollection: <?= lcfirst($relatedModelClassPlural) ?>,
+                relatedCollection: function() {
+                    console.log('TODO: lazy load <?= lcfirst($relatedModelClassPlural) ?> here');
+                    return <?= lcfirst($relatedModelClassPlural) ?>;
+                },
 <?php
 if ($attributeInfo["type"] === "has-one-relation"):
 ?>
@@ -500,6 +489,8 @@ if ($attributeInfo["type"] === "has-one-relation"):
                         // @returns An object that has an `abort` function that can be called to abort
                         //   the request if needed.
                         transport: function (params, success, failure) {
+
+                            // TODO require ensure related services.js and then run the transport stuff
 
                             var relatedItemsCollection = <?= lcfirst($relatedModelClassPlural) ?>;
                             var relatedItemsPromise;
@@ -581,24 +572,7 @@ endforeach;
     /**
      * Service that contains the main objects for CRUD logic
      */
-    .service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout<?php
-
-        $args = [];
-        $args[] = lcfirst($modelClassPlural);
-        $args[] = lcfirst($modelClassSingular) . "RelationsMetadata";
-
-        $hasOneRelatedModelClasses = $generator->hasOneRelatedModelClasses();
-        foreach ($hasOneRelatedModelClasses as $hasOneRelatedModelClass) {
-            $hasOneRelatedModelClassSingularWords = Inflector::camel2words($hasOneRelatedModelClass);
-            $hasOneRelatedModelClassPluralWords = Inflector::pluralize($hasOneRelatedModelClassSingularWords);
-            $hasOneRelatedModelClassPlural = Inflector::camelize($hasOneRelatedModelClassPluralWords);
-            $args[] = lcfirst($hasOneRelatedModelClassPlural);
-            $args[] = lcfirst($hasOneRelatedModelClass) . "Resource";
-            $args[] = lcfirst($hasOneRelatedModelClass) . "RelationsMetadata";
-        }
-        $args = array_unique($args); // Make sure there are no dupes amongst args
-        foreach ($args as $arg):
-            ?>, <?= $arg ?><?php endforeach; ?>) {
+    .service('<?= lcfirst($modelClassSingular) ?>Crud', function ($rootScope, hotkeys, $location, $timeout, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>RelationsMetadata ,$q, $ocLazyLoad, $injector) {
 
         // General relations logic
         var relations = <?= lcfirst($modelClassSingular) ?>RelationsMetadata;
@@ -757,27 +731,29 @@ endforeach;
                     }
                 }
 
-                var collection = relations[selectedColumn].relatedCollection;
+                relations[selectedColumn].relatedCollection().then(function(collection) {
 
-                // Remove cell-specific key combos not related to collection by resetting keycombo binding object
-                reset$columnSpecificKeyComboScope();
+                    // Remove cell-specific key combos not related to collection by resetting keycombo binding object
+                    reset$columnSpecificKeyComboScope();
 
-                // Add key combos for collection
-                keyComboManager.activateKeyCombos(collection);
+                    // Add key combos for collection
+                    keyComboManager.activateKeyCombos(collection);
 
-                // Update key combos when underlying data changes
-                $rootScope.$columnSpecificKeyComboScope.collection = collection;
-                $rootScope.$columnSpecificKeyComboScope.$watch('collection', function (newCollection, oldCollection) {
+                    // Update key combos when underlying data changes
+                    $rootScope.$columnSpecificKeyComboScope.collection = collection;
+                    $rootScope.$columnSpecificKeyComboScope.$watch('collection', function (newCollection, oldCollection) {
 
-                    console.log('$rootScope.$columnSpecificKeyComboScope.$watch newCollection - length', newCollection.length);
+                        console.log('$rootScope.$columnSpecificKeyComboScope.$watch newCollection - length', newCollection.length);
 
-                    // Delete keyboard shortcuts found in old collection
-                    keyComboManager.deactivateKeyCombos(oldCollection);
+                        // Delete keyboard shortcuts found in old collection
+                        keyComboManager.deactivateKeyCombos(oldCollection);
 
-                    // Add key combos for new collection
-                    keyComboManager.activateKeyCombos(newCollection);
+                        // Add key combos for new collection
+                        keyComboManager.activateKeyCombos(newCollection);
 
-                }, true);
+                    }, true);
+
+                });
 
             };
 

@@ -30,9 +30,11 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-(function () {
+'use strict';
 
-    var module = angular.module('crud-<?= $modelClassSingularId ?>-routes', []);
+let module = angular.module('crud-<?= $modelClassSingularId ?>-routes', []);
+
+(function (module) {
 
     var routes = function ($stateProvider, baseState) {
 
@@ -63,4 +65,6 @@ $labelPlural = $unprefixedModelClassPluralWords;
         routes($stateProvider, 'root.api-endpoints.existing');
     });
 
-})();
+})(module);
+
+export default module;
