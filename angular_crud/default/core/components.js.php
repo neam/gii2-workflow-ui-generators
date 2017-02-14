@@ -38,13 +38,34 @@ var module = angular.module('crud-<?= $modelClassSingularId ?>-components', [
 ]);
 
 module
-    .component('crud<?= $modelClassSingular ?>Curate', {template: require('./curate.html'), controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'})
-    .component('crud<?= $modelClassSingular ?>SideMenu', {template: require('./side-menu.html'), controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'})
-    .component('crud<?= $modelClassSingular ?>CompactList', {template: require('./compact-list.html'), controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'})
-    .component('crud<?= $modelClassSingular ?>Form', {template: require('./form.html'), controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'})
-    .component('crud<?= $modelClassSingular ?>FormTop', {template: require('./form.top.html'), controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'})
-    .component('crud<?= $modelClassSingular ?>ElementsFormControls', {template: require('./elements/form-controls.html'), controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'})
-    .component('crud<?= $modelClassSingular ?>ElementsLoadingStatus', {template: require('./elements/loading-status.html'), controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'})
+    .component('crud<?= $modelClassSingular ?>Curate', {
+        template: require('./curate.html'),
+        controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>SideMenu', {
+        template: require('./side-menu.html'),
+        controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>CompactList', {
+        template: require('./compact-list.html'),
+        controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>Form', {
+        template: require('./form.html'),
+        controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>FormTop', {
+        template: require('./form.top.html'),
+        controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>ElementsFormControls', {
+        template: require('./elements/form-controls.html'),
+        controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>ElementsLoadingStatus', {
+        template: require('./elements/loading-status.html'),
+        controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
+    })
 ;
 
 export default module;
