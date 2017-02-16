@@ -31,14 +31,13 @@ $labelNone = ItemTypes::label($modelClassSingular, 2);
     <!--<dna-collection-curation-widget template="" handsontableColumns="handsontableColumns" crud="crud" collection="collection"/>-->
 
     <div ng-show="<?= lcfirst($modelClassPlural) ?>.$metadata.pageCount > 1">
-        <p>Total count: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.totalCount }}</p>
-        <p>Current page: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.currentPage }}</p>
+        <p>Total count: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.totalCount }}, Current page: {{ <?= lcfirst($modelClassPlural) ?>.$metadata.currentPage }}</p>
         <pagination ng-change="pageChanged()" total-items="<?= lcfirst($modelClassPlural) ?>.$metadata.totalCount" ng-model="<?= lcfirst($modelClassPlural) ?>.$metadata.currentPage" items-per-page="<?= lcfirst($modelClassPlural) ?>.$metadata.perPage" num-pages="<?= lcfirst($modelClassPlural) ?>.$metadata.pageCount" class="pagination-sm" boundary-links="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
     </div>
 
-    <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.add()" ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1" class="btn btn-primary btn-xs">Add new item</a>
+    <a ng-if="restrictUi.byUserType(restrictUi.userTypes.DEVELOPER)" href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.add()" ng-show="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1" class="btn btn-primary btn-xs">Add new item</a>
 
-    <a href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.refresh()" ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved" class="btn btn-primary btn-xs">Refresh</a>
+    <a ng-if="restrictUi.byUserType(restrictUi.userTypes.DEVELOPER)" href="javascript:void(0)" ng-click="<?= lcfirst($modelClassPlural) ?>.refresh()" ng-show="<?= lcfirst($modelClassPlural) ?>.$resolved" class="btn btn-primary btn-xs">Refresh</a>
 
     <simple-handsontable
         ng-if="<?= lcfirst($modelClassPlural) ?>.length > 0"

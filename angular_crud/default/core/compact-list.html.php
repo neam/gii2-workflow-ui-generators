@@ -86,7 +86,7 @@ $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
     </div>
 </div>
 
-<div class="row" ng-if="uiModes.currentIsAtLeast(uiModes.modes.ADVANCED)">
+<div class="row" ng-if="restrictUi.byUserType(restrictUi.userTypes.ADVANCED)">
     <div class="col-lg-12">
         <div class="list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">
 

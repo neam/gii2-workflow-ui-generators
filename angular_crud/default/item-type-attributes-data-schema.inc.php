@@ -38,7 +38,7 @@ foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeIn
             }
 ?>
             '<?=$attribute?>': {
-                id: $state.params.<?=$attribute."Id"?> || null,
+                id: $state.params.active<?=ucfirst($attribute)."Id"?> || null,
                 item_label: null,
                 item_type: 'todo',
 <?php if (array_key_exists('deepAttributes', $attributeInfo)): ?>

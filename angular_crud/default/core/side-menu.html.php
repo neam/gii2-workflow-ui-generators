@@ -29,7 +29,7 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<ul class="navbar-default navbar-static-side animated slideInLeft" role="navigation">
+<ul class="nav" role="navigation">
 
     <!-- <?= $labelSingular ?> editing -->
 

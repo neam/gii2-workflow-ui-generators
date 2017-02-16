@@ -27,7 +27,7 @@ let module = angular
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    .service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q, DataEnvironmentService) {
+    .service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q, DataEnvironmentService, suggestionsService) {
 
         // Silly stand-in for the default string object is necessary to work around the fact that
         // the url param in ngResource is only evaluated at $resource creation and can not be changed later
@@ -132,12 +132,12 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             return contentFilters.trueIfNonEmpty(contentFilters.itemTypeSpecificLocationBasedContentFilters("<?= $modelClassSingular ?>"));
 
         };
+        // Collection is a ngResource facade that starts out empty and then gets populated during the refresh logic
         resource.collection = function (params) {
 
             var filter = resource.getItemTypeFilter();
             console.log('<?= lcfirst($modelClassSingular) ?> - filter', filter);
 
-            // Collection is a ngResource facade that starts out empty and then gets populated during the refresh logic
             var collection = [];
             collection.$metadata = {};
             collection.$resolved = null; // Neither true nor false, indicating that a request has not even begun
@@ -183,6 +183,12 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
             // Function to query/refresh the collection with items from server
             collection.refresh = function () {
+                if (suggestionsService.status() === 'active') {
+                    console.log('Warning: Can not refresh <?= lcfirst($modelClassPlural) ?> while operation previews are shown', collection);
+                    // TODO: Notify UI that the operation previews must be refreshed in order for new data to show
+                    collection.refreshDeferredObject.resolve(collection);
+                    return collection.refreshDeferredObject.promise;
+                }
                 var filter = resource.getItemTypeFilter(); // necessary to not get outdated filter
                 // Update state variable for current filter
                 collection.filter = angular.copy(filter);
@@ -221,7 +227,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
                 // automatic initial request inactivated for this item type - use collection.$activate() manually to populate collection from server
                 collection.deferredActivation.promise.then(function() {
-                    console.log('<?= lcfirst($modelClassSingular) ?> - initial query when collection has been activated');
+                    console.log('<?= lcfirst($modelClassPlural) ?> - initial query when collection has been activated');
 
                     collection.refresh();
 
@@ -231,7 +237,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                         },
                         function (newVal, oldVal) {
                             if (JSON.stringify(newVal) !== JSON.stringify(oldVal) && JSON.stringify(newVal) !== JSON.stringify(resource.activeFilter)) {
-                                console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to getItemTypeFilter() change', newVal, oldVal);
+                                console.log('<?= lcfirst($modelClassPlural) ?>.refresh() due to getItemTypeFilter() change', newVal, oldVal);
                                 collection.refresh();
                             }
                         },
@@ -239,8 +245,8 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     );
 
                     // Activate refresh when active data environment has changed
-                    collection.$scope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
-                        console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to "activeDataEnvironment.change" event', chosenDataEnvironment);
+                    $rootScope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
+                        console.log('<?= lcfirst($modelClassPlural) ?>.refresh() due to "activeDataEnvironment.change" event', chosenDataEnvironment);
                         collection.refresh();
                     });
 
@@ -345,7 +351,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             // Current-item-in-focus logic
             collection.currentIndex = function () {
                 var item = _.find(collection, function (item) {
-                    return item.attributes.id == $state.params.<?= lcfirst($modelClassSingular) ?>Id;
+                    return item.attributes.id == $state.params.active<?= $modelClassSingular ?>Id;
                 });
                 return _.indexOf(collection, item);
             };
@@ -384,6 +390,110 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             return collection;
 
         };
+        // Item is a ngResource facade that starts out empty and then gets populated during the refresh logic
+        resource.item = function (params) {
+
+            var item = {};
+            item.$resolved = null; // Neither true nor false, indicating that a request has not even begun
+
+            // Include the corresponding id
+            item.$id = null;
+
+            // Include a reference to the parent resource
+            item.$resource = resource;
+
+            // Returns a promise which resolves the first time the item is queried or next time the item is refreshed
+            item.newRefreshDeferredObject = function() {
+                item.refreshDeferredObject = $q.defer();
+                return item.refreshDeferredObject;
+            };
+
+            // Set initial refresh deferred object and promise
+            item.$promise = item.newRefreshDeferredObject().promise;
+
+            // A promise that waits for manual activation in ui/route code before the item is populated from the server
+            // (lazy load)
+            item.$activated = false;
+            item.deferredActivation = $q.defer();
+            item.$activate = function() {
+                item.deferredActivation.resolve();
+                item.$activated = true;
+                return item.refreshDeferredObject.promise;
+            };
+
+            // State initial variable for "refreshing"-state
+            item.$refreshing = false;
+
+            // Function to query/refresh the item from server
+            item.refresh = function () {
+                if (suggestionsService.status() === 'active') {
+                    console.log('Warning: Can not refresh <?= lcfirst($modelClassSingular) ?> while operation previews are shown', collection);
+                    // TODO: Notify UI that the operation previews must be refreshed in order for new data to show
+                    collection.refreshDeferredObject.resolve(collection);
+                    return collection.refreshDeferredObject.promise;
+                }
+                var refreshedItem;
+                if (item.$id) {
+                    refreshedItem = resource.get({id: item.$id});
+                } else {
+                    console.log('Attempt to refresh <?= lcfirst($modelClassSingular) ?> without an id');
+                    let emptyItem = new resource(resource.dataSchema());
+                    refreshedItem.$promise = $q.defer().promise.resolve(emptyItem);
+                }
+                item.$promise = refreshedItem.$promise;
+                item.$refreshing = true;
+                refreshedItem.$promise.then(function () {
+                    item.replace(refreshedItem);
+                }).catch(function () {
+                    item.replace({});
+                }).finally(function () {
+                    item.$refreshing = false;
+                    item.$metadata = refreshedItem.$metadata;
+                    item.$resolved = refreshedItem.$resolved;
+                    item.refreshDeferredObject.resolve(item);
+                });
+                return item.refreshDeferredObject.promise;
+            };
+
+            item.replace = function (itemData) {
+                _.each(Object.keys(resource.dataSchema()), function (key, index, list) {
+                    delete item[key];
+                });
+                var resourceItem = new resource(itemData);
+                _.each(itemData, function (value, key, list) {
+                    item[key] = resourceItem[key];
+                });
+                //item.$scope.$broadcast('item.replaced', item);
+            };
+
+            item.load = function (id) {
+                // TODO: Hot-load from singleton collection if already available
+                item.$id = id;
+                return item.refresh();
+            };
+
+            // Initial query when active data environment is available
+            DataEnvironmentService.activeDataEnvironment.promise.then(function() {
+
+                // automatic initial request inactivated for this item type - use item.$activate() manually to populate item from server
+                item.deferredActivation.promise.then(function() {
+                    console.log('<?= lcfirst($modelClassSingular) ?> - initial query when item has been activated');
+
+                    item.refresh();
+
+                    // Activate refresh when active data environment has changed
+                    $rootScope.$on('activeDataEnvironment.change', function (ev, chosenDataEnvironment) {
+                        console.log('<?= lcfirst($modelClassSingular) ?>.refresh() due to "activeDataEnvironment.change" event', chosenDataEnvironment);
+                        item.refresh();
+                    });
+
+                });
+
+            });
+
+            return item;
+
+        };
         return resource;
     })
 
@@ -394,6 +504,16 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
         var collection = <?= lcfirst($modelClassSingular) ?>Resource.collection();
         return collection;
+
+    })
+
+    /**
+     * Inject to get a singleton of populatable item object from database
+     */
+    .service('<?= lcfirst($modelClassSingular) ?>', function (<?= lcfirst($modelClassSingular) ?>Resource) {
+
+        var item = <?= lcfirst($modelClassSingular) ?>Resource.item();
+        return item;
 
     })
 
@@ -778,6 +898,11 @@ endforeach;
                 var self = this;
 
                 _.each(changes, function (change, index, list) {
+
+                    if(!$.isArray(change)) {
+                        console.log('Invalid "change" detected in handsontable callback', change, changes, source);
+                        return;
+                    }
 
                     var changeObject = {
                         "row": change[0],
