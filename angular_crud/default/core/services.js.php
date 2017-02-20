@@ -566,116 +566,20 @@ foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeIn
 ?>
             '<?=$attribute?>': {
                 relatedCollection: function() {
-                    console.log('TODO: lazy load <?= lcfirst($relatedModelClassPlural) ?> here');
-                    return <?= lcfirst($relatedModelClassPlural) ?>;
+                    // Inject the related collection
+                    return $q((resolve) => {
+                        $injector.invoke(['<?= lcfirst($relatedModelClassPlural) ?>', function (<?= lcfirst($relatedModelClassPlural) ?>) {
+                            <?= lcfirst($relatedModelClassPlural) ?>.$activate();
+                            <?= lcfirst($relatedModelClassPlural) ?>.$promise.then(function (collection) {
+                                resolve(collection);
+                            })
+                        }]);
+                    });
                 },
 <?php
 if ($attributeInfo["type"] === "has-one-relation"):
 ?>
-                select2Options: {
-                    placeholder:'Select an option',
-                    allowClear: true,
-                    /**
-                     * Ajax mode in select2 is used for two reasons:
-                     * 1. It allows the input to be initialized before the selections/options are available
-                     * 2. It allows for selection amongst an unlimited amount of items
-                     *
-                     * However, the transport function is overridden as to not actually use the built in jquery ajax methods,
-                     * but instead use the ngResource representation of the alternatives.
-                     */
-                    ajax: {
-                        dataType: 'json',
-                        delay: 300,
-                        data: function (params) {
-                            return {
-                                q: params.term, // search term
-                                page: params.page
-                            };
-                        },
-                        processResults: function (data, page) {
-                            // parse the results into the format expected by Select2, which are plain objects with id and text (ngResource objects will NOT work)
-                            // additional attributes can be supplied in order to be utilized in templating functions
-                            var plainObjects = [];
-                            for (var i = 0; i < data.length; i++) {
-                                var item = data[i];
-                                plainObjects.push({
-                                    id: item.id,
-                                    text: item.item_label,
-                                })
-                            }
-                            return {
-                                results: plainObjects
-                            };                        },
-                        // @param params The object containing the parameters used to generate the
-                        //   request.
-                        // @param success A callback function that takes `data`, the results from the
-                        //   request.
-                        // @param failure A callback function that indicates that the request could
-                        //   not be completed.
-                        // @returns An object that has an `abort` function that can be called to abort
-                        //   the request if needed.
-                        transport: function (params, success, failure) {
-
-                            // TODO require ensure related services.js and then run the transport stuff
-
-                            var relatedItemsCollection = <?= lcfirst($relatedModelClassPlural) ?>;
-                            var relatedItemsPromise;
-
-                            // If no search string or the same as before is entered, we can re-use the existing global collection without modification
-                            if ($.trim(relatedItemsCollection.filter.<?= $relatedModelClassSingular ?>_search) === $.trim(params.data.q)) {
-                                relatedItemsPromise = relatedItemsCollection.$promise;
-                            } else {
-                                // Get a promise that will resolve after the collection has been refreshed
-                                relatedItemsPromise = relatedItemsCollection.newRefreshDeferredObject().promise;
-                                // Set global filter which will trigger a refresh (within a timeout so that a digest cycle is run after the modification)
-                                $timeout(function () {
-                                    $location.search('cf_<?= $relatedModelClassSingular ?>_search', params.data.q);
-                                });
-                            }
-
-                            relatedItemsPromise.then(function () {
-
-                                // Filter available results to match the entered text
-                                var filtered = _.filter(relatedItemsCollection, function (data, iterator, context) {
-
-                                    // If there are no search terms, return all of the data
-                                    if ($.trim(params.data.q) === '') {
-                                        return true;
-                                    }
-
-                                    if (data.item_label.toLowerCase().indexOf(params.data.q.toLowerCase()) > -1) {
-                                        return true
-                                    }
-
-                                    return false;
-                                });
-
-                                success(filtered);
-
-                            }).catch(failure);
-
-                            var returnObject = {
-                                abort: function () {
-                                    console.log('abort TODO');
-                                }
-                            };
-                            return returnObject;
-
-                        },
-                        cache: true
-                    },
-                    // Perform no escape of markup = allow html
-                    escapeMarkup: function (markup) {
-                        return markup;
-                    },
-                    minimumInputLength: 0,
-                    templateResult: function (result) {
-                        return result.text;
-                    },
-                    templateSelection: function (selection) {
-                        return selection.text;
-                    }
-                }
+                select2Options: dnaProjectBaseHandsontableCrudHelper.defaultSelect2OptionsFactory('<?= lcfirst($relatedModelClassPlural) ?>', '<?= $relatedModelClassSingular ?>', $injector),
 <?php
 endif;
 ?>
