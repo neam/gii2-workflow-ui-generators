@@ -17,7 +17,18 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 let module = angular
     .module('crud-<?= Inflector::camel2id($modelClassSingular) ?>-controllers', [])
 
-    .controller('list<?= $modelClassPlural ?>Controller', function ($scope, $location, visibilitySettings, <?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
+    .controller('list<?= $modelClassPlural ?>Controller', function (
+        $scope,
+        $location,
+        restrictUi,
+        visibilitySettings,
+        <?= lcfirst($modelClassPlural) ?>,
+        <?= lcfirst($modelClassSingular) ?>Resource,
+        <?= lcfirst($modelClassSingular) ?>Crud
+    ) {
+
+        // For restrictUi to be available in components using this as their controller
+        $scope.restrictUi = restrictUi;
 
         // Activate collections used in view
         <?= lcfirst($modelClassPlural) ?>.$activate();
@@ -115,13 +126,7 @@ if ($workflowItem):
                     }
                 };
                 $scope.refreshModel = function () {
-                    <?= lcfirst($modelClassSingular) ?>.$promise.then(function () {
-                        <?= lcfirst($modelClassSingular) ?>.$get(function (data) {
-                            console.log('<?= $modelClassSingular ?> refresh success', data);
-                        }, function (error) {
-                            console.log('<?= $modelClassSingular ?> refresh error', error);
-                        });
-                    });
+                    <?= lcfirst($modelClassSingular) ?>.refresh();
                 };
                 $scope.persistModel = function (form) {
                     <?= lcfirst($modelClassSingular) ?>.$promise.then(function () {
@@ -170,24 +175,30 @@ if ($workflowItem):
         <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = null;
         $scope.current<?= $modelClassSingular ?> = null;
 
-        var currentIndex = function() {
-            return _.indexOf(<?= lcfirst($modelClassPlural) ?>, <?= lcfirst($modelClassPlural) ?>.currentItemInFocus);
+        // Next/Prev button logic
+        var currentIndex = function () {
+            var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
+                return item.id == <?= lcfirst($modelClassPlural) ?>.currentItemInFocus.id;
+            });
+            return _.indexOf(<?= lcfirst($modelClassPlural) ?>, item);
         };
 
-        var previousCtr = function() {
+        var previousCtr = function () {
             return <?= lcfirst($modelClassPlural) ?>[currentIndex() - 1];
         };
 
-        var nextCtr = function() {
+        var nextCtr = function () {
             return <?= lcfirst($modelClassPlural) ?>[currentIndex() + 1];
         };
 
+        $scope.currentIndex = currentIndex;
+
         $scope.previous = function () {
-            <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = previousCtr();
+            <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(previousCtr());
         };
 
         $scope.next = function () {
-            <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = nextCtr();
+            <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(nextCtr());
         };
 
         $scope.$watch(function () {
@@ -201,18 +212,18 @@ if ($workflowItem):
                 $scope.current<?= $modelClassSingular ?>.$resolved = <?= lcfirst($modelClassPlural) ?>.$resolved;
                 //console.log('current<?= $modelClassSingular ?>ClassificationController watch', $scope.current<?= $modelClassSingular ?>);
 
-                edit<?= $modelClassSingular ?>ControllerService.loadIntoScope($scope, $scope.current<?= $modelClassSingular ?>);
+            edit<?= $modelClassSingular ?>ControllerService.loadIntoScope($scope, $scope.current<?= $modelClassSingular ?>);
 
-                // Animate
-                /*
-                $('#current-classification-form').removeAttr('class').attr('class', '');
+            // Animate
+            /*
+             $('#current-classification-form').removeAttr('class').attr('class', '');
 
-                $timeout(function () {
-                    var animation = 'bounce';
-                    $('#current-classification-form').addClass('animated');
-                    $('#current-classification-form').addClass(animation);
-                });
-                */
+             $timeout(function () {
+             var animation = 'bounce';
+             $('#current-classification-form').addClass('animated');
+             $('#current-classification-form').addClass(animation);
+             });
+             */
 
             }
         });

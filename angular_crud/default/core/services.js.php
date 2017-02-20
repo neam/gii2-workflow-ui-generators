@@ -381,6 +381,9 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 item.$resolved = collection.$resolved;
                 collection.currentItemInFocus = item;
                 collection.goToCurrentItemState(item);
+                // Inform angular that we have updated data by implicitly calling $apply via $timeout
+                $timeout(function () {
+                });
             };
 
             collection.clearCurrentItemInFocus = function() {
