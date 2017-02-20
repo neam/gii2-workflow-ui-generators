@@ -58,6 +58,18 @@ module
         template: require('./form.top.html'),
         controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
     })
+    .component('crud<?= $modelClassSingular ?>ElementsFilterAsRelatedItem', {
+        template: require('./elements/filter-as-related-item.html'),
+        bindings: {
+            ngModel: '=',
+            attributeRef: '<'
+        },
+        controller: function($scope, $location, <?= lcfirst($modelClassPlural) ?>) {
+            <?= lcfirst($modelClassPlural) ?>.$activate();
+            $scope.$location = $location;
+            $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
+        },
+    })
     .component('crud<?= $modelClassSingular ?>ElementsFormControls', {
         template: require('./elements/form-controls.html'),
         controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
