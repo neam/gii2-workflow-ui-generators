@@ -432,13 +432,17 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     collection.refreshDeferredObject.resolve(collection);
                     return collection.refreshDeferredObject.promise;
                 }
-                var refreshedItem;
+                let refreshedItem;
                 if (item.$id) {
                     refreshedItem = resource.get({id: item.$id});
                 } else {
-                    console.log('Attempt to refresh <?= lcfirst($modelClassSingular) ?> without an id');
+                    // This may be the case if we had a previous active item
+                    // and now want to go back to an unloaded state
                     let emptyItem = new resource(resource.dataSchema());
-                    refreshedItem.$promise = $q.defer().promise.resolve(emptyItem);
+                    let emptyItemDefer = $q.defer();
+                    refreshedItem = emptyItem;
+                    refreshedItem.$promise = emptyItemDefer.promise;
+                    emptyItemDefer.resolve(emptyItem);
                 }
                 item.$promise = refreshedItem.$promise;
                 item.$refreshing = true;
@@ -450,6 +454,8 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     item.$refreshing = false;
                     item.$metadata = refreshedItem.$metadata;
                     item.$resolved = refreshedItem.$resolved;
+                    item.$get = refreshedItem.$get;
+                    item.$update = refreshedItem.$update;
                     item.refreshDeferredObject.resolve(item);
                 });
                 return item.refreshDeferredObject.promise;
