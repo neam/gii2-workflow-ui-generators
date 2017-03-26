@@ -29,7 +29,7 @@ let module = angular
     /**
      * Inject to get an object for querying, adding, removing items
      */
-    .service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q, DataEnvironmentService, suggestionsService) {
+    .service('<?= lcfirst($modelClassSingular) ?>Resource', function ($resource, $location, $state, $rootScope, $timeout, contentFilters, $q, DataEnvironmentService, backendOperations) {
 
         // Silly stand-in for the default string object is necessary to work around the fact that
         // the url param in ngResource is only evaluated at $resource creation and can not be changed later
@@ -185,7 +185,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
             // Function to query/refresh the collection with items from server
             collection.refresh = function () {
-                if (suggestionsService.status() === 'active') {
+                if (backendOperations.status() === 'preview') {
                     console.log('Warning: Can not refresh <?= lcfirst($modelClassPlural) ?> while operation previews are shown', collection);
                     // TODO: Notify UI that the operation previews must be refreshed in order for new data to show
                     collection.refreshDeferredObject.resolve(collection);
@@ -453,7 +453,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
 
             // Function to query/refresh the item from server
             item.refresh = function () {
-                if (suggestionsService.status() === 'active') {
+                if (backendOperations.status() === 'preview') {
                     console.log('Warning: Can not refresh <?= lcfirst($modelClassSingular) ?> while operation previews are shown', item);
                     // TODO: Notify UI that the operation previews must be refreshed in order for new data to show
                     item.refreshDeferredObject.resolve(item);
