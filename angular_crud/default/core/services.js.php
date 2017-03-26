@@ -350,6 +350,28 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 }
             };
 
+            collection.replaceItemInCollection = function (item, itemData) {
+                _.each(Object.keys(resource.dataSchema()), function (key, index, list) {
+                    delete item[key];
+                });
+                var resourceItem = new resource(itemData);
+                _.each(itemData, function (value, key, list) {
+                    item[key] = resourceItem[key];
+                });
+            };
+
+            collection.shouldUseThisUpdatedItemIfExistsInCollection = function(updatedItem) {
+
+                // Hot-load from singleton collection if already available
+                var item = _.find(collection, function (item) {
+                    return item.attributes.id == updatedItem.id;
+                });
+                if (item) {
+                    collection.replaceItemInCollection(item, updatedItem);
+                }
+
+            };
+
             // Current-item-in-focus logic
             collection.currentIndex = function () {
                 var item = _.find(collection, function (item) {

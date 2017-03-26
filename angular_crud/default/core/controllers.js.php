@@ -136,6 +136,8 @@ if ($workflowItem):
                                 form.$setPristine();
                                 form.$setUntouched();
                             }
+                            // Tell collection to use the updated item attributes
+                            clerkLedgerDeliverables.shouldUseThisUpdatedItemIfExistsInCollection(updatedItem);
                         }, function (error) {
                             console.log('<?= $modelClassSingular ?> save error', error);
                         });
