@@ -367,7 +367,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             };
 
             collection.goToCurrentItemState = function(item) {
-                var goToStateParams = angular.merge($state.params, {<?= lcfirst($modelClassSingular) ?>Id: item.id});
+                var goToStateParams = angular.merge($state.params, {active<?= $modelClassSingular ?>Id: item.id});
                 //$state.transitionTo($state.current.name, goToStateParams, { notify: false });
                 if ($state.current.name.indexOf('.current-item') > -1) {
                     $state.go($state.current.name, goToStateParams);
@@ -432,10 +432,10 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
             // Function to query/refresh the item from server
             item.refresh = function () {
                 if (suggestionsService.status() === 'active') {
-                    console.log('Warning: Can not refresh <?= lcfirst($modelClassSingular) ?> while operation previews are shown', collection);
+                    console.log('Warning: Can not refresh <?= lcfirst($modelClassSingular) ?> while operation previews are shown', item);
                     // TODO: Notify UI that the operation previews must be refreshed in order for new data to show
-                    collection.refreshDeferredObject.resolve(collection);
-                    return collection.refreshDeferredObject.promise;
+                    item.refreshDeferredObject.resolve(item);
+                    return item.refreshDeferredObject.promise;
                 }
                 let refreshedItem;
                 if (item.$id) {
@@ -585,7 +585,7 @@ foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeIn
 <?php
 if ($attributeInfo["type"] === "has-one-relation"):
 ?>
-                select2Options: dnaProjectBaseHandsontableCrudHelper.defaultSelect2OptionsFactory('<?= lcfirst($relatedModelClassPlural) ?>', '<?= $relatedModelClassSingular ?>', $injector),
+                select2Options: dnaProjectBaseHandsontableCrudHelper.defaultSelect2OptionsFactory('<?= lcfirst($relatedModelClassPlural) ?>', '<?= $relatedModelClassSingular ?>', $injector, $timeout, $location),
 <?php
 endif;
 ?>
@@ -616,7 +616,7 @@ endforeach;
         var handsontable = {
 
             afterChange: dnaProjectBaseHandsontableCrudHelper.defaultAfterChangeCallbackFactory(<?= lcfirst($modelClassPlural) ?>),
-            afterSelectionEndByPropCallback: dnaProjectBaseHandsontableCrudHelper.defaultAfterSelectionEndByPropCallbackFactory(<?= lcfirst($modelClassPlural) ?>, $rootScope, relations),
+            afterSelectionEndByPropCallback: dnaProjectBaseHandsontableCrudHelper.defaultAfterSelectionEndByPropCallbackFactory(<?= lcfirst($modelClassPlural) ?>, $rootScope, relations, hotkeys),
             deleteButtonRenderer: dnaProjectBaseHandsontableCrudHelper.defaultDeleteButtonRendererFactory(<?= lcfirst($modelClassPlural) ?>),
 
             /**
@@ -650,7 +650,7 @@ foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeIn
 
 ?>
                 '<?=$attribute?>': {
-                    cellRenderer: dnaProjectBaseHandsontableCrudHelper.defaultCellrendererForHasOneRelatedItemFactory(<?= lcfirst($modelClassPlural) ?>, '<?=$attribute?>'),
+                    cellRenderer: dnaProjectBaseHandsontableCrudHelper.defaultCellrendererForHasOneRelatedItemFactory(<?= lcfirst($modelClassPlural) ?>, '<?=$attribute?>', hotkeys),
                     select2Options: _.extend({
                             onBeginEditing: dnaProjectBaseHandsontableCrudHelper.onBeginEditingCallbackThatRequiresManualEditorStart,
                             width: '400px'

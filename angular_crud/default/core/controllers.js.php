@@ -130,8 +130,8 @@ if ($workflowItem):
                 };
                 $scope.persistModel = function (form) {
                     <?= lcfirst($modelClassSingular) ?>.$promise.then(function () {
-                        <?= lcfirst($modelClassSingular) ?>.$update(function (data) {
-                            console.log('<?= $modelClassSingular ?> save success', data);
+                        <?= lcfirst($modelClassSingular) ?>.$update(function (updatedItem) {
+                            console.log('<?= $modelClassSingular ?> save success', updatedItem);
                             if (form) {
                                 form.$setPristine();
                                 form.$setUntouched();
