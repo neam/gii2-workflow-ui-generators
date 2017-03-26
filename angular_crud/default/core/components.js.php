@@ -72,9 +72,9 @@ module
             'form': '=',
         },
         template: require('./elements/current-classification-form-controls.html'),
-        controller: function ($scope, <?= lcfirst($modelClassSingular) ?>, <?=$modelClassPlural?>, edit<?= $modelClassSingular ?>ControllerService, restrictUi) {
+        controller: function ($scope, <?= lcfirst($modelClassSingular) ?>, <?= lcfirst($modelClassPlural) ?>, edit<?= $modelClassSingular ?>ControllerService, restrictUi) {
             $scope.<?= lcfirst($modelClassSingular) ?> = <?= lcfirst($modelClassSingular) ?>;
-            $scope.<?=$modelClassPlural?> = <?=$modelClassPlural?>;
+            $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
             $scope.restrictUi = restrictUi;
 
             // Next/Prev button logic
@@ -82,33 +82,33 @@ module
                 if (!<?= lcfirst($modelClassSingular) ?>) {
                     return -1;
                 }
-                var item = _.find(<?=$modelClassPlural?>, function (item) {
+                var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
                     return item.id == <?= lcfirst($modelClassSingular) ?>.id;
                 });
-                return _.indexOf(<?=$modelClassPlural?>, item);
+                return _.indexOf(<?= lcfirst($modelClassPlural) ?>, item);
             };
 
             var previousCtr = function () {
-                return <?=$modelClassPlural?>[currentIndex() - 1];
+                return <?= lcfirst($modelClassPlural) ?>[currentIndex() - 1];
             };
 
             var nextCtr = function () {
-                return <?=$modelClassPlural?>[currentIndex() + 1];
+                return <?= lcfirst($modelClassPlural) ?>[currentIndex() + 1];
             };
 
             $scope.currentIndex = currentIndex;
 
             $scope.previous = function () {
-                <?=$modelClassPlural?>.setCurrentItemInFocus(previousCtr());
+                <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(previousCtr());
             };
 
             $scope.next = function () {
-                <?=$modelClassPlural?>.setCurrentItemInFocus(nextCtr());
+                <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(nextCtr());
             };
 
             edit<?= $modelClassSingular ?>ControllerService.loadIntoScope($scope, <?= lcfirst($modelClassSingular) ?>);
 
-            // Reload ctr when id has changed so that the reset-functionality works as expected
+            // Reload item when id has changed so that the reset-functionality works as expected
             $scope.$watch('<?= lcfirst($modelClassSingular) ?>.id', function (newVal, oldVal) {
                 edit<?= $modelClassSingular ?>ControllerService.loadIntoScope($scope, <?= lcfirst($modelClassSingular) ?>);
             });

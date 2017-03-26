@@ -31,24 +31,25 @@ $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
 <div ng-if="!<?= lcfirst($modelClassSingular) ?>.$resolved">
-    <div class="alert alert-info">Select a transaction to begin</div>
+    <div class="alert alert-info">Select a <?= strtolower($labelSingular) ?> to begin</div>
 </div>
 <div ng-if="<?= lcfirst($modelClassSingular) ?>.$resolved && <?= lcfirst($modelClassSingular) ?>.$promise.$$state.status !== 2">
     <div class="row wrapper border-bottom white-bg page-heading ">
         <h1 class="pull-left">{{<?= lcfirst($modelClassSingular) ?>.item_label}}</h1>
         <div class="pull-right top-buttons">
 
-            <crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls <?= $modelClassSingularId ?>-form="$ctrl.<?= lcfirst($modelClassSingular) ?>Form"></crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls>
+            <crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls form="$ctrl.form"></crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls>
 
         </div>
     </div>
+
     <div data-ui-view="currentClassificationStep"></div>
 
     <div class="row wrapper border-bottom white-bg page-heading ">
         <h1 class="pull-left">{{<?= lcfirst($modelClassSingular) ?>.item_label}}</h1>
         <div class="pull-right top-buttons">
 
-            <crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls <?= $modelClassSingularId ?>-form="$ctrl.<?= lcfirst($modelClassSingular) ?>Form"></crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls>
+            <crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls form="$ctrl.form"></crud-<?= $modelClassSingularId ?>-elements-current-classification-form-controls>
 
         </div>
     </div>

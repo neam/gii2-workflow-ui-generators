@@ -29,7 +29,6 @@ $labelSingular = ucfirst(strtolower($unprefixedModelClassSingularWords));
 $labelPlural = ucfirst(strtolower($unprefixedModelClassPluralWords));
 
 ?>
-
 <div class="row">
     <div class="col-lg-12">
         <div class="list-<?= $modelClassPluralId ?>" ng-controller="list<?= $modelClassPlural ?>Controller">

@@ -16,7 +16,8 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         class="btn btn-primary"
         ng-disabled="!$ctrl.form.$valid || !<?= lcfirst($modelClassSingular) ?>.$resolved"
         >
-    <span ng-if="$ctrl.form.$pristine">Refresh</span><span ng-if="!$ctrl.form.$pristine">Save</span>
+    <span ng-if="$ctrl.form.$pristine">Refresh</span><span
+        ng-if="!$ctrl.form.$pristine">Save</span>
 </button>
 
 <button
@@ -25,4 +26,22 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         ng-disabled="$ctrl.form.$pristine || !<?= lcfirst($modelClassSingular) ?>.$resolved"
         ng-click="reset($ctrl.form)"
         >Reset Form
+</button>
+
+<button
+        type="button"
+        class="btn btn-default"
+        ng-if="currentIndex(<?= lcfirst($modelClassSingular) ?>) > -1"
+        ng-disabled="<?= lcfirst($modelClassPlural) ?>[0].id === <?= lcfirst($modelClassSingular) ?>.id"
+        ng-click="previous()"
+        >Previous
+</button>
+
+<button
+        type="button"
+        class="btn btn-default"
+        ng-if="currentIndex(<?= lcfirst($modelClassSingular) ?>) > -1"
+        ng-disabled="<?= lcfirst($modelClassPlural) ?>[<?= lcfirst($modelClassPlural) ?>.length-1].id === <?= lcfirst($modelClassSingular) ?>.id"
+        ng-click="next()"
+        >Next
 </button>
