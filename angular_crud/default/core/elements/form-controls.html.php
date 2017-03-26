@@ -14,15 +14,15 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
 <button
         type="submit"
         class="btn btn-primary"
-        ng-disabled="!<?= lcfirst($modelClassSingular) ?>Form.$valid || !<?= lcfirst($modelClassSingular) ?>.$resolved"
+        ng-disabled="!$ctrl.form.$valid || !$ctrl.<?= lcfirst($modelClassSingular) ?>.$resolved"
         >
-    <span ng-if="<?= lcfirst($modelClassSingular) ?>Form.$pristine">Refresh</span><span ng-if="!<?= lcfirst($modelClassSingular) ?>Form.$pristine">Save</span>
+    <span ng-if="$ctrl.form.$pristine">Refresh</span><span ng-if="!$ctrl.form.$pristine">Save</span>
 </button>
 
 <button
         type="button"
         class="btn btn-default"
-        ng-disabled="<?= lcfirst($modelClassSingular) ?>Form.$pristine || !<?= lcfirst($modelClassSingular) ?>.$resolved"
-        ng-click="reset(<?= lcfirst($modelClassSingular) ?>Form)"
+        ng-disabled="$ctrl.form.$pristine || !$ctrl.<?= lcfirst($modelClassSingular) ?>.$resolved"
+        ng-click="reset($ctrl.form)"
         >Reset Form
 </button>

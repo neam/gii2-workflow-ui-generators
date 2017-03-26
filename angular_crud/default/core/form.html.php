@@ -43,7 +43,7 @@ $modelClassPlural = Inflector::camelize($modelClassPluralWords);
         <div id="wrapper" class="<?= $modelClassSingularId ?>">
             <div class="animated fadeIn wrapper-content">
 
-                <crud-<?= lcfirst($modelClassSingularId) ?>-form-top></crud-<?= lcfirst($modelClassSingularId) ?>-form-top>
+                <crud-<?= lcfirst($modelClassSingularId) ?>-form-top form="<?= lcfirst($modelClassSingular) ?>Form"></crud-<?= lcfirst($modelClassSingularId) ?>-form-top>
                 <ui-view/>
 
             </div>
