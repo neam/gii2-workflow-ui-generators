@@ -30,7 +30,7 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<div ng-if="<?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1 && <?= lcfirst($modelClassPlural) ?>.length > 0">
+<div ng-if="<?= lcfirst($modelClassPlural) ?>.enableCurrentItemMode && <?= lcfirst($modelClassPlural) ?>.$promise.$$state.status === 1 && <?= lcfirst($modelClassPlural) ?>.length > 0">
     <form id="current-classification-form" name="<?= lcfirst($modelClassSingular) ?>Form" ng-submit="saveOrRefresh(<?= lcfirst($modelClassSingular) ?>Form)"
           novalidate>
 

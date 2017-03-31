@@ -106,7 +106,11 @@ if ($workflowItem):
 
     })
 
-    .service('edit<?= $modelClassSingular ?>ControllerService', function ($state, $rootScope, <?= lcfirst($modelClassSingular) ?>Resource, <?= lcfirst($modelClassSingular) ?>Crud) {
+    .service('edit<?= $modelClassSingular ?>ControllerService',
+        function ($state, $rootScope, restrictUi,
+                  <?= lcfirst($modelClassSingular) ?>Resource,
+                  <?= lcfirst($modelClassSingular) ?>Crud,
+                  <?= lcfirst($modelClassPlural) ?>) {
 
         return {
             loadIntoScope: function ($scope, <?= lcfirst($modelClassSingular) ?>) {
@@ -137,7 +141,7 @@ if ($workflowItem):
                                 form.$setUntouched();
                             }
                             // Tell collection to use the updated item attributes
-                            clerkLedgerDeliverables.shouldUseThisUpdatedItemIfExistsInCollection(updatedItem);
+                            <?= lcfirst($modelClassPlural) ?>.shouldUseThisUpdatedItemIfExistsInCollection(updatedItem);
                         }, function (error) {
                             console.log('<?= $modelClassSingular ?> save error', error);
                         });
@@ -164,66 +168,6 @@ if ($workflowItem):
 
             }
         };
-
-    })
-
-    .controller('current<?= $modelClassSingular ?>ClassificationController', function ($scope, $timeout, edit<?= $modelClassSingular ?>ControllerService, <?= lcfirst($modelClassPlural) ?>) {
-
-        <?= lcfirst($modelClassPlural) ?>.currentItemInFocus = null;
-        $scope.current<?= $modelClassSingular ?> = null;
-
-        // Next/Prev button logic
-        var currentIndex = function () {
-            var item = _.find(<?= lcfirst($modelClassPlural) ?>, function (item) {
-                return item.id == <?= lcfirst($modelClassPlural) ?>.currentItemInFocus.id;
-            });
-            return _.indexOf(<?= lcfirst($modelClassPlural) ?>, item);
-        };
-
-        var previousCtr = function () {
-            return <?= lcfirst($modelClassPlural) ?>[currentIndex() - 1];
-        };
-
-        var nextCtr = function () {
-            return <?= lcfirst($modelClassPlural) ?>[currentIndex() + 1];
-        };
-
-        $scope.currentIndex = currentIndex;
-
-        $scope.previous = function () {
-            <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(previousCtr());
-        };
-
-        $scope.next = function () {
-            <?= lcfirst($modelClassPlural) ?>.setCurrentItemInFocus(nextCtr());
-        };
-
-        $scope.$watch(function () {
-            //console.log('current<?= $modelClassSingular ?>ClassificationController watch check - <?= lcfirst($modelClassPlural) ?>.currentItemInFocus', <?= lcfirst($modelClassPlural) ?>.currentItemInFocus);
-            return <?= lcfirst($modelClassPlural) ?>.currentItemInFocus;
-        }, function (newVal, oldVal) {
-            if (newVal && newVal.item_type === '<?= $modelClassSingularIdUnderscored ?>') {
-
-                $scope.current<?= $modelClassSingular ?> = newVal;
-                $scope.current<?= $modelClassSingular ?>.$promise = <?= lcfirst($modelClassPlural) ?>.$promise;
-                $scope.current<?= $modelClassSingular ?>.$resolved = <?= lcfirst($modelClassPlural) ?>.$resolved;
-                //console.log('current<?= $modelClassSingular ?>ClassificationController watch', $scope.current<?= $modelClassSingular ?>);
-
-            edit<?= $modelClassSingular ?>ControllerService.loadIntoScope($scope, $scope.current<?= $modelClassSingular ?>);
-
-            // Animate
-            /*
-             $('#current-classification-form').removeAttr('class').attr('class', '');
-
-             $timeout(function () {
-             var animation = 'bounce';
-             $('#current-classification-form').addClass('animated');
-             $('#current-classification-form').addClass(animation);
-             });
-             */
-
-            }
-        });
 
     });
 

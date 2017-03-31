@@ -60,13 +60,12 @@ module
             $scope.restrictUi = restrictUi;
         }
     })
-    /*
-     // Defined in routes atm, not a component
-     .component('crud<?= $modelClassSingular ?>CurrentClassificationForm', {
-     template: require('./current-classification-form.html'),
-     controller: 'current<?= $modelClassSingular ?>ClassificationController'
-     })
-     */
+    .component('crud<?= $modelClassSingular ?>CurrentClassificationForm', {
+        template: require('./current-classification-form.html'),
+        controller: function ($scope, <?= lcfirst($modelClassPlural) ?>) {
+            $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
+        }
+    })
     .component('crud<?= $modelClassSingular ?>ElementsCurrentClassificationFormControls', {
         bindings: {
             'form': '=',
@@ -117,14 +116,14 @@ module
     })
     .component('crud<?= $modelClassSingular ?>Form', {
         template: require('./form.html'),
-        controller: 'edit<?=$modelClassPlural?>Controller'
+        controller: 'edit<?= $modelClassSingular ?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>FormTop', {
         template: require('./form.top.html'),
         bindings: {
             'form': '=',
         },
-        controller: 'edit<?=$modelClassPlural?>Controller'
+        controller: 'edit<?= $modelClassSingular ?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>ElementsFilterAsRelatedItem', {
         template: require('./elements/filter-as-related-item.html'),
@@ -161,7 +160,7 @@ module
         bindings: {
             'form': '=',
         },
-        controller: 'edit<?=$modelClassPlural?>Controller'
+        controller: 'edit<?= $modelClassSingular ?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>ElementsLoadingStatus', {
         template: require('./elements/loading-status.html'),
