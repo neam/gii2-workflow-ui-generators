@@ -459,6 +459,17 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     item.refreshDeferredObject.resolve(item);
                     return item.refreshDeferredObject.promise;
                 }
+
+                // Prevent multiple requests to refresh the item (Note: This assumes that the same id is requested multiple times)
+                if (item.$refreshing) {
+                    return item.refreshDeferredObject.promise;
+                }
+                // Mark as refreshing
+                item.$refreshing = true;
+                // Create a new refresh deferred object to hold the status and promise of this refresh
+                item.newRefreshDeferredObject();
+                item.$promise = item.refreshDeferredObject.promise;
+                // Set up an object to reflect the given .$id parameter - be it either via fetching a real object or an empty item
                 let refreshedItem;
                 if (item.$id) {
                     refreshedItem = resource.get({id: item.$id});
@@ -471,11 +482,11 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     refreshedItem.$promise = emptyItemDefer.promise;
                     emptyItemDefer.resolve(emptyItem);
                 }
-                item.$promise = refreshedItem.$promise;
-                item.$refreshing = true;
+                // When the above object is ready, update the singleton item to reflect the refreshed status
                 refreshedItem.$promise.then(function () {
                     item.replace(refreshedItem);
-                }).catch(function () {
+                }).catch(function (err) {
+                    console.log('refreshedItem error: ', err)
                     item.replace({});
                 }).finally(function () {
                     item.$refreshing = false;
@@ -485,7 +496,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                     item.$update = refreshedItem.$update;
                     item.refreshDeferredObject.resolve(item);
                 });
-                return item.refreshDeferredObject.promise;
+                return item.$promise;
             };
 
             item.replace = function (itemData) {
@@ -496,7 +507,6 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
                 _.each(itemData, function (value, key, list) {
                     item[key] = resourceItem[key];
                 });
-                //item.$scope.$broadcast('item.replaced', item);
             };
 
             item.load = function (id) {
