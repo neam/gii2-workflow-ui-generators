@@ -141,12 +141,12 @@ class Generator extends \neam\gii2_workflow_ui_generators\yii1_crud\Generator
                 );
             }
         }
-        $templatePath = $this->getTemplatePath() . '/core/elements';
+        $templatePath = $this->getTemplatePath() . '/core/components';
         foreach (scandir($templatePath) as $file) {
             if (is_file($templatePath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 $files[] = new CodeFile(
-                    $this->jsTemplateDestination('elements/' . $file),
-                    $this->render("core/elements/$file", compact("itemTypeAttributesWithAdditionalMetadata", "generator"))
+                    $this->jsTemplateDestination('components/' . $file),
+                    $this->render("core/components/$file", compact("itemTypeAttributesWithAdditionalMetadata", "generator"))
                 );
             }
         }

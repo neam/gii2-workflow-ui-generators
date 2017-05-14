@@ -39,29 +39,29 @@ var module = angular.module('crud-<?= $modelClassSingularId ?>-components', [
 
 module
     .component('crud<?= $modelClassSingular ?>Curate', {
-        template: require('./curate.html'),
+        template: require('./components/curate.html'),
         controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>SideMenu', {
-        template: require('./side-menu.html'),
+        template: require('./components/side-menu.html'),
         controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>CompactList', {
-        template: require('./compact-list.html'),
+        template: require('./components/compact-list.html'),
         controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>CurrentClassification', {
         bindings: {
             'form': '=',
         },
-        template: require('./current-classification.html'),
+        template: require('./components/current-classification.html'),
         controller: function ($scope, <?= lcfirst($modelClassSingular) ?>, restrictUi) {
             $scope.<?= lcfirst($modelClassSingular) ?> = <?= lcfirst($modelClassSingular) ?>;
             $scope.restrictUi = restrictUi;
         }
     })
     .component('crud<?= $modelClassSingular ?>CurrentClassificationForm', {
-        template: require('./current-classification-form.html'),
+        template: require('./components/current-classification-form.html'),
         controller: function ($scope, <?= lcfirst($modelClassPlural) ?>) {
             $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
         }
@@ -70,7 +70,7 @@ module
         bindings: {
             'form': '=',
         },
-        template: require('./elements/current-classification-form-controls.html'),
+        template: require('./components/current-classification-form-controls.html'),
         controller: function ($scope, <?= lcfirst($modelClassSingular) ?>, <?= lcfirst($modelClassPlural) ?>, edit<?= $modelClassSingular ?>ControllerService, restrictUi) {
             $scope.<?= lcfirst($modelClassSingular) ?> = <?= lcfirst($modelClassSingular) ?>;
             $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
@@ -115,18 +115,18 @@ module
         }
     })
     .component('crud<?= $modelClassSingular ?>Form', {
-        template: require('./form.html'),
+        template: require('./components/form.html'),
         controller: 'edit<?= $modelClassSingular ?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>FormTop', {
-        template: require('./form.top.html'),
+        template: require('./components/form.top.html'),
         bindings: {
             'form': '=',
         },
         controller: 'edit<?= $modelClassSingular ?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>ElementsFilterAsRelatedItem', {
-        template: require('./elements/filter-as-related-item.html'),
+        template: require('./components/filter-as-related-item.html'),
         bindings: {
             ngModel: '=',
             attributeRef: '<'
@@ -138,7 +138,7 @@ module
         },
     })
     .component('crud<?= $modelClassSingular ?>ElementsItemSelectionWidget', {
-        template: require('./elements/item-selection-widget.html'),
+        template: require('./components/item-selection-widget.html'),
         bindings: {
             selectedItem: '=',
             ngModel: '=',
@@ -149,21 +149,21 @@ module
             $scope.$location = $location;
             $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
             $scope.openCurateModal = function (params) {
-                let template = require('./curate-modal.html');
+                let template = require('./components/curate-modal.html');
                 let size = 'lg';
                 GeneralModalControllerService.openWithinScope($scope, template, size, params);
             };
         },
     })
     .component('crud<?= $modelClassSingular ?>ElementsFormControls', {
-        template: require('./elements/form-controls.html'),
+        template: require('./components/form-controls.html'),
         bindings: {
             'form': '=',
         },
         controller: 'edit<?= $modelClassSingular ?>Controller'
     })
     .component('crud<?= $modelClassSingular ?>ElementsLoadingStatus', {
-        template: require('./elements/loading-status.html'),
+        template: require('./components/loading-status.html'),
         controller: 'list<?=$modelClassPlural?>Controller'
     })
 ;
