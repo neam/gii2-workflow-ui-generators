@@ -28,10 +28,17 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<select ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved" ng-model="$ctrl.ngModel"
-        ng-options="<?= lcfirst($modelClassSingular) ?>.id as <?= lcfirst($modelClassSingular) ?>.item_label for <?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>"
-        type="text"
-        ng-blur="$location.search($ctrl.attributeRef, $ctrl.ngModel || '')">
-    <option value="">Select <?= $labelSingular ?>...</option>
-</select>
-<span ng-if="!<?= lcfirst($modelClassPlural) ?>.$resolved">{{ $ctrl.ngModel | json }}</span>
+<span ng-if="restrictUi.asInternalFeature()">
+
+    <a href="javascript:void(0)"
+       ng-if="<?= lcfirst($modelClassPlural) ?>.$activated"
+       ng-click="restrictUi.show<?= $modelClassSingular ?>Groupings = !restrictUi.show<?= $modelClassSingular ?>Groupings" class="label"
+       ng-class="{'label-primary': !restrictUi.show<?= $modelClassSingular ?>Groupings, 'label-warning': restrictUi.show<?= $modelClassSingular ?>Groupings}"><i
+            class="fa fa-cubes"></i></a>
+
+</span>
+<span>
+
+    <!-- TODO -->
+
+</span>

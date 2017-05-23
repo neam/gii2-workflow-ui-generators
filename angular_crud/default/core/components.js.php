@@ -38,6 +38,52 @@ var module = angular.module('crud-<?= $modelClassSingularId ?>-components', [
 ]);
 
 module
+    .component('crud<?= $modelClassSingular ?>Count', {
+        template: require('./components/count.html'),
+        controller: 'list<?= $modelClassPlural ?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>Filters', {
+        bindings: {
+            'renderInMenu': '<',
+        },
+        template: require('./components/filters.html'),
+        controller: 'filter<?= $modelClassPlural ?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>FiltersToggleAndStatus', {
+        template: require('./components/filters-toggle-and-status.html'),
+        controller: 'filter<?= $modelClassPlural ?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>Sortings', {
+        bindings: {
+            'renderInMenu': '<',
+        },
+        template: require('./components/sortings.html'),
+        controller: 'sorting<?= $modelClassPlural ?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>SortingsToggleAndStatus', {
+        template: require('./components/sortings-toggle-and-status.html'),
+        controller: 'filter<?= $modelClassPlural ?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>Groupings', {
+        bindings: {
+            'renderInMenu': '<',
+        },
+        template: require('./components/groupings.html'),
+        controller: 'filter<?= $modelClassPlural ?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>GroupingsToggleAndStatus', {
+        template: require('./components/groupings-toggle-and-status.html'),
+        controller: 'filter<?= $modelClassPlural ?>Controller'
+    })
+    .component('crud<?= $modelClassSingular ?>ImportButton', {
+        template: require('./components/import-button.html'),
+        controller: function ($scope, $state, clerkLedgerDeliverable, restrictUi) {
+            $scope.$state = $state;
+            $scope.clerkLedgerDeliverable = clerkLedgerDeliverable;
+            $scope.importRouteReference = '<?= $modelClassSingularId ?>';
+            $scope.restrictUi = restrictUi;
+        }
+    })
     .component('crud<?= $modelClassSingular ?>Curate', {
         template: require('./components/curate.html'),
         controller: 'list<?=Inflector::pluralize($modelClass)?>Controller'

@@ -28,10 +28,18 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<select ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved" ng-model="$ctrl.ngModel"
-        ng-options="<?= lcfirst($modelClassSingular) ?>.id as <?= lcfirst($modelClassSingular) ?>.item_label for <?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>"
-        type="text"
-        ng-blur="$location.search($ctrl.attributeRef, $ctrl.ngModel || '')">
-    <option value="">Select <?= $labelSingular ?>...</option>
-</select>
-<span ng-if="!<?= lcfirst($modelClassPlural) ?>.$resolved">{{ $ctrl.ngModel | json }}</span>
+<i class="fa fa-delete" ng-if="!$root.activeDataEnvironment.available"></i>
+
+<span ng-if="!$root.activeDataEnvironment.available">
+    _
+</span>
+
+<i class="fa fa-exclamation" ng-if="!<?= lcfirst($modelClassPlural) ?>.$activated && !<?= lcfirst($modelClassPlural) ?>.$refreshing && <?= lcfirst($modelClassPlural) ?>.$resolved === null"></i>
+
+<span ng-if="!<?= lcfirst($modelClassPlural) ?>.$activated && !<?= lcfirst($modelClassPlural) ?>.$refreshing && <?= lcfirst($modelClassPlural) ?>.$resolved === null">
+    !
+</span>
+
+<i class="fa fa-circle-o-notch fa-spin" ng-if="<?= lcfirst($modelClassPlural) ?>.$refreshing"></i>
+
+<span ng-if="<?= lcfirst($modelClassPlural) ?>.$activated && !<?= lcfirst($modelClassPlural) ?>.$refreshing && <?= lcfirst($modelClassPlural) ?>.$resolved">{{ <?= lcfirst($modelClassPlural) ?>.$metadata.totalCount }}</span>

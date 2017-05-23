@@ -28,10 +28,7 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<select ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved" ng-model="$ctrl.ngModel"
-        ng-options="<?= lcfirst($modelClassSingular) ?>.id as <?= lcfirst($modelClassSingular) ?>.item_label for <?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>"
-        type="text"
-        ng-blur="$location.search($ctrl.attributeRef, $ctrl.ngModel || '')">
-    <option value="">Select <?= $labelSingular ?>...</option>
-</select>
-<span ng-if="!<?= lcfirst($modelClassPlural) ?>.$resolved">{{ $ctrl.ngModel | json }}</span>
+<a ui-state="$state.current.data.workflowBaseState + '.import.optionally-by-import-session.' + importRouteReference"
+   ui-state-params="{activeImportSessionId: clerkLedgerDeliverable.id ? 'by-todo-list-item' : 'current'}">
+    <span class="label label-primary"><i class="fa fa-plus"></i></span>
+</a>

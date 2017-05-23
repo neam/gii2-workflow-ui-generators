@@ -28,10 +28,26 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<select ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved" ng-model="$ctrl.ngModel"
-        ng-options="<?= lcfirst($modelClassSingular) ?>.id as <?= lcfirst($modelClassSingular) ?>.item_label for <?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>"
-        type="text"
-        ng-blur="$location.search($ctrl.attributeRef, $ctrl.ngModel || '')">
-    <option value="">Select <?= $labelSingular ?>...</option>
-</select>
-<span ng-if="!<?= lcfirst($modelClassPlural) ?>.$resolved">{{ $ctrl.ngModel | json }}</span>
+<ul class="nav menu-filters"
+    ng-if="(restrictUi.show<?= $modelClassSingular ?>Filters) && restrictUi.asPrivateBetaFeature() && $ctrl.renderInMenu">
+
+    <li class="nav-title">Filters</li>
+
+    <li>
+        <label for="cf_<?= $modelClassSingular ?>_search">Free-text search</label>
+        <input ng-model="$state.params.cf_<?= $modelClassSingular ?>_search" name="cf_<?= $modelClassSingular ?>_search"
+               name="cf_<?= $modelClassSingular ?>_search"
+               type="text"
+               ng-model-options='{ debounce: 600 }' ng-change="$state.go($state.current.name, {'cf_<?= $modelClassSingular ?>_search': $state.params.cf_<?= $modelClassSingular ?>_search})"/>
+    </li>
+</ul>
+
+<ul class="not-a-list"
+    ng-if="(restrictUi.show<?= $modelClassSingular ?>Filters) && restrictUi.asPrivateBetaFeature() && !$ctrl.renderInMenu">
+
+    <li>
+        Free-text search
+        <input ng-model="$state.params.cf_<?= $modelClassSingular ?>_search" name="cf_<?= $modelClassSingular ?>_search" type="text"
+               ng-model-options='{ debounce: 600 }' ng-change="$state.go($state.current.name, {'cf_<?= $modelClassSingular ?>_search': cf_<?= $modelClassSingular ?>_search})"/>
+    </li>
+</ul>

@@ -28,10 +28,15 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<select ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved" ng-model="$ctrl.ngModel"
-        ng-options="<?= lcfirst($modelClassSingular) ?>.id as <?= lcfirst($modelClassSingular) ?>.item_label for <?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>"
-        type="text"
-        ng-blur="$location.search($ctrl.attributeRef, $ctrl.ngModel || '')">
-    <option value="">Select <?= $labelSingular ?>...</option>
-</select>
-<span ng-if="!<?= lcfirst($modelClassPlural) ?>.$resolved">{{ $ctrl.ngModel | json }}</span>
+<ul class="nav menu-groupings"
+    ng-if="(restrictUi.show<?= $modelClassSingular ?>Groupings) && restrictUi.asPrivateBetaFeature() && $ctrl.renderInMenu">
+
+    <li class="nav-title">Groupings</li>
+
+    TODO
+
+</ul>
+
+<ul class="not-a-list" ng-if="(restrictUi.show<?= $modelClassSingular ?>Groupings) && restrictUi.asPrivateBetaFeature() && !$ctrl.renderInMenu">
+    TODO
+</ul>

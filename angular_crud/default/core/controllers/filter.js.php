@@ -28,10 +28,23 @@ $labelSingular = $unprefixedModelClassSingularWords;
 $labelPlural = $unprefixedModelClassPluralWords;
 
 ?>
-<select ng-if="<?= lcfirst($modelClassPlural) ?>.$resolved" ng-model="$ctrl.ngModel"
-        ng-options="<?= lcfirst($modelClassSingular) ?>.id as <?= lcfirst($modelClassSingular) ?>.item_label for <?= lcfirst($modelClassSingular) ?> in <?= lcfirst($modelClassPlural) ?>"
-        type="text"
-        ng-blur="$location.search($ctrl.attributeRef, $ctrl.ngModel || '')">
-    <option value="">Select <?= $labelSingular ?>...</option>
-</select>
-<span ng-if="!<?= lcfirst($modelClassPlural) ?>.$resolved">{{ $ctrl.ngModel | json }}</span>
+'use strict';
+
+let module = /*@ngInject*/ function ($scope,
+                                     $state,
+                                     $location,
+                                     <?= lcfirst($modelClassPlural) ?>,
+                                     restrictUi) {
+
+    // To be able to read filter parameters in views
+    $scope.$state = $state;
+
+    // For restrictUi to be available in components using this as their controller
+    $scope.restrictUi = restrictUi;
+
+    // Make filtered collection available to scope
+    $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
+
+};
+
+export default module;
