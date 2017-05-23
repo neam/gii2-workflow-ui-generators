@@ -177,15 +177,21 @@ module
             ngModel: '=',
             attributeRef: '<'
         },
-        controller: function ($scope, $location, <?= lcfirst($modelClassPlural) ?>) {
+        controller: function ($scope, $state, <?= lcfirst($modelClassPlural) ?>) {
             <?= lcfirst($modelClassPlural) ?>.$activate();
-            $scope.$location = $location;
+            $scope.$state = $state;
+            $scope.select = function(key, value) {
+                let params = {};
+                params[key] = value;
+                $state.go($state.current.name, params);
+            };
             $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
         },
     })
     .component('crud<?= $modelClassSingular ?>ElementsItemSelectionWidget', {
         template: require('./components/item-selection-widget.html'),
         bindings: {
+            candidateCollection: '<',
             selectedItem: '=',
             ngModel: '=',
             attributeRef: '<'
@@ -193,11 +199,18 @@ module
         controller: function ($scope, $location, GeneralModalControllerService, <?= lcfirst($modelClassPlural) ?>) {
             <?= lcfirst($modelClassPlural) ?>.$activate();
             $scope.$location = $location;
-            $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
+            $scope.<?= lcfirst($modelClassPlural) ?> = [];
             $scope.openCurateModal = function (params) {
                 let template = require('./components/curate-modal.html');
                 let size = 'lg';
                 GeneralModalControllerService.openWithinScope($scope, template, size, params);
+            };
+            this.$onChanges = function (bindings) {
+                if (bindings.candidateCollection && bindings.candidateCollection.currentValue) {
+                    $scope.<?= lcfirst($modelClassPlural) ?> = bindings.candidateCollection.currentValue;
+                } else {
+                    $scope.<?= lcfirst($modelClassPlural) ?> = <?= lcfirst($modelClassPlural) ?>;
+                }
             };
         },
     })

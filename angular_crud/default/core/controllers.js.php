@@ -123,10 +123,10 @@ if ($workflowItem):
 
             let vs = visibilitySettings.itemTypeSpecific('<?= $modelClassSingular ?>');
             if (vs.<?= $modelClassSingular ?>_columns_by_step) {
-                $scope.handsontableSettings = angular.merge({}, handsontableSettings, workflowStepDependentSettings[vs.<?= $modelClassSingular ?>_columns_by_step]);
+                $scope.<?= lcfirst($modelClassSingular) ?>Crud.handsontableSettings = angular.merge({}, handsontableSettings, workflowStepDependentSettings[vs.<?= $modelClassSingular ?>_columns_by_step]);
                 columns = <?= lcfirst($modelClassSingular) ?>Crud.handsontable.workflowColumns[vs.<?= $modelClassSingular ?>_columns_by_step];
             } else {
-                $scope.handsontableSettings = angular.merge({}, handsontableSettings, workflowStepDependentSettings['default']);
+                $scope.<?= lcfirst($modelClassSingular) ?>Crud.handsontableSettings = angular.merge({}, handsontableSettings, workflowStepDependentSettings['default']);
                 columns = <?= lcfirst($modelClassSingular) ?>Crud.handsontable.crudColumns;
             }
 
@@ -137,7 +137,7 @@ if ($workflowItem):
                 });
             }
 
-            $scope.handsontableSettings.columns = columns;
+            $scope.<?= lcfirst($modelClassSingular) ?>Crud.handsontableSettings.columns = columns;
 
         };
 
