@@ -175,7 +175,7 @@ module
         template: require('./components/filter-as-related-item.html'),
         bindings: {
             ngModel: '=',
-            attributeRef: '<'
+            attributeRef: '@'
         },
         controller: function ($scope, $state, <?= lcfirst($modelClassPlural) ?>) {
             <?= lcfirst($modelClassPlural) ?>.$activate();
@@ -194,7 +194,7 @@ module
             candidateCollection: '<',
             selectedItem: '=',
             ngModel: '=',
-            attributeRef: '<'
+            attributeRef: '@'
         },
         controller: function ($scope, $location, GeneralModalControllerService, <?= lcfirst($modelClassPlural) ?>) {
             <?= lcfirst($modelClassPlural) ?>.$activate();
