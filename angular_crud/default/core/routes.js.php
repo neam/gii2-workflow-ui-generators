@@ -32,7 +32,7 @@ $labelPlural = $unprefixedModelClassPluralWords;
 ?>
 'use strict';
 
-let module = angular.module('crud-<?= $modelClassSingularId ?>-routes', []);
+let module = {};
 
 (function (module) {
 
@@ -61,9 +61,14 @@ let module = angular.module('crud-<?= $modelClassSingularId ?>-routes', []);
 
     };
 
-    module.config(function ($stateProvider) {
-        routes($stateProvider, 'root.api-endpoints.existing');
-    });
+    module.routes = routes;
+
+    /*
+     Usage example:
+     someAngularModuleThatRequiresThisItemsCrudRouting.config(function ($stateProvider) {
+         routes($stateProvider, 'root.api-endpoints.existing');
+     });
+     */
 
 })(module);
 
