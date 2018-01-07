@@ -63,7 +63,7 @@ let module = angular
                             return data;
                         }
                         var wrappedResult = angular.fromJson(data);
-                        wrappedResult.<?=$itemsResponseKey?>.$metadata = wrappedResult.<?=$metadataResponseKey?>;
+                        if (!wrappedResult.<?=$itemsResponseKey?>) {return wrappedResult;} else {wrappedResult.<?=$itemsResponseKey?>.$metadata = wrappedResult.<?=$metadataResponseKey?>;}
                         return wrappedResult.<?=$itemsResponseKey?>;
                     },
 
@@ -563,7 +563,7 @@ echo $this->render('../item-type-attributes-data-schema.inc.php', ["itemTypeAttr
     /**
      * Service that contains the item's relations' metadata
      */
-    .service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $location, $timeout, $q, $ocLazyLoad, $injector) {
+    .service('<?= lcfirst($modelClassSingular) ?>RelationsMetadata', function ($rootScope, $state, $timeout, $q, $ocLazyLoad, $injector) {
 
         // General relations logic
         var relations = {
@@ -617,7 +617,7 @@ foreach ($itemTypeAttributesWithAdditionalMetadata as $attribute => $attributeIn
 <?php
 if ($attributeInfo["type"] === "has-one-relation"):
 ?>
-                select2Options: dnaProjectBaseHandsontableCrudHelper.defaultSelect2OptionsFactory('<?= lcfirst($relatedModelClassPlural) ?>', '<?= $relatedModelClassSingular ?>', $injector, $timeout, $location),
+                select2Options: dnaProjectBaseHandsontableCrudHelper.defaultSelect2OptionsFactory('<?= lcfirst($relatedModelClassPlural) ?>', '<?= $relatedModelClassSingular ?>', $injector, $timeout, $state),
 <?php
 endif;
 ?>
